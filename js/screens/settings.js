@@ -48,6 +48,7 @@ export async function renderSettings(app, router) {
       <nav class="bottom-nav">
         <button class="nav-btn" data-route="/">Home</button>
         <button class="nav-btn" data-route="/browse">Browse</button>
+        <button class="nav-btn" data-route="/reference">Reference</button>
         <button class="nav-btn active" data-route="/settings">Settings</button>
       </nav>
     </div>

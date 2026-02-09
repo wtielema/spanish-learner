@@ -724,3 +724,199 @@ button {
   margin-top: 10px;
   text-align: center;
 }
+
+/* Conjugation Reference */
+.conjugation-ref {
+  padding-bottom: 80px;
+}
+
+.ref-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ref-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.ref-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.ref-nav-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.ref-chip {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  min-height: 32px;
+  border-radius: 16px;
+}
+
+.ref-chip:active {
+  background: var(--accent);
+  color: white;
+}
+
+.ref-tier-section {
+  margin-bottom: 32px;
+}
+
+.ref-tier-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.ref-pattern-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.ref-pattern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ref-pattern-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.ref-verb-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.ref-pattern-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.ref-stem-note {
+  font-size: 13px;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
+
+.ref-tenses-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ref-tense-block {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.ref-tense-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ref-table th {
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.ref-table td {
+  padding: 6px 8px;
+}
+
+.ref-person {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.ref-ending {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ref-form {
+  color: var(--text-primary);
+}
+
+.ref-stem-change td {
+  background: rgba(240, 192, 64, 0.08);
+}
+
+/* Quick Rules */
+.ref-quick-rules {
+  margin-bottom: 8px;
+}
+
+.ref-rule-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.ref-rule-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.ref-rule-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ref-example {
+  margin-top: 6px;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.ref-example strong {
+  color: var(--accent);
+  font-style: normal;
+}
