@@ -492,6 +492,14 @@ button {
   padding: 0 4px;
 }
 
+.fillin-translation {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
 /* Pattern Match */
 .pattern-card {
   min-height: 200px;

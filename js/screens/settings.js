@@ -7,6 +7,7 @@ export async function renderSettings(app, router) {
   const newPerDay = (await db.getSetting('newPerDay')) || 10;
   const practiceMode = (await db.getSetting('practiceMode')) || 'mixed';
   const verbTrainingMode = (await db.getSetting('verbTrainingMode')) || 'auto';
+  const showTranslations = (await db.getSetting('showTranslations')) !== false;
 
   app.innerHTML = `
     <div class="settings">
@@ -37,6 +38,15 @@ export async function renderSettings(app, router) {
           <button class="setting-option ${verbTrainingMode === 'typing' ? 'active' : ''}" data-vmode="typing">Typing</button>
         </div>
         <p class="setting-hint">Auto: progressive escalation based on mastery</p>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label">Show English translations</label>
+        <div class="setting-options" id="translation-options">
+          <button class="setting-option ${showTranslations ? 'active' : ''}" data-trans="true">On</button>
+          <button class="setting-option ${!showTranslations ? 'active' : ''}" data-trans="false">Off</button>
+        </div>
+        <p class="setting-hint">Show English translation on sentence exercises</p>
       </div>
 
       <div class="setting-group">
@@ -73,6 +83,14 @@ export async function renderSettings(app, router) {
       document.querySelectorAll('.setting-option[data-vmode]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       await db.saveSetting('verbTrainingMode', btn.dataset.vmode);
+    });
+  });
+
+  document.querySelectorAll('.setting-option[data-trans]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      document.querySelectorAll('.setting-option[data-trans]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      await db.saveSetting('showTranslations', btn.dataset.trans === 'true');
     });
   });
 

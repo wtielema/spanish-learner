@@ -8,6 +8,7 @@ export async function renderPractice(app, router, mode) {
   const db = new DB();
   await db.init();
   const practiceMode = (await db.getSetting('practiceMode')) || 'mixed';
+  const showTranslations = (await db.getSetting('showTranslations')) !== false;
 
   const isVerbMode = mode.startsWith('verb-');
   const session = isVerbMode ? new VerbSession() : new Session();
@@ -334,6 +335,9 @@ export async function renderPractice(app, router, mode) {
     const sentenceParts = card.sentence.split('_____');
     const sentenceHtml = `<span class="fillin-text">${sentenceParts[0]}</span><span class="fillin-blank">_____</span><span class="fillin-text">${sentenceParts[1] || ''}</span>`;
 
+    const translationHtml = showTranslations && card.sentenceEn
+      ? `<div class="fillin-translation">${card.sentenceEn}</div>` : '';
+
     if (variant === 'mc') {
       // Multiple choice fill-in
       const options = shuffle([card.answer, ...card.distractors]);
@@ -348,6 +352,7 @@ export async function renderPractice(app, router, mode) {
             <div class="card-front">
               <span class="card-label">Fill in the blank \u2014 ${card.tense || ''}</span>
               <div class="fillin-sentence">${sentenceHtml}</div>
+              ${translationHtml}
               <span class="fr-verb-name">${card.verb.spanish} (${card.verb.english})</span>
             </div>
           </div>
@@ -388,6 +393,7 @@ export async function renderPractice(app, router, mode) {
             <div class="card-front">
               <span class="card-label">Fill in the blank \u2014 ${card.tense || ''}</span>
               <div class="fillin-sentence">${sentenceHtml}</div>
+              ${translationHtml}
               <span class="fr-verb-name">${card.verb.spanish} (${card.verb.english})</span>
             </div>
           </div>
