@@ -31,7 +31,16 @@ export class Session {
         const progress = progressMap[card.id];
         return progress && SRS.getDueCards([progress]).length > 0;
       });
-      this.cards = this._shuffle(dueCards).slice(0, 30);
+
+      if (dueCards.length > 0) {
+        this.cards = this._shuffle(dueCards).slice(0, 30);
+      } else {
+        // Nothing due — fall back to weakest cards for extra practice
+        const practicedCards = this._allCards
+          .filter(card => progressMap[card.id])
+          .sort((a, b) => (progressMap[a.id].easeFactor || 2.5) - (progressMap[b.id].easeFactor || 2.5));
+        this.cards = practicedCards.slice(0, 20);
+      }
     } else {
       const newPerDay = (await this.db.getSetting('newPerDay')) || 10;
       const newCards = this._allCards.filter(card => !progressMap[card.id]);

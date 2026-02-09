@@ -112,7 +112,15 @@ export class VerbSession {
       })
       .sort((a, b) => (this.verbProgressMap[a.id].mastery || 0) - (this.verbProgressMap[b.id].mastery || 0));
 
-    const sessionVerbs = dueVerbs.slice(0, 8);
+    let sessionVerbs = dueVerbs.slice(0, 8);
+
+    // Nothing due — fall back to weakest practiced verbs for extra practice
+    if (sessionVerbs.length === 0 && allWithProgress.length > 0) {
+      sessionVerbs = allWithProgress
+        .sort((a, b) => (this.verbProgressMap[a.id].mastery || 0) - (this.verbProgressMap[b.id].mastery || 0))
+        .slice(0, 8);
+    }
+
     this._generateCards(sessionVerbs);
   }
 
