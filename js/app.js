@@ -4,6 +4,7 @@ import { renderPractice } from './screens/practice.js';
 import { renderBrowse } from './screens/browse.js';
 import { renderSettings } from './screens/settings.js';
 import { renderConjugationRef } from './screens/conjugation-ref.js';
+import { renderProgress } from './screens/progress.js';
 
 const app = document.getElementById('app');
 
@@ -15,6 +16,7 @@ const router = new Router({
   },
   '/browse': () => renderBrowse(app, router),
   '/reference': () => renderConjugationRef(app, router),
+  '/progress': () => renderProgress(app, router),
   '/settings': () => renderSettings(app, router),
 });
 

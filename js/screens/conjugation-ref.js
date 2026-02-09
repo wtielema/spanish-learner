@@ -144,6 +144,7 @@ export async function renderConjugationRef(app, router) {
         <button class="nav-btn" data-route="/">Home</button>
         <button class="nav-btn" data-route="/browse">Browse</button>
         <button class="nav-btn active" data-route="/reference">Reference</button>
+        <button class="nav-btn" data-route="/progress">Progress</button>
         <button class="nav-btn" data-route="/settings">Settings</button>
       </nav>
     </div>
