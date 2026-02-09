@@ -2,6 +2,7 @@ import { Session } from '../session.js';
 import { DB } from '../db.js';
 
 export async function renderPractice(app, router, mode) {
+  try {
   const db = new DB();
   await db.init();
   const practiceMode = (await db.getSetting('practiceMode')) || 'mixed';
@@ -138,4 +139,7 @@ export async function renderPractice(app, router, mode) {
   }
 
   render();
+  } catch (e) {
+    app.innerHTML = `<div style="padding:20px;color:#e94560;"><h2>Error</h2><pre>${e.message}\n${e.stack}</pre><button class="btn-primary" onclick="location.hash='/'">Back</button></div>`;
+  }
 }

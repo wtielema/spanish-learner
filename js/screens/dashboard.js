@@ -52,8 +52,14 @@ export async function renderDashboard(app, router) {
     </div>
   `;
 
-  document.getElementById('btn-review').addEventListener('click', () => router.navigate('/practice?mode=review'));
-  document.getElementById('btn-learn').addEventListener('click', () => router.navigate('/practice?mode=learn'));
+  document.getElementById('btn-review').addEventListener('click', () => {
+    router.navigate('/practice?mode=review');
+  });
+
+  document.getElementById('btn-learn').addEventListener('click', () => {
+    router.navigate('/practice?mode=learn');
+  });
+
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => router.navigate(btn.dataset.route));
   });

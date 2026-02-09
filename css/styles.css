@@ -23,8 +23,8 @@ body {
   min-height: 100vh;
   padding-top: var(--safe-top);
   padding-bottom: var(--safe-bottom);
-  -webkit-user-select: none;
-  user-select: none;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 #app {

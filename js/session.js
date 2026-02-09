@@ -35,7 +35,7 @@ export class Session {
     } else {
       const newPerDay = (await this.db.getSetting('newPerDay')) || 10;
       const newCards = this._allCards.filter(card => !progressMap[card.id]);
-      this.cards = newCards.slice(0, newPerDay);
+      this.cards = this._shuffle(newCards).slice(0, newPerDay);
     }
   }
 

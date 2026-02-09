@@ -10,7 +10,7 @@ const router = new Router({
   '/': () => renderDashboard(app, router),
   '/practice': () => {
     const params = new URLSearchParams(window.location.hash.split('?')[1]);
-    renderPractice(app, router, params.get('mode') || 'review');
+    return renderPractice(app, router, params.get('mode') || 'review');
   },
   '/browse': () => renderBrowse(app, router),
   '/settings': () => renderSettings(app, router),
