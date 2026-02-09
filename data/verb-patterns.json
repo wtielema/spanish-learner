@@ -1,0 +1,90 @@
+{
+  "regular-ar": {
+    "name": "Regular -AR",
+    "description": "Regular verbs ending in -ar follow standard conjugation patterns",
+    "example": "hablar",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-as", "él": "-a", "nosotros": "-amos", "vosotros": "-áis", "ellos": "-an" },
+      "preterite": { "yo": "-é", "tú": "-aste", "él": "-ó", "nosotros": "-amos", "vosotros": "-asteis", "ellos": "-aron" },
+      "future": { "yo": "-aré", "tú": "-arás", "él": "-ará", "nosotros": "-aremos", "vosotros": "-aréis", "ellos": "-arán" }
+    },
+    "stemChangePersons": []
+  },
+  "regular-er": {
+    "name": "Regular -ER",
+    "description": "Regular verbs ending in -er follow standard conjugation patterns",
+    "example": "comer",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-es", "él": "-e", "nosotros": "-emos", "vosotros": "-éis", "ellos": "-en" },
+      "preterite": { "yo": "-í", "tú": "-iste", "él": "-ió", "nosotros": "-imos", "vosotros": "-isteis", "ellos": "-ieron" },
+      "future": { "yo": "-eré", "tú": "-erás", "él": "-erá", "nosotros": "-eremos", "vosotros": "-eréis", "ellos": "-erán" }
+    },
+    "stemChangePersons": []
+  },
+  "regular-ir": {
+    "name": "Regular -IR",
+    "description": "Regular verbs ending in -ir follow standard conjugation patterns",
+    "example": "vivir",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-es", "él": "-e", "nosotros": "-imos", "vosotros": "-ís", "ellos": "-en" },
+      "preterite": { "yo": "-í", "tú": "-iste", "él": "-ió", "nosotros": "-imos", "vosotros": "-isteis", "ellos": "-ieron" },
+      "future": { "yo": "-iré", "tú": "-irás", "él": "-irá", "nosotros": "-iremos", "vosotros": "-iréis", "ellos": "-irán" }
+    },
+    "stemChangePersons": []
+  },
+  "stem-e-ie": {
+    "name": "Stem e→ie",
+    "description": "The stem vowel 'e' changes to 'ie' in stressed syllables (present tense, except nosotros/vosotros)",
+    "example": "pensar",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-as/-es", "él": "-a/-e", "nosotros": "-amos/-emos/-imos", "vosotros": "-áis/-éis/-ís", "ellos": "-an/-en" },
+      "preterite": { "yo": "-é/-í", "tú": "-aste/-iste", "él": "-ó/-ió", "nosotros": "-amos/-imos", "vosotros": "-asteis/-isteis", "ellos": "-aron/-ieron" },
+      "future": { "yo": "-é/-eré/-iré", "tú": "-ás/-erás/-irás", "él": "-á/-erá/-irá", "nosotros": "-emos/-eremos/-iremos", "vosotros": "-éis/-eréis/-iréis", "ellos": "-án/-erán/-irán" }
+    },
+    "stemChangePersons": ["yo", "tú", "él", "ellos"]
+  },
+  "stem-o-ue": {
+    "name": "Stem o→ue",
+    "description": "The stem vowel 'o' changes to 'ue' in stressed syllables (present tense, except nosotros/vosotros). Jugar changes u→ue.",
+    "example": "volver",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-es/-as", "él": "-e/-a", "nosotros": "-emos/-amos/-imos", "vosotros": "-éis/-áis/-ís", "ellos": "-en/-an" },
+      "preterite": { "yo": "-í/-é", "tú": "-iste/-aste", "él": "-ió/-ó", "nosotros": "-imos/-amos", "vosotros": "-isteis/-asteis", "ellos": "-ieron/-aron" },
+      "future": { "yo": "-eré/-aré/-iré", "tú": "-erás/-arás/-irás", "él": "-erá/-ará/-irá", "nosotros": "-eremos/-aremos/-iremos", "vosotros": "-eréis/-aréis/-iréis", "ellos": "-erán/-arán/-irán" }
+    },
+    "stemChangePersons": ["yo", "tú", "él", "ellos"]
+  },
+  "stem-e-i": {
+    "name": "Stem e→i",
+    "description": "The stem vowel 'e' changes to 'i' in stressed syllables. Also changes in preterite 3rd person forms.",
+    "example": "pedir",
+    "endings": {
+      "present": { "yo": "-o", "tú": "-es", "él": "-e", "nosotros": "-imos", "vosotros": "-ís", "ellos": "-en" },
+      "preterite": { "yo": "-í", "tú": "-iste", "él": "-ió", "nosotros": "-imos", "vosotros": "-isteis", "ellos": "-ieron" },
+      "future": { "yo": "-iré", "tú": "-irás", "él": "-irá", "nosotros": "-iremos", "vosotros": "-iréis", "ellos": "-irán" }
+    },
+    "stemChangePersons": ["yo", "tú", "él", "ellos"]
+  },
+  "yo-irreg": {
+    "name": "Yo-form Irregular",
+    "description": "These verbs have an irregular yo form in the present tense (-go, -zco) but otherwise follow regular patterns for other persons",
+    "example": "tener",
+    "endings": {
+      "present": { "yo": "irregular", "tú": "regular", "él": "regular", "nosotros": "regular", "vosotros": "regular", "ellos": "regular" },
+      "preterite": { "yo": "varies", "tú": "varies", "él": "varies", "nosotros": "varies", "vosotros": "varies", "ellos": "varies" },
+      "future": { "yo": "varies", "tú": "varies", "él": "varies", "nosotros": "varies", "vosotros": "varies", "ellos": "varies" }
+    },
+    "stemChangePersons": ["yo"]
+  },
+  "irregular": {
+    "name": "Irregular",
+    "description": "Fully irregular verbs that don't follow standard patterns and must be memorized individually",
+    "example": "ser",
+    "endings": {
+      "present": { "yo": "irregular", "tú": "irregular", "él": "irregular", "nosotros": "irregular", "vosotros": "irregular", "ellos": "irregular" },
+      "preterite": { "yo": "irregular", "tú": "irregular", "él": "irregular", "nosotros": "irregular", "vosotros": "irregular", "ellos": "irregular" },
+      "future": { "yo": "irregular", "tú": "irregular", "él": "irregular", "nosotros": "irregular", "vosotros": "irregular", "ellos": "irregular" }
+    },
+    "stemChangePersons": []
+  }
+}

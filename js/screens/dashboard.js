@@ -19,6 +19,47 @@ export async function renderDashboard(app, router) {
   );
   const accuracy = totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
 
+  // Verb training data
+  const allVerbProgress = await db.getAllVerbProgress();
+  const verbProgressMap = Object.fromEntries(allVerbProgress.map(p => [p.verbId, p]));
+
+  let verbs = [];
+  try {
+    verbs = await fetch('data/verbs.json').then(r => r.json());
+  } catch (e) { /* offline fallback */ }
+
+  const tierData = {};
+  const TIER_UNLOCK_THRESHOLD = 0.6;
+
+  for (const tier of [1, 2, 3]) {
+    const tierVerbs = verbs.filter(v => v.tier === tier);
+    const practiced = tierVerbs.filter(v => verbProgressMap[v.id]);
+    const mastered = tierVerbs.filter(v => {
+      const p = verbProgressMap[v.id];
+      return p && p.mastery >= TIER_UNLOCK_THRESHOLD;
+    }).length;
+    // Show average mastery of all practiced verbs in tier (more encouraging)
+    const avgMastery = practiced.length > 0
+      ? practiced.reduce((sum, v) => sum + (verbProgressMap[v.id].mastery || 0), 0) / tierVerbs.length
+      : 0;
+    tierData[tier] = {
+      total: tierVerbs.length,
+      practiced: practiced.length,
+      mastered,
+      percent: Math.round(avgMastery * 100),
+    };
+  }
+
+  const tier2Unlocked = tierData[1].total > 0 && tierData[1].mastered / tierData[1].total >= TIER_UNLOCK_THRESHOLD;
+  const tier3Unlocked = tier2Unlocked && tierData[2].total > 0 && tierData[2].mastered / tierData[2].total >= TIER_UNLOCK_THRESHOLD;
+
+  const verbsDue = verbs.filter(v => {
+    const p = verbProgressMap[v.id];
+    return p && (!p.nextReview || p.nextReview <= today);
+  }).length;
+
+  const tierNames = { 1: 'Regular', 2: 'Stem-Changing', 3: 'Irregular' };
+
   app.innerHTML = `
     <div class="dashboard">
       <h1 class="dashboard-title">Spanish Learner</h1>
@@ -40,6 +81,33 @@ export async function renderDashboard(app, router) {
           <span class="stat-label">Accuracy</span>
         </div>
       </div>
+
+      <div class="verb-training-section">
+        <h2 class="verb-section-title">Verb Training</h2>
+        <div class="tier-progress-list">
+          ${[1, 2, 3].map(tier => {
+            const data = tierData[tier];
+            const unlocked = tier === 1 || (tier === 2 && tier2Unlocked) || (tier === 3 && tier3Unlocked);
+            return `
+              <div class="tier-progress-item ${unlocked ? '' : 'tier-locked'}">
+                <div class="tier-header">
+                  <span class="tier-name">${unlocked ? '' : '<span class="tier-lock-icon">&#128274;</span> '}${tierNames[tier]}</span>
+                  <span class="tier-percent">${data.percent}%</span>
+                </div>
+                <div class="tier-bar">
+                  <div class="tier-bar-fill" style="width: ${data.percent}%"></div>
+                </div>
+                <span class="tier-detail">${data.practiced} practiced, ${data.mastered} mastered / ${data.total} verbs</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="verb-training-actions">
+          <button class="btn-primary" id="btn-verb-learn">Train Verbs</button>
+          <button class="btn-secondary" id="btn-verb-review" style="margin-top: 8px;">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
+        </div>
+      </div>
+
       <div class="dashboard-actions">
         <button class="btn-primary" id="btn-review">Start Review${dueNow > 0 ? ` (${dueNow})` : ''}</button>
         <button class="btn-secondary" id="btn-learn" style="margin-top: 12px;">Learn New Words</button>
@@ -58,6 +126,14 @@ export async function renderDashboard(app, router) {
 
   document.getElementById('btn-learn').addEventListener('click', () => {
     router.navigate('/practice?mode=learn');
+  });
+
+  document.getElementById('btn-verb-learn').addEventListener('click', () => {
+    router.navigate('/practice?mode=verb-learn');
+  });
+
+  document.getElementById('btn-verb-review').addEventListener('click', () => {
+    router.navigate('/practice?mode=verb-review');
   });
 
   document.querySelectorAll('.nav-btn').forEach(btn => {

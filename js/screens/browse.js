@@ -1,5 +1,16 @@
 import { DB } from '../db.js';
 
+const PATTERN_LABELS = {
+  'regular-ar': 'Regular -AR',
+  'regular-er': 'Regular -ER',
+  'regular-ir': 'Regular -IR',
+  'stem-e-ie': 'Stem e>ie',
+  'stem-o-ue': 'Stem o>ue',
+  'stem-e-i': 'Stem e>i',
+  'yo-irreg': 'Yo-irreg',
+  'irregular': 'Irregular',
+};
+
 export async function renderBrowse(app, router) {
   const db = new DB();
   await db.init();
@@ -12,6 +23,9 @@ export async function renderBrowse(app, router) {
   const allProgress = await db.getAllProgress();
   const progressMap = Object.fromEntries(allProgress.map(p => [p.cardId, p]));
 
+  const allVerbProgress = await db.getAllVerbProgress();
+  const verbProgressMap = Object.fromEntries(allVerbProgress.map(p => [p.verbId, p]));
+
   const allWords = [
     ...nouns.map(n => ({ ...n, type: 'noun' })),
     ...verbs.map(v => ({ ...v, type: 'verb' })),
@@ -23,6 +37,13 @@ export async function renderBrowse(app, router) {
     if (!p || p.repetitions === 0) return 'new';
     if (p.easeFactor >= 2.3 && p.repetitions >= 3) return 'mastered';
     return 'learning';
+  }
+
+  function getVerbMasteryLevel(word) {
+    if (word.type !== 'verb') return null;
+    const p = verbProgressMap[word.id];
+    if (!p) return null;
+    return Math.round(p.mastery * 100);
   }
 
   function renderList(filter = '') {
@@ -41,6 +62,8 @@ export async function renderBrowse(app, router) {
         <ul class="word-list">
           ${filtered.slice(0, 100).map(w => {
             const mastery = getMastery(w);
+            const patternLabel = w.pattern ? PATTERN_LABELS[w.pattern] || w.pattern : '';
+            const verbMastery = getVerbMasteryLevel(w);
             return `
               <li class="word-item" data-id="${w.id}" data-type="${w.type}">
                 <span class="mastery-dot mastery-${mastery}"></span>
@@ -48,6 +71,7 @@ export async function renderBrowse(app, router) {
                   <span class="word-spanish">${w.spanish}</span>
                   <span class="word-english">${w.english}</span>
                 </div>
+                ${patternLabel ? `<span class="pattern-badge">${patternLabel}</span>` : ''}
                 <span class="word-type">${w.type === 'noun' ? (w.gender === 'm' ? 'el' : 'la') : 'verb'}</span>
               </li>
             `;
@@ -92,6 +116,7 @@ export async function renderBrowse(app, router) {
     const cardId = `${word.id}-es`;
     const progress = progressMap[cardId];
     const history = progress?.history?.slice(-5) || [];
+    const verbProg = verbProgressMap[word.id];
 
     let detailHtml = `
       <div class="browse">
@@ -119,18 +144,42 @@ export async function renderBrowse(app, router) {
       `;
     }
 
-    if (type === 'verb' && word.conjugations) {
-      for (const tense of ['present', 'preterite', 'future']) {
+    if (type === 'verb') {
+      if (word.pattern) {
         detailHtml += `
-          <div class="detail-section">
-            <h3>${tense.charAt(0).toUpperCase() + tense.slice(1)}</h3>
-            <div class="conj-grid">
-              ${Object.entries(word.conjugations[tense]).map(([person, form]) =>
-                `<span class="conj-person">${person}</span><span class="conj-form">${form}</span>`
-              ).join('')}
-            </div>
+          <div class="detail-row">
+            <span class="detail-label">Pattern</span>
+            <span class="pattern-badge-detail">${PATTERN_LABELS[word.pattern] || word.pattern}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Tier</span>
+            <span>${word.tier === 1 ? 'Regular' : word.tier === 2 ? 'Stem-Changing' : 'Irregular'}</span>
           </div>
         `;
+      }
+
+      if (verbProg) {
+        detailHtml += `
+          <div class="detail-row">
+            <span class="detail-label">Verb Mastery</span>
+            <span class="mastery-value">${Math.round(verbProg.mastery * 100)}%</span>
+          </div>
+        `;
+      }
+
+      if (word.conjugations) {
+        for (const tense of ['present', 'preterite', 'future']) {
+          detailHtml += `
+            <div class="detail-section">
+              <h3>${tense.charAt(0).toUpperCase() + tense.slice(1)}</h3>
+              <div class="conj-grid">
+                ${Object.entries(word.conjugations[tense]).map(([person, form]) =>
+                  `<span class="conj-person">${person}</span><span class="conj-form">${form}</span>`
+                ).join('')}
+              </div>
+            </div>
+          `;
+        }
       }
     }
 

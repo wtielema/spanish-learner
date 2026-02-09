@@ -6,6 +6,7 @@ export async function renderSettings(app, router) {
 
   const newPerDay = (await db.getSetting('newPerDay')) || 10;
   const practiceMode = (await db.getSetting('practiceMode')) || 'mixed';
+  const verbTrainingMode = (await db.getSetting('verbTrainingMode')) || 'auto';
 
   app.innerHTML = `
     <div class="settings">
@@ -29,6 +30,16 @@ export async function renderSettings(app, router) {
       </div>
 
       <div class="setting-group">
+        <label class="setting-label">Verb training mode</label>
+        <div class="setting-options" id="verb-mode-options">
+          <button class="setting-option ${verbTrainingMode === 'auto' ? 'active' : ''}" data-vmode="auto">Auto</button>
+          <button class="setting-option ${verbTrainingMode === 'mc' ? 'active' : ''}" data-vmode="mc">MC Only</button>
+          <button class="setting-option ${verbTrainingMode === 'typing' ? 'active' : ''}" data-vmode="typing">Typing</button>
+        </div>
+        <p class="setting-hint">Auto: progressive escalation based on mastery</p>
+      </div>
+
+      <div class="setting-group">
         <label class="setting-label">Data</label>
         <button class="btn-danger" id="btn-reset">Reset All Progress</button>
         <p class="setting-warning">Warning: Clearing Safari cache will also erase your progress.</p>
@@ -48,11 +59,19 @@ export async function renderSettings(app, router) {
     await db.saveSetting('newPerDay', val);
   });
 
-  document.querySelectorAll('.setting-option').forEach(btn => {
+  document.querySelectorAll('.setting-option[data-mode]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      document.querySelectorAll('.setting-option').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.setting-option[data-mode]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       await db.saveSetting('practiceMode', btn.dataset.mode);
+    });
+  });
+
+  document.querySelectorAll('.setting-option[data-vmode]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      document.querySelectorAll('.setting-option[data-vmode]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      await db.saveSetting('verbTrainingMode', btn.dataset.vmode);
     });
   });
 
