@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><title>DB Tests</title></head>
+<body>
+<pre id="output"></pre>
+<script type="module">
+import { DB } from '../js/db.js';
+
+const out = document.getElementById('output');
+function log(msg) { out.textContent += msg + '\n'; }
+function assert(cond, msg) { log(cond ? `PASS: ${msg}` : `FAIL: ${msg}`); if (!cond) throw new Error(msg); }
+
+async function runTests() {
+  const db = new DB('test-spanish-learner');
+  await db.init();
+
+  await db.saveProgress('n0001', { easeFactor: 2.5, interval: 1, nextReview: '2026-02-09', repetitions: 1, history: [] });
+  const p = await db.getProgress('n0001');
+  assert(p.easeFactor === 2.5, 'Save/get progress');
+
+  await db.saveProgress('n0002', { easeFactor: 2.0, interval: 2, nextReview: '2026-02-10', repetitions: 2, history: [] });
+  const all = await db.getAllProgress();
+  assert(all.length >= 2, 'Get all progress returns multiple');
+
+  await db.saveSetting('newPerDay', 15);
+  const s = await db.getSetting('newPerDay');
+  assert(s === 15, 'Save/get setting');
+
+  await db.clear();
+  const afterClear = await db.getAllProgress();
+  assert(afterClear.length === 0, 'Clear removes all progress');
+
+  log('\nAll tests passed!');
+}
+
+runTests().catch(e => log('ERROR: ' + e.message));
+</script>
+</body></html>

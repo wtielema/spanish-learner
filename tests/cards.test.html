@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><title>Card Tests</title></head>
+<body>
+<pre id="output"></pre>
+<script type="module">
+import { generateNounCards, generateVerbCards } from '../js/cards.js';
+
+const out = document.getElementById('output');
+function log(msg) { out.textContent += msg + '\n'; }
+function assert(cond, msg) { log(cond ? `PASS: ${msg}` : `FAIL: ${msg}`); if (!cond) throw new Error(msg); }
+
+const noun = { id: 'n0001', spanish: 'tiempo', english: 'time', gender: 'm', plural: 'tiempos' };
+const nounCards = generateNounCards(noun);
+assert(nounCards.length === 2, 'Noun generates 2 cards');
+assert(nounCards[0].front.includes('tiempo'), 'First card shows Spanish');
+assert(nounCards[0].back.includes('time'), 'First card back shows English');
+assert(nounCards[1].front.includes('time'), 'Second card shows English');
+assert(nounCards[1].back.includes('tiempo'), 'Second card back shows Spanish');
+assert(nounCards[0].type === 'noun', 'Card type is noun');
+
+const verb = {
+  id: 'v0001', spanish: 'hablar', english: 'to speak',
+  conjugations: {
+    present: { yo: 'hablo', tú: 'hablas', él: 'habla', nosotros: 'hablamos', vosotros: 'habláis', ellos: 'hablan' },
+    preterite: { yo: 'hablé', tú: 'hablaste', él: 'habló', nosotros: 'hablamos', vosotros: 'hablasteis', ellos: 'hablaron' },
+    future: { yo: 'hablaré', tú: 'hablarás', él: 'hablará', nosotros: 'hablaremos', vosotros: 'hablaréis', ellos: 'hablarán' }
+  }
+};
+const verbCards = generateVerbCards(verb);
+
+assert(verbCards.length === 20, 'Verb generates 20 cards');
+
+const meaningCards = verbCards.filter(c => c.subtype === 'meaning');
+assert(meaningCards.length === 2, '2 meaning cards');
+
+const conjCards = verbCards.filter(c => c.subtype === 'conjugation');
+assert(conjCards.length === 18, '18 conjugation cards');
+assert(conjCards[0].front.includes('hablar'), 'Conjugation card shows infinitive');
+assert(conjCards[0].tense, 'Conjugation card has tense property');
+
+log('\nAll tests passed!');
+</script>
+</body></html>

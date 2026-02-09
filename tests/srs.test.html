@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html><head><title>SRS Tests</title></head>
+<body>
+<pre id="output"></pre>
+<script type="module">
+import { SRS } from '../js/srs.js';
+
+const out = document.getElementById('output');
+function log(msg) { out.textContent += msg + '\n'; }
+function assert(cond, msg) { log(cond ? `PASS: ${msg}` : `FAIL: ${msg}`); if (!cond) throw new Error(msg); }
+
+const card = SRS.newCard('n0001');
+assert(card.easeFactor === 2.5, 'New card ease factor is 2.5');
+assert(card.interval === 0, 'New card interval is 0');
+assert(card.repetitions === 0, 'New card repetitions is 0');
+
+const afterAgain = SRS.review(card, 'again');
+assert(afterAgain.interval === 1, 'Again sets interval to 1');
+assert(afterAgain.repetitions === 0, 'Again resets repetitions');
+assert(afterAgain.easeFactor < 2.5, 'Again decreases ease factor');
+
+const afterGood = SRS.review(card, 'good');
+assert(afterGood.interval === 1, 'First good sets interval to 1');
+assert(afterGood.repetitions === 1, 'Good increments repetitions');
+
+const afterGood2 = SRS.review(afterGood, 'good');
+assert(afterGood2.interval > afterGood.interval, 'Second good increases interval');
+
+const afterEasy = SRS.review(card, 'easy');
+assert(afterEasy.interval > afterGood.interval, 'Easy gives bigger interval than good');
+assert(afterEasy.easeFactor > 2.5, 'Easy increases ease factor');
+
+assert(afterGood.nextReview.match(/^\d{4}-\d{2}-\d{2}/), 'nextReview is date string');
+
+const today = new Date().toISOString().split('T')[0];
+const cards = [
+  { ...SRS.newCard('a'), nextReview: '2020-01-01' },
+  { ...SRS.newCard('b'), nextReview: '2099-01-01' },
+  { ...SRS.newCard('c'), nextReview: today },
+];
+const due = SRS.getDueCards(cards);
+assert(due.length === 2, 'getDueCards returns past and today cards');
+assert(due.find(c => c.cardId === 'b') === undefined, 'getDueCards excludes future cards');
+
+log('\nAll tests passed!');
+</script>
+</body></html>

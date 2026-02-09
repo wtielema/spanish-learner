@@ -1,17 +1,19 @@
-// js/app.js
 import { Router } from './router.js';
+import { renderDashboard } from './screens/dashboard.js';
+import { renderPractice } from './screens/practice.js';
+import { renderBrowse } from './screens/browse.js';
+import { renderSettings } from './screens/settings.js';
 
 const app = document.getElementById('app');
 
-function renderHome() {
-  app.innerHTML = `
-    <h1 style="text-align:center; margin: 40px 0;">Spanish Learner</h1>
-    <p style="text-align:center; color: var(--text-secondary);">App is running.</p>
-  `;
-}
-
 const router = new Router({
-  '/': renderHome,
+  '/': () => renderDashboard(app, router),
+  '/practice': () => {
+    const params = new URLSearchParams(window.location.hash.split('?')[1]);
+    renderPractice(app, router, params.get('mode') || 'review');
+  },
+  '/browse': () => renderBrowse(app, router),
+  '/settings': () => renderSettings(app, router),
 });
 
 router.resolve();
