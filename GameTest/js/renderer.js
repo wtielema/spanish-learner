@@ -112,6 +112,67 @@ export function renderRoomLabels(ctx, rooms, canvasW, canvasH) {
   ctx.restore();
 }
 
+// Unit type colors and initials for rendering
+const UNIT_COLORS = {
+  thrall:    '#a0a080',
+  karl:      '#cc6644',
+  berserker: '#cc3333',
+  seer:      '#6688cc',
+  valkyrie:  '#cc88ff',
+};
+
+const UNIT_INITIALS = {
+  thrall:    'T',
+  karl:      'K',
+  berserker: 'B',
+  seer:      'S',
+  valkyrie:  'V',
+};
+
+/** Draw all units on the grid as colored circles with type initials */
+export function renderUnits(ctx, units, canvasW, canvasH) {
+  if (!units || units.length === 0) return;
+
+  ctx.save();
+  ctx.scale(camera.zoom, camera.zoom);
+  ctx.translate(-camera.x, -camera.y);
+
+  const radius = TILE_SIZE * 0.35;
+
+  for (const unit of units) {
+    const px = (unit.position.x + 0.5) * TILE_SIZE;
+    const py = (unit.position.y + 0.5) * TILE_SIZE;
+
+    // Skip if off-screen (rough check)
+    const screenX = (px - camera.x) * camera.zoom;
+    const screenY = (py - camera.y) * camera.zoom;
+    if (screenX < -50 || screenX > canvasW + 50 || screenY < -50 || screenY > canvasH + 50) continue;
+
+    const color = UNIT_COLORS[unit.type] || '#888888';
+    const initial = UNIT_INITIALS[unit.type] || '?';
+
+    // Filled circle
+    ctx.beginPath();
+    ctx.arc(px, py, radius, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    // Dark outline for contrast
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Letter initial
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(initial, px, py);
+  }
+
+  ctx.restore();
+}
+
 /** Draw a semi-transparent room preview at the given tile position */
 export function renderRoomPreview(ctx, roomDef, tileX, tileY, isValid) {
   if (!roomDef) return;

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "thrall",
+    "name": "Thrall",
+    "role": "worker",
+    "cost": {},
+    "spawnTime": 30,
+    "stats": { "health": 20, "attack": 0, "defense": 1 },
+    "canFight": false
+  },
+  {
+    "id": "karl",
+    "name": "Karl",
+    "role": "warrior",
+    "cost": { "iron": 15 },
+    "spawnTime": 20,
+    "stats": { "health": 50, "attack": 8, "defense": 5 },
+    "canFight": true
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "role": "warrior",
+    "cost": { "iron": 25, "wood": 10 },
+    "spawnTime": 40,
+    "stats": { "health": 40, "attack": 15, "defense": 2 },
+    "canFight": true
+  },
+  {
+    "id": "seer",
+    "name": "Seer",
+    "role": "mystic",
+    "cost": { "runes": 20 },
+    "spawnTime": 45,
+    "stats": { "health": 30, "attack": 3, "defense": 3 },
+    "canFight": false
+  },
+  {
+    "id": "valkyrie",
+    "name": "Valkyrie",
+    "role": "support",
+    "cost": { "runes": 30, "iron": 15 },
+    "spawnTime": 60,
+    "stats": { "health": 45, "attack": 6, "defense": 6 },
+    "canFight": true
+  }
+]

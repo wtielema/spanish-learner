@@ -1,8 +1,9 @@
 import { gameState, setState, createInitialState } from './state.js';
 import { camera, setupCameraControls, centerCamera, screenToWorld } from './camera.js';
 import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock, digTile } from './grid.js';
-import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview } from './renderer.js';
+import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview, renderUnits } from './renderer.js';
 import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds } from './rooms.js';
+import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 
 const canvas = document.getElementById('game-canvas');
@@ -136,6 +137,87 @@ function tryPlaceRoom(tx, ty) {
   return false;
 }
 
+// --- Recruit Panel ---
+
+let recruitPanelRoom = null; // the room instance currently showing a recruit panel, or null
+
+function getRoomAtTile(tx, ty) {
+  if (tx < 0 || tx >= GRID_WIDTH || ty < 0 || ty >= GRID_HEIGHT) return null;
+  const tile = gameState.grid[ty][tx];
+  if (!tile.roomId) return null;
+  return gameState.rooms.find(r => r.id === tile.roomId) || null;
+}
+
+function openRecruitPanel(room) {
+  closeRecruitPanel();
+  recruitPanelRoom = room;
+
+  const recruits = getRecruitsForRoom(gameState, room);
+  if (recruits.length === 0) return; // nothing to recruit from this room
+
+  const panel = document.createElement('div');
+  panel.id = 'recruit-panel';
+
+  const roomDefs = getRoomDefs();
+  const roomDef = roomDefs.find(d => d.id === room.type);
+  const roomName = roomDef ? roomDef.name : room.type;
+  panel.innerHTML = `<h3>Recruit — ${roomName}</h3>`;
+
+  const cap = getUnitCapacity(gameState);
+  const count = gameState.units ? gameState.units.length : 0;
+  const capLine = document.createElement('div');
+  capLine.className = 'recruit-cap';
+  capLine.textContent = `Units: ${count}/${cap}`;
+  panel.appendChild(capLine);
+
+  for (const unitDef of recruits) {
+    const btn = document.createElement('button');
+    btn.className = 'recruit-btn';
+    btn.dataset.unitId = unitDef.id;
+
+    const costParts = Object.entries(unitDef.cost);
+    const costStr = costParts.length > 0
+      ? costParts.map(([res, amt]) => `<span>${res}: ${amt}</span>`).join('')
+      : '<span>Free</span>';
+
+    btn.innerHTML = `
+      <span class="unit-name">${unitDef.name}</span>
+      <span class="unit-role">${unitDef.role}</span>
+      <span class="unit-cost">${costStr}</span>
+    `;
+
+    const affordable = canAfford(gameState.resources, unitDef.cost) && count < cap;
+    btn.disabled = !affordable;
+
+    btn.addEventListener('click', () => {
+      const unit = recruitUnit(gameState, unitDef.id);
+      if (unit) {
+        // Refresh the panel to update costs and cap
+        openRecruitPanel(room);
+      } else {
+        showWarning('Cannot recruit!');
+      }
+    });
+
+    panel.appendChild(btn);
+  }
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'recruit-close-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => closeRecruitPanel());
+  panel.appendChild(closeBtn);
+
+  overlay.appendChild(panel);
+}
+
+function closeRecruitPanel() {
+  recruitPanelRoom = null;
+  const existing = document.getElementById('recruit-panel');
+  if (existing) existing.remove();
+}
+
 // --- Pre-place starting Mead Hall ---
 
 function placeStartingMeadHall() {
@@ -163,6 +245,9 @@ function render() {
 
   // Draw room name labels
   renderRoomLabels(ctx, gameState.rooms, canvas.width, canvas.height);
+
+  // Draw units on the grid
+  renderUnits(ctx, gameState.units, canvas.width, canvas.height);
 
   // Draw dig flash effects (brief white flash on newly dug tiles)
   if (digFlashes.length > 0) {
@@ -208,6 +293,9 @@ function render() {
     renderHoverTile(ctx, mouse.tileX, mouse.tileY, canDig);
   }
 
+  // Update maxUnits based on Mead Hall level for HUD display
+  gameState.maxUnits = getUnitCapacity(gameState);
+
   // Update HTML HUD with current resource values
   updateHUD(gameState);
 
@@ -239,13 +327,15 @@ function loadGame() {
 
 // Boot
 async function init() {
-  // Load room definitions before anything else
+  // Load room and unit definitions before anything else
   await loadRoomDefs();
+  await loadUnitDefs();
 
   const loaded = loadGame();
   if (loaded) {
-    // Sync room ID counter so new rooms get unique IDs
+    // Sync room and unit ID counters so new entries get unique IDs
     syncRoomIds(gameState.rooms);
+    syncUnitIds(gameState.units);
   }
 
   // If no rooms exist (fresh game), place the starting Mead Hall
@@ -282,12 +372,25 @@ async function init() {
     mouse.leftDown = false;
   });
 
-  // Left-click: dig (no build mode) or place room (build mode)
+  // Left-click: dig (no build mode) or place room (build mode) or recruit (click room)
   canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0) {
       if (buildMode) {
         tryPlaceRoom(mouse.tileX, mouse.tileY);
       } else {
+        // Check if clicking a room that supports recruitment
+        const clickedRoom = getRoomAtTile(mouse.tileX, mouse.tileY);
+        if (clickedRoom) {
+          const recruits = getRecruitsForRoom(gameState, clickedRoom);
+          if (recruits.length > 0) {
+            openRecruitPanel(clickedRoom);
+            return; // don't dig
+          }
+        }
+        // Close recruit panel if clicking elsewhere
+        if (recruitPanelRoom) {
+          closeRecruitPanel();
+        }
         mouse.leftDown = true;
         tryDig(mouse.tileX, mouse.tileY);
       }
@@ -299,17 +402,19 @@ async function init() {
     }
   });
 
-  // Right-click to cancel build mode (camera panning still handled by camera.js)
+  // Right-click to cancel build mode or close recruit panel
   canvas.addEventListener('mouseup', (e) => {
-    if (e.button === 2 && buildMode) {
-      exitBuildMode();
+    if (e.button === 2) {
+      if (buildMode) exitBuildMode();
+      if (recruitPanelRoom) closeRecruitPanel();
     }
   });
 
-  // Escape to cancel build mode
+  // Escape to cancel build mode or close recruit panel
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && buildMode) {
-      exitBuildMode();
+    if (e.key === 'Escape') {
+      if (buildMode) exitBuildMode();
+      if (recruitPanelRoom) closeRecruitPanel();
     }
   });
 
