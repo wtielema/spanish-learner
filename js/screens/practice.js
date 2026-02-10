@@ -187,7 +187,7 @@ export async function renderPractice(app, router, mode) {
         </div>
         <div class="practice-card form-recognition-card">
           <div class="card-front">
-            <span class="card-label">Form Recognition${card.tense ? ' \u2014 ' + card.tense : ''}</span>
+            <span class="card-label">Form Recognition${isPerson && card.tense ? ' \u2014 ' + card.tense : ''}</span>
             <span class="card-text fr-conjugated">${card.prompt}</span>
             <span class="fr-verb-name">${verbInfo} (${card.verb ? card.verb.english : ''})</span>
             <span class="card-hint">${title}</span>
