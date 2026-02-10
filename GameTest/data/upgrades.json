@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ironWeapons",
+    "name": "Iron Weapons",
+    "description": "Karls gain +3 attack",
+    "cost": { "iron": 30 },
+    "requiredForgeLevel": 1,
+    "effects": { "karl": { "attack": 3 } }
+  },
+  {
+    "id": "ironShields",
+    "name": "Iron Shields",
+    "description": "Karls gain +3 defense",
+    "cost": { "iron": 25, "wood": 15 },
+    "requiredForgeLevel": 1,
+    "effects": { "karl": { "defense": 3 } }
+  },
+  {
+    "id": "runicAxes",
+    "name": "Runic Axes",
+    "description": "Berserkers gain +5 attack",
+    "cost": { "iron": 30, "runes": 15 },
+    "requiredForgeLevel": 2,
+    "effects": { "berserker": { "attack": 5 } }
+  },
+  {
+    "id": "seerStaff",
+    "name": "Seer Staff",
+    "description": "Seers generate runes 50% faster",
+    "cost": { "runes": 25 },
+    "requiredForgeLevel": 2,
+    "effects": { "seer": { "productionBonus": 0.5 } }
+  },
+  {
+    "id": "blessedArmor",
+    "name": "Blessed Armor",
+    "description": "All combat units gain +4 defense",
+    "cost": { "runes": 30, "iron": 25 },
+    "requiredForgeLevel": 3,
+    "effects": { "karl": { "defense": 4 }, "berserker": { "defense": 4 }, "valkyrie": { "defense": 4 } }
+  }
+]

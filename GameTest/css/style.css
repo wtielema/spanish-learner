@@ -256,3 +256,148 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
 .recruit-close-btn:hover {
   background: rgba(120, 50, 50, 0.9);
 }
+
+/* Forge panel */
+#forge-panel {
+  position: absolute;
+  right: 0;
+  top: 80px;
+  width: 240px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(20, 20, 40, 0.9);
+  border-left: 1px solid #444;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #444;
+  border-radius: 8px 0 0 8px;
+  padding: 10px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+#forge-panel h3 {
+  font-size: 14px;
+  color: #e08040;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.forge-item {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: rgba(60, 60, 80, 0.8);
+  border: 1px solid #555;
+  border-radius: 4px;
+  transition: border-color 0.15s;
+}
+
+.forge-item:hover {
+  border-color: #e08040;
+}
+
+.forge-item.purchased {
+  border-color: #4a8a4a;
+  background: rgba(40, 70, 40, 0.6);
+}
+
+.forge-item.locked {
+  opacity: 0.5;
+  border-color: #444;
+}
+
+.forge-item.locked:hover {
+  border-color: #555;
+}
+
+.forge-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.forge-item-name {
+  font-weight: bold;
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.forge-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.purchased-badge {
+  background: rgba(60, 140, 60, 0.8);
+  color: #b0f0b0;
+}
+
+.locked-badge {
+  background: rgba(80, 80, 80, 0.8);
+  color: #999;
+}
+
+.forge-item-desc {
+  font-size: 11px;
+  color: #bbb;
+  margin-bottom: 4px;
+}
+
+.forge-item-cost {
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+.forge-item-cost span {
+  margin-right: 6px;
+}
+
+.forge-buy-btn {
+  display: block;
+  width: 100%;
+  padding: 5px 8px;
+  background: rgba(180, 100, 30, 0.8);
+  border: 1px solid #c07030;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.forge-buy-btn:hover:not(:disabled) {
+  background: rgba(210, 120, 40, 0.9);
+  border-color: #e09050;
+}
+
+.forge-buy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.forge-close-btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-top: 6px;
+  background: rgba(80, 40, 40, 0.8);
+  border: 1px solid #664444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.forge-close-btn:hover {
+  background: rgba(120, 50, 50, 0.9);
+}

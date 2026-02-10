@@ -5,6 +5,7 @@ import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview, rende
 import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds, tickProduction } from './rooms.js';
 import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
+import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -222,6 +223,91 @@ function closeRecruitPanel() {
   if (existing) existing.remove();
 }
 
+// --- Forge Panel ---
+
+let forgePanelRoom = null; // the forge room instance currently showing the panel, or null
+
+function openForgePanel(room) {
+  closeForgePanel();
+  forgePanelRoom = room;
+
+  const allUpgrades = getUpgradeDefs();
+  if (allUpgrades.length === 0) return;
+
+  const forgeLevel = room.level || 1;
+
+  const panel = document.createElement('div');
+  panel.id = 'forge-panel';
+
+  panel.innerHTML = `<h3>Forge (Level ${forgeLevel})</h3>`;
+
+  for (const def of allUpgrades) {
+    const purchased = isUpgradePurchased(gameState, def.id);
+    const locked = def.requiredForgeLevel > forgeLevel;
+    const affordable = !locked && !purchased && canAfford(gameState.resources, def.cost);
+
+    const item = document.createElement('div');
+    item.className = 'forge-item';
+    if (purchased) item.classList.add('purchased');
+    if (locked) item.classList.add('locked');
+
+    const costParts = Object.entries(def.cost)
+      .map(([res, amt]) => `<span>${res}: ${amt}</span>`)
+      .join('');
+
+    let badge = '';
+    if (purchased) {
+      badge = '<span class="forge-badge purchased-badge">Purchased</span>';
+    } else if (locked) {
+      badge = `<span class="forge-badge locked-badge">Locked (Forge Lv.${def.requiredForgeLevel})</span>`;
+    }
+
+    item.innerHTML = `
+      <div class="forge-item-header">
+        <span class="forge-item-name">${def.name}</span>
+        ${badge}
+      </div>
+      <div class="forge-item-desc">${def.description}</div>
+      <div class="forge-item-cost">${costParts}</div>
+    `;
+
+    if (!purchased && !locked) {
+      const buyBtn = document.createElement('button');
+      buyBtn.className = 'forge-buy-btn';
+      buyBtn.textContent = 'Buy';
+      buyBtn.disabled = !affordable;
+
+      buyBtn.addEventListener('click', () => {
+        const success = purchaseUpgrade(gameState, def.id);
+        if (success) {
+          openForgePanel(room); // refresh panel
+        } else {
+          showWarning('Cannot purchase!');
+        }
+      });
+
+      item.appendChild(buyBtn);
+    }
+
+    panel.appendChild(item);
+  }
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'forge-close-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => closeForgePanel());
+  panel.appendChild(closeBtn);
+
+  overlay.appendChild(panel);
+}
+
+function closeForgePanel() {
+  forgePanelRoom = null;
+  const existing = document.getElementById('forge-panel');
+  if (existing) existing.remove();
+}
+
 // --- Pre-place starting Mead Hall ---
 
 function placeStartingMeadHall() {
@@ -331,9 +417,10 @@ function loadGame() {
 
 // Boot
 async function init() {
-  // Load room and unit definitions before anything else
+  // Load room, unit, and upgrade definitions before anything else
   await loadRoomDefs();
   await loadUnitDefs();
+  await loadUpgradeDefs();
 
   const loaded = loadGame();
   if (loaded) {
@@ -420,18 +507,30 @@ async function init() {
         const recruits = getRecruitsForRoom(gameState, clickedRoom);
         if (recruits.length > 0) {
           selectedUnitId = null;
+          closeForgePanel();
           openRecruitPanel(clickedRoom);
           return;
         }
       }
 
-      // Clicking empty space → deselect unit, close recruit panel, then dig
+      // If clicking a forge room (and no unit selected) → open forge panel
+      if (clickedRoom && clickedRoom.type === 'forge') {
+        selectedUnitId = null;
+        closeRecruitPanel();
+        openForgePanel(clickedRoom);
+        return;
+      }
+
+      // Clicking empty space → deselect unit, close panels, then dig
       if (selectedUnitId != null) {
         selectedUnitId = null;
         return;
       }
       if (recruitPanelRoom) {
         closeRecruitPanel();
+      }
+      if (forgePanelRoom) {
+        closeForgePanel();
       }
       mouse.leftDown = true;
       tryDig(mouse.tileX, mouse.tileY);
@@ -443,20 +542,22 @@ async function init() {
     }
   });
 
-  // Right-click to cancel build mode, close recruit panel, or deselect unit
+  // Right-click to cancel build mode, close panels, or deselect unit
   canvas.addEventListener('mouseup', (e) => {
     if (e.button === 2) {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
+      if (forgePanelRoom) closeForgePanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }
   });
 
-  // Escape to cancel build mode, close recruit panel, or deselect unit
+  // Escape to cancel build mode, close panels, or deselect unit
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
+      if (forgePanelRoom) closeForgePanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }
   });
