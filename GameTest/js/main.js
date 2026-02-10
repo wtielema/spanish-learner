@@ -21,7 +21,16 @@ function render() {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // TODO: draw grid, rooms, units
+  // Draw grid tiles
+  const grid = gameState.grid;
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      const tile = grid[y][x];
+      ctx.fillStyle = tile.type === 'rock' ? '#2d2d44' : '#4a4a3a';
+      ctx.fillRect(x * 32, y * 32, 32, 32);
+    }
+  }
+
   // Placeholder text
   ctx.fillStyle = '#e0e0e0';
   ctx.font = '24px sans-serif';

@@ -1,6 +1,8 @@
+import { createGrid } from './grid.js';
+
 export function createInitialState() {
   return {
-    grid: [],           // 2D array of tile objects
+    grid: createGrid(),
     rooms: [],          // placed room instances
     units: [],          // all unit instances
     resources: { wood: 50, iron: 30, runes: 0 },
