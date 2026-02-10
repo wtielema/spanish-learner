@@ -1064,3 +1064,159 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   background: rgba(80, 80, 110, 0.9);
   border-color: #888;
 }
+
+/* Offline progress report ("While you were away...") */
+#offline-report {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 360px;
+  background: rgba(15, 12, 30, 0.96);
+  border: 2px solid #6080c0;
+  border-radius: 8px;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 40;
+  animation: offlineSlideIn 0.4s ease-out;
+  box-shadow: 0 0 40px rgba(60, 100, 180, 0.3);
+}
+
+@keyframes offlineSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.offline-header {
+  padding: 14px 18px 10px;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+  background: rgba(30, 40, 70, 0.8);
+  border-bottom: 2px solid #4060a0;
+}
+
+.offline-header h3 {
+  font-size: 18px;
+  color: #a0c0f0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 4px;
+}
+
+.offline-time {
+  font-size: 13px;
+  color: #8090b0;
+}
+
+.offline-body {
+  padding: 14px 18px;
+}
+
+.offline-section {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(80, 80, 120, 0.4);
+}
+
+.offline-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.offline-section-title {
+  font-size: 11px;
+  color: #8090b0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.offline-res-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 13px;
+}
+
+.offline-res-name {
+  color: #bbb;
+  text-transform: capitalize;
+}
+
+.offline-res-amt {
+  color: #80e080;
+  font-weight: bold;
+}
+
+.offline-exp-info {
+  font-size: 13px;
+  color: #c0a0f0;
+}
+
+.offline-section > div {
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 3px;
+  line-height: 1.4;
+}
+
+.offline-raid-victory {
+  color: #80e080 !important;
+}
+
+.offline-raid-defeat {
+  color: #ff6060 !important;
+}
+
+.offline-raid-draw {
+  color: #e0c060 !important;
+}
+
+.offline-raid-losses {
+  color: #e06060 !important;
+  font-style: italic;
+}
+
+.offline-raid-damage {
+  color: #ff8040 !important;
+  font-weight: bold;
+}
+
+.offline-nothing {
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.offline-dismiss-btn {
+  display: block;
+  width: calc(100% - 36px);
+  margin: 4px 18px 14px;
+  padding: 10px;
+  background: rgba(40, 60, 100, 0.8);
+  border: 1px solid #6080c0;
+  border-radius: 4px;
+  color: #c0d0f0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.offline-dismiss-btn:hover {
+  background: rgba(60, 80, 130, 0.9);
+  border-color: #80a0e0;
+}

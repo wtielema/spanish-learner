@@ -8,6 +8,7 @@ import { createHUD, updateHUD, showWarning } from './ui.js';
 import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
 import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport } from './raids.js';
 import { loadExpeditionDefs, getExpeditionDefs, getAvailableExpeditions, getLockedExpeditions, startExpedition, tickExpeditions, getExpeditionTimeRemaining, formatDuration } from './expeditions.js';
+import { calculateOfflineProgress, formatElapsedTime } from './idle.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -758,6 +759,101 @@ function closeExpeditionReport() {
   }
 }
 
+// --- Offline Progress Panel ("While you were away...") ---
+
+function showOfflineReport(summary) {
+  // Remove any existing offline report
+  closeOfflineReport();
+
+  const panel = document.createElement('div');
+  panel.id = 'offline-report';
+
+  const timeStr = formatElapsedTime(summary.elapsedSeconds);
+
+  // Resource gains
+  const resEntries = Object.entries(summary.resourcesGained)
+    .filter(([, amt]) => amt > 0);
+  let resourcesHtml = '';
+  if (resEntries.length > 0) {
+    const resList = resEntries
+      .map(([res, amt]) => `<div class="offline-res-item"><span class="offline-res-name">${res}:</span> <span class="offline-res-amt">+${Math.floor(amt)}</span></div>`)
+      .join('');
+    resourcesHtml = `
+      <div class="offline-section">
+        <div class="offline-section-title">Resources Gathered</div>
+        ${resList}
+      </div>
+    `;
+  }
+
+  // Expedition results
+  let expeditionsHtml = '';
+  if (summary.expeditionResults.length > 0) {
+    const expCount = summary.expeditionResults.length;
+    expeditionsHtml = `
+      <div class="offline-section">
+        <div class="offline-section-title">Expeditions</div>
+        <div class="offline-exp-info">${expCount} expedition${expCount !== 1 ? 's' : ''} completed! Check results when they resolve.</div>
+      </div>
+    `;
+  }
+
+  // Raid results
+  let raidsHtml = '';
+  if (summary.raidResults.length > 0) {
+    const raidCount = summary.raidResults.length;
+    const victories = summary.raidResults.filter(r => r.winner === 'defenders').length;
+    const defeats = summary.raidResults.filter(r => r.winner === 'attackers').length;
+    const draws = raidCount - victories - defeats;
+
+    let raidLines = `<div>${raidCount} raid${raidCount !== 1 ? 's' : ''} occurred</div>`;
+    if (victories > 0) raidLines += `<div class="offline-raid-victory">${victories} repelled</div>`;
+    if (defeats > 0) raidLines += `<div class="offline-raid-defeat">${defeats} breached</div>`;
+    if (draws > 0) raidLines += `<div class="offline-raid-draw">${draws} stalemate${draws !== 1 ? 's' : ''}</div>`;
+    if (summary.unitsLost > 0) raidLines += `<div class="offline-raid-losses">Units lost: ${summary.unitsLost}</div>`;
+    if (summary.meadHallDamage > 0) raidLines += `<div class="offline-raid-damage">Mead Hall damage: ${summary.meadHallDamage}</div>`;
+
+    raidsHtml = `
+      <div class="offline-section">
+        <div class="offline-section-title">Raids</div>
+        ${raidLines}
+      </div>
+    `;
+  }
+
+  // Nothing happened?
+  let nothingHtml = '';
+  if (resEntries.length === 0 && summary.expeditionResults.length === 0 && summary.raidResults.length === 0) {
+    nothingHtml = '<div class="offline-nothing">All was quiet in your absence.</div>';
+  }
+
+  panel.innerHTML = `
+    <div class="offline-header">
+      <h3>While You Were Away...</h3>
+      <div class="offline-time">${timeStr}</div>
+    </div>
+    <div class="offline-body">
+      ${resourcesHtml}
+      ${expeditionsHtml}
+      ${raidsHtml}
+      ${nothingHtml}
+    </div>
+  `;
+
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'offline-dismiss-btn';
+  dismissBtn.textContent = 'Continue';
+  dismissBtn.addEventListener('click', () => closeOfflineReport());
+  panel.appendChild(dismissBtn);
+
+  overlay.appendChild(panel);
+}
+
+function closeOfflineReport() {
+  const existing = document.getElementById('offline-report');
+  if (existing) existing.remove();
+}
+
 // --- Pre-place starting Mead Hall ---
 
 function placeStartingMeadHall() {
@@ -883,6 +979,15 @@ async function init() {
 
   // Initialize raid timer and Mead Hall HP (handles fresh + loaded games)
   initRaidTimer(gameState);
+
+  // Calculate offline progress if significant time has passed (> 10 seconds)
+  let offlineSummary = null;
+  if (loaded && gameState.lastSaved) {
+    const elapsed = (Date.now() - gameState.lastSaved) / 1000;
+    if (elapsed > 10) {
+      offlineSummary = calculateOfflineProgress(gameState);
+    }
+  }
 
   // If no rooms exist (fresh game), place the starting Mead Hall
   if (gameState.rooms.length === 0) {
@@ -1014,6 +1119,7 @@ async function init() {
   // Escape to cancel build mode, close panels, or deselect unit
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      closeOfflineReport();
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
       if (forgePanelRoom) closeForgePanel();
@@ -1021,6 +1127,11 @@ async function init() {
       if (selectedUnitId != null) selectedUnitId = null;
     }
   });
+
+  // Show offline progress report if applicable
+  if (offlineSummary) {
+    showOfflineReport(offlineSummary);
+  }
 
   setInterval(gameTick, 1000);
   setInterval(saveGame, 10000); // auto-save every 10s
