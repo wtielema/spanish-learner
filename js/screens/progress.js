@@ -121,6 +121,7 @@ export async function renderProgress(app, router) {
               <span class="progress-ring-text">${nounStats.avgMastery}%</span>
             </div>
             <div class="progress-breakdown">
+              <div class="progress-stat-row"><strong>${nounStats.mastered + nounStats.learning}</strong> learned</div>
               <div class="progress-stat-row"><span class="dot-mastered"></span> Mastered: <strong>${nounStats.mastered}</strong></div>
               <div class="progress-stat-row"><span class="dot-learning"></span> Learning: <strong>${nounStats.learning}</strong></div>
               <div class="progress-stat-row"><span class="dot-new"></span> Not started: <strong>${nounStats.new}</strong></div>
