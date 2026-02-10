@@ -11,7 +11,11 @@ export async function renderDashboard(app, router) {
   const nounEsCards = allProgress.filter(p => p.cardId && p.cardId.startsWith('n') && p.cardId.endsWith('-es'));
   const totalNouns = 1000;
   const nounLearned = nounEsCards.filter(p => p.repetitions > 0).length;
-  const nounMastered = nounEsCards.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).length;
+  const nounMastered = nounEsCards.filter(p => {
+    if (!p.repetitions) return false;
+    const m = Math.min(100, Math.round(((p.easeFactor - 1.3) / (2.5 - 1.3)) * 50 + (p.repetitions >= 3 ? 50 : p.repetitions * 15)));
+    return m >= 80;
+  }).length;
   const nounDue = nounEsCards.filter(p => p.nextReview <= today).length;
 
   // Preposition stats (sub-part of vocabulary, p-prefix cards)
