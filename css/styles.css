@@ -1064,6 +1064,116 @@ button {
   font-style: normal;
 }
 
+/* Reference Tabs */
+.ref-tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 4px;
+}
+
+.ref-tab {
+  flex: 1;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 16px;
+  min-height: 40px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.ref-tab.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* Preposition Reference */
+.ref-por-para-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ref-prep-col-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.ref-prep-col-para {
+  color: var(--success);
+}
+
+.ref-prep-usages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ref-prep-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+}
+
+.ref-prep-usage-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ref-prep-usage-ex {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.ref-prep-usage-en {
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.ref-prep-colloc-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.ref-prep-colloc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.ref-prep-colloc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+.ref-prep-colloc-verb {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.ref-prep-colloc-meaning {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
 /* Progress Screen */
 .progress-screen {
   padding-bottom: 80px;

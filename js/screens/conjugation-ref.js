@@ -1,10 +1,12 @@
 export async function renderConjugationRef(app, router) {
   let verbs = [];
   let patterns = {};
+  let preps = [];
   try {
-    [verbs, patterns] = await Promise.all([
+    [verbs, patterns, preps] = await Promise.all([
       fetch('data/verbs.json').then(r => r.json()),
       fetch('data/verb-patterns.json').then(r => r.json()),
+      fetch('data/prepositions.json').then(r => r.json()).catch(() => []),
     ]);
   } catch (e) { /* offline fallback */ }
 
@@ -127,41 +129,150 @@ export async function renderConjugationRef(app, router) {
     </div>
   `;
 
-  app.innerHTML = `
-    <div class="conjugation-ref">
-      <div class="ref-header">
-        <button class="practice-close" id="ref-back">&larr;</button>
-        <h1 class="ref-title">Conjugation Reference</h1>
+  // Preposition reference section
+  const porPrep = preps.find(p => p.spanish === 'por');
+  const paraPrep = preps.find(p => p.spanish === 'para');
+
+  const porParaSection = (porPrep && paraPrep) ? `
+    <div class="ref-pattern-card" id="prep-por-para">
+      <h3 class="ref-pattern-name">Por vs Para</h3>
+      <p class="ref-pattern-desc">The most commonly confused preposition pair. Both translate to "for" in English, but have distinct uses.</p>
+      <div class="ref-por-para-grid">
+        <div class="ref-por-para-col">
+          <h4 class="ref-prep-col-title">Por</h4>
+          ${porPrep.usages.map(u => `
+            <div class="ref-prep-usage">
+              <span class="ref-prep-usage-label">${u.meaning}</span>
+              <span class="ref-prep-usage-ex">${u.example}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="ref-por-para-col">
+          <h4 class="ref-prep-col-title ref-prep-col-para">Para</h4>
+          ${paraPrep.usages.map(u => `
+            <div class="ref-prep-usage">
+              <span class="ref-prep-usage-label">${u.meaning}</span>
+              <span class="ref-prep-usage-ex">${u.example}</span>
+            </div>
+          `).join('')}
+        </div>
       </div>
-      ${quickRules}
-      <h2 class="ref-section-title" style="margin-top: 32px;">All Patterns</h2>
-      <div class="ref-nav-chips">
-        ${patternOrder.map(id => `<button class="ref-chip" data-target="pattern-${id}">${patterns[id]?.name || id}</button>`).join('')}
+    </div>
+  ` : '';
+
+  function renderPrepCard(prep) {
+    const hasCollocations = prep.collocations && prep.collocations.length > 0;
+    return `
+      <div class="ref-pattern-card" id="prep-${prep.id}">
+        <div class="ref-pattern-header">
+          <h3 class="ref-pattern-name">${prep.spanish}</h3>
+          <span class="ref-verb-count">${prep.primaryMeaning}</span>
+        </div>
+        <div class="ref-prep-usages">
+          ${prep.usages.map(u => `
+            <div class="ref-prep-usage">
+              <span class="ref-prep-usage-label">${u.meaning}</span>
+              <span class="ref-prep-usage-ex">${u.example}</span>
+              <span class="ref-prep-usage-en">${u.exampleEn}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${hasCollocations ? `
+          <div class="ref-prep-colloc-section">
+            <h4 class="ref-prep-colloc-title">Common Collocations</h4>
+            ${prep.collocations.map(c => `
+              <div class="ref-prep-colloc">
+                <span class="ref-prep-colloc-verb">${c.verb} ${prep.spanish}</span>
+                <span class="ref-prep-colloc-meaning">${c.meaning}</span>
+                <span class="ref-prep-usage-ex">${c.example}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
       </div>
-      ${sectionsHTML}
-      <div style="height: 80px;"></div>
-      <nav class="bottom-nav">
-        <button class="nav-btn" data-route="/">Home</button>
-        <button class="nav-btn" data-route="/browse">Browse</button>
-        <button class="nav-btn active" data-route="/reference">Reference</button>
-        <button class="nav-btn" data-route="/progress">Progress</button>
-        <button class="nav-btn" data-route="/settings">Settings</button>
-      </nav>
+    `;
+  }
+
+  const prepCommon = preps.filter(p => ['a','de','en','con','por','para','sin','entre'].includes(p.spanish));
+  const prepIntermediate = preps.filter(p => ['desde','hasta','hacia','sobre','contra','durante','según','tras'].includes(p.spanish));
+  const prepLessCom = preps.filter(p => ['ante','bajo','mediante','excepto','salvo','versus','vía'].includes(p.spanish));
+
+  const prepSectionsHTML = `
+    <div class="ref-tier-section">
+      <h2 class="ref-tier-title">Common Prepositions</h2>
+      ${prepCommon.map(renderPrepCard).join('')}
+    </div>
+    <div class="ref-tier-section">
+      <h2 class="ref-tier-title">Intermediate Prepositions</h2>
+      ${prepIntermediate.map(renderPrepCard).join('')}
+    </div>
+    <div class="ref-tier-section">
+      <h2 class="ref-tier-title">Less Common Prepositions</h2>
+      ${prepLessCom.map(renderPrepCard).join('')}
     </div>
   `;
 
-  document.getElementById('ref-back').addEventListener('click', () => {
-    router.navigate('/');
-  });
+  // Top-level tab state
+  let activeTab = 'verbs'; // verbs | prepositions
 
-  document.querySelectorAll('.ref-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const target = document.getElementById(chip.dataset.target);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function renderPage() {
+    app.innerHTML = `
+      <div class="conjugation-ref">
+        <div class="ref-header">
+          <button class="practice-close" id="ref-back">&larr;</button>
+          <h1 class="ref-title">Reference</h1>
+        </div>
+        <div class="ref-tab-bar">
+          <button class="ref-tab ${activeTab === 'verbs' ? 'active' : ''}" data-tab="verbs">Conjugations</button>
+          <button class="ref-tab ${activeTab === 'prepositions' ? 'active' : ''}" data-tab="prepositions">Prepositions</button>
+        </div>
+        ${activeTab === 'verbs' ? `
+          ${quickRules}
+          <h2 class="ref-section-title" style="margin-top: 32px;">All Patterns</h2>
+          <div class="ref-nav-chips">
+            ${patternOrder.map(id => `<button class="ref-chip" data-target="pattern-${id}">${patterns[id]?.name || id}</button>`).join('')}
+          </div>
+          ${sectionsHTML}
+        ` : `
+          ${porParaSection}
+          <h2 class="ref-section-title" style="margin-top: 24px;">All Prepositions</h2>
+          <div class="ref-nav-chips">
+            ${preps.map(p => `<button class="ref-chip" data-target="prep-${p.id}">${p.spanish}</button>`).join('')}
+          </div>
+          ${prepSectionsHTML}
+        `}
+        <div style="height: 80px;"></div>
+        <nav class="bottom-nav">
+          <button class="nav-btn" data-route="/">Home</button>
+          <button class="nav-btn" data-route="/browse">Browse</button>
+          <button class="nav-btn active" data-route="/reference">Reference</button>
+          <button class="nav-btn" data-route="/progress">Progress</button>
+          <button class="nav-btn" data-route="/settings">Settings</button>
+        </nav>
+      </div>
+    `;
+
+    document.getElementById('ref-back').addEventListener('click', () => router.navigate('/'));
+
+    document.querySelectorAll('.ref-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        activeTab = tab.dataset.tab;
+        renderPage();
+      });
     });
-  });
 
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => router.navigate(btn.dataset.route));
-  });
+    document.querySelectorAll('.ref-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const target = document.getElementById(chip.dataset.target);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => router.navigate(btn.dataset.route));
+    });
+  }
+
+  renderPage();
+
 }
