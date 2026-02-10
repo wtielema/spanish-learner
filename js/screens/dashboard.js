@@ -7,12 +7,27 @@ export async function renderDashboard(app, router) {
   const allProgress = await db.getAllProgress();
   const today = new Date().toISOString().split('T')[0];
 
-  // Vocabulary stats
+  // Vocabulary stats — count unique nouns (n-prefix cards only, deduplicated by noun ID)
+  const nounCards = allProgress.filter(p => p.cardId && p.cardId.startsWith('n'));
   const totalNouns = 1000;
-  const learned = allProgress.filter(p => p.repetitions > 0).length;
-  const nounMastered = allProgress.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).length;
-  const dueNow = allProgress.filter(p => p.nextReview <= today).length;
-  const vocabPercent = totalNouns > 0 ? Math.round((learned / totalNouns) * 100) : 0;
+  const learnedNounIds = new Set(nounCards.filter(p => p.repetitions > 0).map(p => p.cardId.split('-')[0]));
+  const nounLearned = learnedNounIds.size;
+  const masteredNounIds = new Set(nounCards.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).map(p => p.cardId.split('-')[0]));
+  const nounMastered = masteredNounIds.size;
+  const nounDue = nounCards.filter(p => p.nextReview <= today).length;
+
+  // Preposition stats (sub-part of vocabulary, p-prefix cards)
+  const prepProgress = allProgress.filter(p => p.cardId && p.cardId.startsWith('p'));
+  const prepLearnedIds = new Set(prepProgress.filter(p => p.repetitions > 0).map(p => p.cardId.split('-')[0]));
+  const prepLearned = prepLearnedIds.size;
+  const totalPreps = 23;
+  const prepDue = prepProgress.filter(p => p.nextReview <= today).length;
+
+  // Combined vocabulary numbers for header
+  const totalVocabLearned = nounLearned + prepLearned;
+  const totalVocabDue = nounDue + prepDue;
+  const vocabPercent = Math.round((nounLearned / totalNouns) * 100);
+  const prepPercent = totalPreps > 0 ? Math.round((prepLearned / totalPreps) * 100) : 0;
 
   // Verb training data
   const allVerbProgress = await db.getAllVerbProgress();
@@ -65,23 +80,33 @@ export async function renderDashboard(app, router) {
       <div class="dash-section">
         <div class="dash-section-header" id="vocab-toggle">
           <h2 class="dash-section-title">Vocabulary</h2>
-          <span class="dash-section-summary">${learned} learned${dueNow > 0 ? ` &middot; ${dueNow} due` : ''}</span>
+          <span class="dash-section-summary">${totalVocabLearned} learned${totalVocabDue > 0 ? ` &middot; ${totalVocabDue} due` : ''}</span>
           <span class="dash-toggle-icon" id="vocab-toggle-icon">&#9654;</span>
         </div>
         <div class="dash-section-details collapsed" id="vocab-details">
           <div class="dash-progress-row">
             <div class="dash-progress-header">
-              <span class="dash-progress-label">Overall</span>
+              <span class="dash-progress-label">Words</span>
               <span class="dash-progress-pct">${vocabPercent}%</span>
             </div>
             <div class="dash-progress-bar">
               <div class="dash-progress-fill" style="width: ${vocabPercent}%"></div>
             </div>
-            <span class="dash-progress-detail">${learned} learned, ${nounMastered} mastered / ${totalNouns} words</span>
+            <span class="dash-progress-detail">${nounLearned} learned, ${nounMastered} mastered / ${totalNouns} words</span>
+          </div>
+          <div class="dash-progress-row" style="margin-top: 12px;">
+            <div class="dash-progress-header">
+              <span class="dash-progress-label">Prepositions</span>
+              <span class="dash-progress-pct">${prepPercent}%</span>
+            </div>
+            <div class="dash-progress-bar">
+              <div class="dash-progress-fill" style="width: ${prepPercent}%"></div>
+            </div>
+            <span class="dash-progress-detail">${prepLearned} / ${totalPreps} prepositions learned</span>
           </div>
           <div class="vocab-stats-row">
             <div class="vocab-stat">
-              <span class="vocab-stat-value">${dueNow}</span>
+              <span class="vocab-stat-value">${totalVocabDue}</span>
               <span class="vocab-stat-label">Due</span>
             </div>
             <div class="vocab-stat">
@@ -89,14 +114,16 @@ export async function renderDashboard(app, router) {
               <span class="vocab-stat-label">Mastered</span>
             </div>
             <div class="vocab-stat">
-              <span class="vocab-stat-value">${totalNouns - learned}</span>
+              <span class="vocab-stat-value">${totalNouns - nounLearned}</span>
               <span class="vocab-stat-label">Unseen</span>
             </div>
           </div>
         </div>
         <div class="dash-section-actions">
-          <button class="btn-primary" id="btn-review">Start Review${dueNow > 0 ? ` (${dueNow})` : ''}</button>
+          <button class="btn-primary" id="btn-review">Review Words${nounDue > 0 ? ` (${nounDue})` : ''}</button>
           <button class="btn-secondary" id="btn-learn">Learn New Words</button>
+          <button class="btn-primary" id="btn-prep-review">Review Prepositions${prepDue > 0 ? ` (${prepDue})` : ''}</button>
+          <button class="btn-secondary" id="btn-prep-learn">Learn Prepositions</button>
         </div>
       </div>
 
@@ -166,6 +193,14 @@ export async function renderDashboard(app, router) {
 
   document.getElementById('btn-learn').addEventListener('click', () => {
     router.navigate('/practice?mode=learn');
+  });
+
+  document.getElementById('btn-prep-review').addEventListener('click', () => {
+    router.navigate('/practice?mode=prep-review');
+  });
+
+  document.getElementById('btn-prep-learn').addEventListener('click', () => {
+    router.navigate('/practice?mode=prep-learn');
   });
 
   document.getElementById('btn-verb-learn').addEventListener('click', () => {

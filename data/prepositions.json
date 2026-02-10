@@ -1,0 +1,1504 @@
+[
+  {
+    "id": "p01",
+    "spanish": "a",
+    "primaryMeaning": "to, at",
+    "usages": [
+      {
+        "category": "direction",
+        "meaning": "to (destination)",
+        "example": "Voy a la tienda.",
+        "exampleEn": "I go to the store."
+      },
+      {
+        "category": "time",
+        "meaning": "at (specific time)",
+        "example": "La clase empieza a las ocho.",
+        "exampleEn": "The class starts at eight."
+      },
+      {
+        "category": "personal-a",
+        "meaning": "personal a (before people as direct objects)",
+        "example": "Veo a mi madre.",
+        "exampleEn": "I see my mother."
+      },
+      {
+        "category": "manner",
+        "meaning": "by/on (manner or means)",
+        "example": "Vamos a pie.",
+        "exampleEn": "We go on foot."
+      },
+      {
+        "category": "distance",
+        "meaning": "at (distance)",
+        "example": "El pueblo está a diez kilómetros.",
+        "exampleEn": "The town is ten kilometers away."
+      }
+    ],
+    "confusionPairs": ["en", "de", "hacia"],
+    "sentences": [
+      {
+        "text": "Voy _____ la escuela todos los días.",
+        "answer": "a",
+        "en": "I go to school every day.",
+        "usage": "direction"
+      },
+      {
+        "text": "El tren llega _____ las tres de la tarde.",
+        "answer": "a",
+        "en": "The train arrives at three in the afternoon.",
+        "usage": "time"
+      },
+      {
+        "text": "Quiero mucho _____ mis abuelos.",
+        "answer": "a",
+        "en": "I love my grandparents very much.",
+        "usage": "personal-a"
+      },
+      {
+        "text": "Aprendí _____ cocinar con mi madre.",
+        "answer": "a",
+        "en": "I learned to cook with my mother.",
+        "usage": "direction"
+      },
+      {
+        "text": "Nos sentamos _____ la mesa para cenar.",
+        "answer": "a",
+        "en": "We sit at the table to have dinner.",
+        "usage": "direction"
+      },
+      {
+        "text": "Llamé _____ la puerta pero nadie abrió.",
+        "answer": "a",
+        "en": "I knocked on the door but nobody opened.",
+        "usage": "direction"
+      },
+      {
+        "text": "El museo está _____ dos calles de aquí.",
+        "answer": "a",
+        "en": "The museum is two streets from here.",
+        "usage": "distance"
+      },
+      {
+        "text": "Fuimos _____ pie hasta el centro.",
+        "answer": "a",
+        "en": "We went on foot to the center.",
+        "usage": "manner"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "ir",
+        "meaning": "to go to",
+        "example": "Vamos a la playa.",
+        "exampleEn": "We go to the beach."
+      },
+      {
+        "verb": "llegar",
+        "meaning": "to arrive at",
+        "example": "Llegamos a casa tarde.",
+        "exampleEn": "We arrived home late."
+      },
+      {
+        "verb": "aprender",
+        "meaning": "to learn to",
+        "example": "Aprendo a hablar español.",
+        "exampleEn": "I learn to speak Spanish."
+      },
+      {
+        "verb": "empezar",
+        "meaning": "to begin to",
+        "example": "Empezó a llover.",
+        "exampleEn": "It started to rain."
+      }
+    ]
+  },
+  {
+    "id": "p02",
+    "spanish": "de",
+    "primaryMeaning": "of, from",
+    "usages": [
+      {
+        "category": "origin",
+        "meaning": "from (origin or source)",
+        "example": "Soy de México.",
+        "exampleEn": "I am from Mexico."
+      },
+      {
+        "category": "possession",
+        "meaning": "of (possession or belonging)",
+        "example": "El libro de María.",
+        "exampleEn": "Maria's book."
+      },
+      {
+        "category": "material",
+        "meaning": "of/made of (material)",
+        "example": "Una mesa de madera.",
+        "exampleEn": "A wooden table."
+      },
+      {
+        "category": "topic",
+        "meaning": "about (topic)",
+        "example": "Hablamos de política.",
+        "exampleEn": "We talk about politics."
+      },
+      {
+        "category": "time",
+        "meaning": "of/in (time expressions)",
+        "example": "Son las tres de la tarde.",
+        "exampleEn": "It is three in the afternoon."
+      }
+    ],
+    "confusionPairs": ["desde", "en", "a"],
+    "sentences": [
+      {
+        "text": "Mi amigo es _____ Colombia.",
+        "answer": "de",
+        "en": "My friend is from Colombia.",
+        "usage": "origin"
+      },
+      {
+        "text": "La casa _____ mis padres es muy grande.",
+        "answer": "de",
+        "en": "My parents' house is very big.",
+        "usage": "possession"
+      },
+      {
+        "text": "Quiero un vaso _____ agua, por favor.",
+        "answer": "de",
+        "en": "I want a glass of water, please.",
+        "usage": "possession"
+      },
+      {
+        "text": "El anillo es _____ oro.",
+        "answer": "de",
+        "en": "The ring is made of gold.",
+        "usage": "material"
+      },
+      {
+        "text": "Hablamos _____ nuestros planes para el verano.",
+        "answer": "de",
+        "en": "We talk about our plans for the summer.",
+        "usage": "topic"
+      },
+      {
+        "text": "Vengo _____ la oficina.",
+        "answer": "de",
+        "en": "I come from the office.",
+        "usage": "origin"
+      },
+      {
+        "text": "Es la mejor película _____ este año.",
+        "answer": "de",
+        "en": "It is the best movie of this year.",
+        "usage": "possession"
+      },
+      {
+        "text": "Trabajo _____ lunes a viernes.",
+        "answer": "de",
+        "en": "I work from Monday to Friday.",
+        "usage": "time"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "hablar",
+        "meaning": "to talk about",
+        "example": "Hablan de sus vacaciones.",
+        "exampleEn": "They talk about their vacations."
+      },
+      {
+        "verb": "depender",
+        "meaning": "to depend on",
+        "example": "Depende de ti.",
+        "exampleEn": "It depends on you."
+      },
+      {
+        "verb": "salir",
+        "meaning": "to leave from",
+        "example": "Salimos de la ciudad.",
+        "exampleEn": "We leave the city."
+      },
+      {
+        "verb": "dejar",
+        "meaning": "to stop (doing something)",
+        "example": "Dejé de fumar.",
+        "exampleEn": "I stopped smoking."
+      }
+    ]
+  },
+  {
+    "id": "p03",
+    "spanish": "en",
+    "primaryMeaning": "in, on, at",
+    "usages": [
+      {
+        "category": "location",
+        "meaning": "in/at (location)",
+        "example": "Estoy en casa.",
+        "exampleEn": "I am at home."
+      },
+      {
+        "category": "surface",
+        "meaning": "on (surface)",
+        "example": "El libro está en la mesa.",
+        "exampleEn": "The book is on the table."
+      },
+      {
+        "category": "time",
+        "meaning": "in (time period)",
+        "example": "Nací en 1990.",
+        "exampleEn": "I was born in 1990."
+      },
+      {
+        "category": "transport",
+        "meaning": "by (means of transport)",
+        "example": "Viajamos en avión.",
+        "exampleEn": "We travel by plane."
+      },
+      {
+        "category": "language",
+        "meaning": "in (language)",
+        "example": "Dilo en español.",
+        "exampleEn": "Say it in Spanish."
+      }
+    ],
+    "confusionPairs": ["a", "de", "sobre"],
+    "sentences": [
+      {
+        "text": "Vivo _____ una ciudad muy bonita.",
+        "answer": "en",
+        "en": "I live in a very beautiful city.",
+        "usage": "location"
+      },
+      {
+        "text": "Las llaves están _____ la mesa.",
+        "answer": "en",
+        "en": "The keys are on the table.",
+        "usage": "surface"
+      },
+      {
+        "text": "Mi hermana nació _____ marzo.",
+        "answer": "en",
+        "en": "My sister was born in March.",
+        "usage": "time"
+      },
+      {
+        "text": "Prefiero viajar _____ tren.",
+        "answer": "en",
+        "en": "I prefer to travel by train.",
+        "usage": "transport"
+      },
+      {
+        "text": "¿Puedes decirlo _____ español?",
+        "answer": "en",
+        "en": "Can you say it in Spanish?",
+        "usage": "language"
+      },
+      {
+        "text": "Trabajo _____ un hospital.",
+        "answer": "en",
+        "en": "I work in a hospital.",
+        "usage": "location"
+      },
+      {
+        "text": "Estamos _____ el restaurante esperándote.",
+        "answer": "en",
+        "en": "We are at the restaurant waiting for you.",
+        "usage": "location"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "pensar",
+        "meaning": "to think about",
+        "example": "Pienso en ti.",
+        "exampleEn": "I think about you."
+      },
+      {
+        "verb": "confiar",
+        "meaning": "to trust in",
+        "example": "Confío en mi equipo.",
+        "exampleEn": "I trust my team."
+      },
+      {
+        "verb": "insistir",
+        "meaning": "to insist on",
+        "example": "Insiste en pagar.",
+        "exampleEn": "He insists on paying."
+      },
+      {
+        "verb": "tardar",
+        "meaning": "to take (time) in",
+        "example": "Tardé una hora en llegar.",
+        "exampleEn": "It took me an hour to arrive."
+      }
+    ]
+  },
+  {
+    "id": "p04",
+    "spanish": "con",
+    "primaryMeaning": "with",
+    "usages": [
+      {
+        "category": "company",
+        "meaning": "with (accompaniment)",
+        "example": "Voy con mis amigos.",
+        "exampleEn": "I go with my friends."
+      },
+      {
+        "category": "instrument",
+        "meaning": "with (instrument or tool)",
+        "example": "Corta el pan con un cuchillo.",
+        "exampleEn": "Cut the bread with a knife."
+      },
+      {
+        "category": "manner",
+        "meaning": "with (manner or quality)",
+        "example": "Habla con cuidado.",
+        "exampleEn": "Speak with care."
+      },
+      {
+        "category": "content",
+        "meaning": "with (content or filling)",
+        "example": "Un café con leche.",
+        "exampleEn": "A coffee with milk."
+      }
+    ],
+    "confusionPairs": ["sin", "de"],
+    "sentences": [
+      {
+        "text": "Voy al cine _____ mi hermana.",
+        "answer": "con",
+        "en": "I go to the movies with my sister.",
+        "usage": "company"
+      },
+      {
+        "text": "Escribo _____ un bolígrafo azul.",
+        "answer": "con",
+        "en": "I write with a blue pen.",
+        "usage": "instrument"
+      },
+      {
+        "text": "Habla _____ mucha confianza.",
+        "answer": "con",
+        "en": "She speaks with a lot of confidence.",
+        "usage": "manner"
+      },
+      {
+        "text": "Quiero una pizza _____ queso extra.",
+        "answer": "con",
+        "en": "I want a pizza with extra cheese.",
+        "usage": "content"
+      },
+      {
+        "text": "Estoy de acuerdo _____ tu opinión.",
+        "answer": "con",
+        "en": "I agree with your opinion.",
+        "usage": "company"
+      },
+      {
+        "text": "¿_____ quién vas a la fiesta?",
+        "answer": "Con",
+        "en": "With whom are you going to the party?",
+        "usage": "company"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "soñar",
+        "meaning": "to dream about",
+        "example": "Sueño con viajar por el mundo.",
+        "exampleEn": "I dream about traveling the world."
+      },
+      {
+        "verb": "contar",
+        "meaning": "to count on",
+        "example": "Cuento con tu ayuda.",
+        "exampleEn": "I count on your help."
+      },
+      {
+        "verb": "quedarse",
+        "meaning": "to keep/stay with",
+        "example": "Me quedo con este.",
+        "exampleEn": "I'll keep this one."
+      }
+    ]
+  },
+  {
+    "id": "p05",
+    "spanish": "por",
+    "primaryMeaning": "for, by, through, because of",
+    "usages": [
+      {
+        "category": "cause",
+        "meaning": "because of (cause or reason)",
+        "example": "No fui por la lluvia.",
+        "exampleEn": "I didn't go because of the rain."
+      },
+      {
+        "category": "movement-through",
+        "meaning": "through/along (movement)",
+        "example": "Camino por el parque.",
+        "exampleEn": "I walk through the park."
+      },
+      {
+        "category": "exchange",
+        "meaning": "for (exchange or price)",
+        "example": "Lo compré por diez euros.",
+        "exampleEn": "I bought it for ten euros."
+      },
+      {
+        "category": "agent",
+        "meaning": "by (agent in passive voice)",
+        "example": "El libro fue escrito por Cervantes.",
+        "exampleEn": "The book was written by Cervantes."
+      },
+      {
+        "category": "time-approximate",
+        "meaning": "around/during (approximate time)",
+        "example": "Llegaré por la mañana.",
+        "exampleEn": "I will arrive in the morning."
+      }
+    ],
+    "confusionPairs": ["para", "de", "a"],
+    "sentences": [
+      {
+        "text": "Gracias _____ tu ayuda.",
+        "answer": "por",
+        "en": "Thank you for your help.",
+        "usage": "cause"
+      },
+      {
+        "text": "Paseamos _____ la playa al atardecer.",
+        "answer": "por",
+        "en": "We strolled along the beach at sunset.",
+        "usage": "movement-through"
+      },
+      {
+        "text": "Pagué veinte dólares _____ este libro.",
+        "answer": "por",
+        "en": "I paid twenty dollars for this book.",
+        "usage": "exchange"
+      },
+      {
+        "text": "La carta fue enviada _____ mi abuela.",
+        "answer": "por",
+        "en": "The letter was sent by my grandmother.",
+        "usage": "agent"
+      },
+      {
+        "text": "Te llamo _____ la tarde.",
+        "answer": "por",
+        "en": "I'll call you in the afternoon.",
+        "usage": "time-approximate"
+      },
+      {
+        "text": "El gato entró _____ la ventana.",
+        "answer": "por",
+        "en": "The cat came in through the window.",
+        "usage": "movement-through"
+      },
+      {
+        "text": "No pude dormir _____ el ruido.",
+        "answer": "por",
+        "en": "I couldn't sleep because of the noise.",
+        "usage": "cause"
+      },
+      {
+        "text": "¿_____ qué no viniste a la reunión?",
+        "answer": "Por",
+        "en": "Why didn't you come to the meeting?",
+        "usage": "cause"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "preguntar",
+        "meaning": "to ask about / to ask for",
+        "example": "Preguntó por ti.",
+        "exampleEn": "He asked about you."
+      },
+      {
+        "verb": "preocuparse",
+        "meaning": "to worry about",
+        "example": "Se preocupa por su salud.",
+        "exampleEn": "She worries about her health."
+      },
+      {
+        "verb": "luchar",
+        "meaning": "to fight for",
+        "example": "Luchan por sus derechos.",
+        "exampleEn": "They fight for their rights."
+      },
+      {
+        "verb": "optar",
+        "meaning": "to opt for",
+        "example": "Opté por quedarme en casa.",
+        "exampleEn": "I opted to stay at home."
+      }
+    ]
+  },
+  {
+    "id": "p06",
+    "spanish": "para",
+    "primaryMeaning": "for (purpose), in order to",
+    "usages": [
+      {
+        "category": "purpose",
+        "meaning": "for (purpose or goal)",
+        "example": "Estudio para aprender.",
+        "exampleEn": "I study in order to learn."
+      },
+      {
+        "category": "recipient",
+        "meaning": "for (recipient or destination)",
+        "example": "Este regalo es para ti.",
+        "exampleEn": "This gift is for you."
+      },
+      {
+        "category": "deadline",
+        "meaning": "by/for (deadline)",
+        "example": "Necesito el informe para el lunes.",
+        "exampleEn": "I need the report by Monday."
+      },
+      {
+        "category": "opinion",
+        "meaning": "for (in someone's opinion)",
+        "example": "Para mí, es difícil.",
+        "exampleEn": "For me, it's difficult."
+      },
+      {
+        "category": "destination",
+        "meaning": "toward/headed for",
+        "example": "Salgo para Madrid mañana.",
+        "exampleEn": "I leave for Madrid tomorrow."
+      }
+    ],
+    "confusionPairs": ["por", "a"],
+    "sentences": [
+      {
+        "text": "Estudio español _____ comunicarme mejor.",
+        "answer": "para",
+        "en": "I study Spanish in order to communicate better.",
+        "usage": "purpose"
+      },
+      {
+        "text": "Compré flores _____ mi madre.",
+        "answer": "para",
+        "en": "I bought flowers for my mother.",
+        "usage": "recipient"
+      },
+      {
+        "text": "El proyecto es _____ el viernes.",
+        "answer": "para",
+        "en": "The project is due by Friday.",
+        "usage": "deadline"
+      },
+      {
+        "text": "_____ mí, la familia es lo más importante.",
+        "answer": "Para",
+        "en": "For me, family is the most important thing.",
+        "usage": "opinion"
+      },
+      {
+        "text": "Necesito gafas _____ leer.",
+        "answer": "para",
+        "en": "I need glasses to read.",
+        "usage": "purpose"
+      },
+      {
+        "text": "¿_____ qué sirve esta herramienta?",
+        "answer": "Para",
+        "en": "What is this tool for?",
+        "usage": "purpose"
+      },
+      {
+        "text": "Este tren va _____ Barcelona.",
+        "answer": "para",
+        "en": "This train is headed for Barcelona.",
+        "usage": "destination"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "servir",
+        "meaning": "to be useful for",
+        "example": "Esto sirve para cortar.",
+        "exampleEn": "This is used for cutting."
+      },
+      {
+        "verb": "prepararse",
+        "meaning": "to prepare for",
+        "example": "Me preparo para el examen.",
+        "exampleEn": "I prepare for the exam."
+      },
+      {
+        "verb": "estar listo",
+        "meaning": "to be ready for",
+        "example": "Estoy listo para salir.",
+        "exampleEn": "I am ready to leave."
+      }
+    ]
+  },
+  {
+    "id": "p07",
+    "spanish": "sin",
+    "primaryMeaning": "without",
+    "usages": [
+      {
+        "category": "absence",
+        "meaning": "without (lacking something)",
+        "example": "Café sin azúcar.",
+        "exampleEn": "Coffee without sugar."
+      },
+      {
+        "category": "negated-action",
+        "meaning": "without (not doing something)",
+        "example": "Salió sin decir nada.",
+        "exampleEn": "He left without saying anything."
+      },
+      {
+        "category": "condition",
+        "meaning": "without (condition lacking)",
+        "example": "No puedo vivir sin ti.",
+        "exampleEn": "I can't live without you."
+      }
+    ],
+    "confusionPairs": ["con"],
+    "sentences": [
+      {
+        "text": "Prefiero el té _____ azúcar.",
+        "answer": "sin",
+        "en": "I prefer tea without sugar.",
+        "usage": "absence"
+      },
+      {
+        "text": "Se fue _____ despedirse.",
+        "answer": "sin",
+        "en": "He left without saying goodbye.",
+        "usage": "negated-action"
+      },
+      {
+        "text": "No salgas _____ abrigo, hace frío.",
+        "answer": "sin",
+        "en": "Don't go out without a coat, it's cold.",
+        "usage": "absence"
+      },
+      {
+        "text": "Estoy _____ dinero hasta fin de mes.",
+        "answer": "sin",
+        "en": "I am without money until the end of the month.",
+        "usage": "absence"
+      },
+      {
+        "text": "Pasó la noche _____ dormir.",
+        "answer": "sin",
+        "en": "She spent the night without sleeping.",
+        "usage": "negated-action"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "quedarse",
+        "meaning": "to be left without",
+        "example": "Se quedó sin trabajo.",
+        "exampleEn": "He was left without a job."
+      }
+    ]
+  },
+  {
+    "id": "p08",
+    "spanish": "entre",
+    "primaryMeaning": "between, among",
+    "usages": [
+      {
+        "category": "position",
+        "meaning": "between (two things)",
+        "example": "El banco está entre la farmacia y el supermercado.",
+        "exampleEn": "The bank is between the pharmacy and the supermarket."
+      },
+      {
+        "category": "group",
+        "meaning": "among (within a group)",
+        "example": "Es popular entre los jóvenes.",
+        "exampleEn": "It is popular among young people."
+      },
+      {
+        "category": "collaboration",
+        "meaning": "between/among (shared action)",
+        "example": "Lo hicimos entre todos.",
+        "exampleEn": "We did it among all of us."
+      }
+    ],
+    "confusionPairs": ["de", "con"],
+    "sentences": [
+      {
+        "text": "La tienda está _____ el banco y la farmacia.",
+        "answer": "entre",
+        "en": "The shop is between the bank and the pharmacy.",
+        "usage": "position"
+      },
+      {
+        "text": "Hay mucha competencia _____ las empresas.",
+        "answer": "entre",
+        "en": "There is a lot of competition among the companies.",
+        "usage": "group"
+      },
+      {
+        "text": "_____ tú y yo, no me gusta su idea.",
+        "answer": "Entre",
+        "en": "Between you and me, I don't like his idea.",
+        "usage": "position"
+      },
+      {
+        "text": "Repartimos la comida _____ todos.",
+        "answer": "entre",
+        "en": "We divided the food among everyone.",
+        "usage": "collaboration"
+      },
+      {
+        "text": "Puedes elegir _____ estos tres colores.",
+        "answer": "entre",
+        "en": "You can choose between these three colors.",
+        "usage": "position"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "elegir",
+        "meaning": "to choose between",
+        "example": "Elige entre estos dos.",
+        "exampleEn": "Choose between these two."
+      },
+      {
+        "verb": "distinguir",
+        "meaning": "to distinguish between",
+        "example": "No distingo entre los gemelos.",
+        "exampleEn": "I can't tell the twins apart."
+      }
+    ]
+  },
+  {
+    "id": "p09",
+    "spanish": "desde",
+    "primaryMeaning": "from, since",
+    "usages": [
+      {
+        "category": "time-start",
+        "meaning": "since (starting point in time)",
+        "example": "Vivo aquí desde 2010.",
+        "exampleEn": "I have lived here since 2010."
+      },
+      {
+        "category": "place-start",
+        "meaning": "from (starting point in space)",
+        "example": "Se ve el mar desde aquí.",
+        "exampleEn": "You can see the sea from here."
+      },
+      {
+        "category": "range",
+        "meaning": "from...to (range with hasta)",
+        "example": "Trabajo desde las nueve hasta las cinco.",
+        "exampleEn": "I work from nine to five."
+      }
+    ],
+    "confusionPairs": ["de", "hasta"],
+    "sentences": [
+      {
+        "text": "Estudio español _____ hace dos años.",
+        "answer": "desde",
+        "en": "I have been studying Spanish for two years.",
+        "usage": "time-start"
+      },
+      {
+        "text": "Se puede ver toda la ciudad _____ la torre.",
+        "answer": "desde",
+        "en": "You can see the whole city from the tower.",
+        "usage": "place-start"
+      },
+      {
+        "text": "No lo he visto _____ el lunes.",
+        "answer": "desde",
+        "en": "I haven't seen him since Monday.",
+        "usage": "time-start"
+      },
+      {
+        "text": "Camina _____ tu casa hasta la mía.",
+        "answer": "desde",
+        "en": "Walk from your house to mine.",
+        "usage": "range"
+      },
+      {
+        "text": "_____ aquí puedo oír la música.",
+        "answer": "Desde",
+        "en": "From here I can hear the music.",
+        "usage": "place-start"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "ver",
+        "meaning": "to see from",
+        "example": "Lo veo desde mi ventana.",
+        "exampleEn": "I see it from my window."
+      }
+    ]
+  },
+  {
+    "id": "p10",
+    "spanish": "hasta",
+    "primaryMeaning": "until, up to, as far as",
+    "usages": [
+      {
+        "category": "time-end",
+        "meaning": "until (end point in time)",
+        "example": "Espero hasta las cinco.",
+        "exampleEn": "I wait until five."
+      },
+      {
+        "category": "place-end",
+        "meaning": "as far as / up to (end point in space)",
+        "example": "Caminé hasta la esquina.",
+        "exampleEn": "I walked to the corner."
+      },
+      {
+        "category": "limit",
+        "meaning": "up to (limit or maximum)",
+        "example": "Caben hasta veinte personas.",
+        "exampleEn": "It fits up to twenty people."
+      },
+      {
+        "category": "farewell",
+        "meaning": "until (in goodbyes)",
+        "example": "¡Hasta luego!",
+        "exampleEn": "See you later!"
+      }
+    ],
+    "confusionPairs": ["desde", "a", "para"],
+    "sentences": [
+      {
+        "text": "La tienda está abierta _____ las nueve de la noche.",
+        "answer": "hasta",
+        "en": "The store is open until nine at night.",
+        "usage": "time-end"
+      },
+      {
+        "text": "Corrí _____ el final de la calle.",
+        "answer": "hasta",
+        "en": "I ran to the end of the street.",
+        "usage": "place-end"
+      },
+      {
+        "text": "No me voy _____ que termines.",
+        "answer": "hasta",
+        "en": "I'm not leaving until you finish.",
+        "usage": "time-end"
+      },
+      {
+        "text": "¡_____ mañana, compañeros!",
+        "answer": "Hasta",
+        "en": "See you tomorrow, colleagues!",
+        "usage": "farewell"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "esperar",
+        "meaning": "to wait until",
+        "example": "Espera hasta que yo llegue.",
+        "exampleEn": "Wait until I arrive."
+      }
+    ]
+  },
+  {
+    "id": "p11",
+    "spanish": "hacia",
+    "primaryMeaning": "toward, towards",
+    "usages": [
+      {
+        "category": "direction",
+        "meaning": "toward (direction of movement)",
+        "example": "Camina hacia la puerta.",
+        "exampleEn": "Walk toward the door."
+      },
+      {
+        "category": "time-approximate",
+        "meaning": "around/about (approximate time)",
+        "example": "Llegaré hacia las seis.",
+        "exampleEn": "I will arrive around six."
+      },
+      {
+        "category": "attitude",
+        "meaning": "toward (feelings or attitude)",
+        "example": "Siente respeto hacia sus maestros.",
+        "exampleEn": "He feels respect toward his teachers."
+      }
+    ],
+    "confusionPairs": ["a", "hasta", "para"],
+    "sentences": [
+      {
+        "text": "El barco navega _____ el norte.",
+        "answer": "hacia",
+        "en": "The boat sails toward the north.",
+        "usage": "direction"
+      },
+      {
+        "text": "Caminamos _____ la montaña.",
+        "answer": "hacia",
+        "en": "We walk toward the mountain.",
+        "usage": "direction"
+      },
+      {
+        "text": "Llegaremos _____ las tres de la tarde.",
+        "answer": "hacia",
+        "en": "We will arrive around three in the afternoon.",
+        "usage": "time-approximate"
+      },
+      {
+        "text": "Muestra mucha amabilidad _____ los demás.",
+        "answer": "hacia",
+        "en": "She shows a lot of kindness toward others.",
+        "usage": "attitude"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "dirigirse",
+        "meaning": "to head toward",
+        "example": "Se dirige hacia la salida.",
+        "exampleEn": "He heads toward the exit."
+      }
+    ]
+  },
+  {
+    "id": "p12",
+    "spanish": "sobre",
+    "primaryMeaning": "on, about, over",
+    "usages": [
+      {
+        "category": "surface",
+        "meaning": "on/on top of (physical surface)",
+        "example": "El gato está sobre la cama.",
+        "exampleEn": "The cat is on the bed."
+      },
+      {
+        "category": "topic",
+        "meaning": "about (topic or subject)",
+        "example": "Un libro sobre historia.",
+        "exampleEn": "A book about history."
+      },
+      {
+        "category": "above",
+        "meaning": "over/above (position)",
+        "example": "El avión vuela sobre la ciudad.",
+        "exampleEn": "The plane flies over the city."
+      },
+      {
+        "category": "approximation",
+        "meaning": "about/around (approximate number)",
+        "example": "Hay sobre cien personas.",
+        "exampleEn": "There are about a hundred people."
+      }
+    ],
+    "confusionPairs": ["en", "de", "encima de"],
+    "sentences": [
+      {
+        "text": "Dejé las llaves _____ la mesa.",
+        "answer": "sobre",
+        "en": "I left the keys on the table.",
+        "usage": "surface"
+      },
+      {
+        "text": "Leí un artículo _____ el cambio climático.",
+        "answer": "sobre",
+        "en": "I read an article about climate change.",
+        "usage": "topic"
+      },
+      {
+        "text": "El puente pasa _____ el río.",
+        "answer": "sobre",
+        "en": "The bridge goes over the river.",
+        "usage": "above"
+      },
+      {
+        "text": "Necesito hablar contigo _____ un tema importante.",
+        "answer": "sobre",
+        "en": "I need to talk to you about an important topic.",
+        "usage": "topic"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "opinar",
+        "meaning": "to have an opinion about",
+        "example": "¿Qué opinas sobre esto?",
+        "exampleEn": "What do you think about this?"
+      }
+    ]
+  },
+  {
+    "id": "p13",
+    "spanish": "contra",
+    "primaryMeaning": "against",
+    "usages": [
+      {
+        "category": "opposition",
+        "meaning": "against (opposition)",
+        "example": "Jugamos contra el otro equipo.",
+        "exampleEn": "We play against the other team."
+      },
+      {
+        "category": "physical",
+        "meaning": "against (physical contact)",
+        "example": "Se apoyó contra la pared.",
+        "exampleEn": "He leaned against the wall."
+      },
+      {
+        "category": "protection",
+        "meaning": "against (protection from)",
+        "example": "Vacuna contra la gripe.",
+        "exampleEn": "Flu vaccine."
+      }
+    ],
+    "confusionPairs": ["con", "ante"],
+    "sentences": [
+      {
+        "text": "Mañana jugamos _____ el mejor equipo de la liga.",
+        "answer": "contra",
+        "en": "Tomorrow we play against the best team in the league.",
+        "usage": "opposition"
+      },
+      {
+        "text": "Lucharon _____ la injusticia.",
+        "answer": "contra",
+        "en": "They fought against injustice.",
+        "usage": "opposition"
+      },
+      {
+        "text": "Apoyó la escalera _____ la pared.",
+        "answer": "contra",
+        "en": "He leaned the ladder against the wall.",
+        "usage": "physical"
+      },
+      {
+        "text": "Necesitas protección _____ el sol.",
+        "answer": "contra",
+        "en": "You need protection against the sun.",
+        "usage": "protection"
+      }
+    ],
+    "collocations": [
+      {
+        "verb": "luchar",
+        "meaning": "to fight against",
+        "example": "Luchan contra la pobreza.",
+        "exampleEn": "They fight against poverty."
+      }
+    ]
+  },
+  {
+    "id": "p14",
+    "spanish": "durante",
+    "primaryMeaning": "during, for (duration)",
+    "usages": [
+      {
+        "category": "period",
+        "meaning": "during (a time period)",
+        "example": "Estudié durante el verano.",
+        "exampleEn": "I studied during the summer."
+      },
+      {
+        "category": "duration",
+        "meaning": "for (length of time)",
+        "example": "Esperé durante dos horas.",
+        "exampleEn": "I waited for two hours."
+      }
+    ],
+    "confusionPairs": ["por", "en"],
+    "sentences": [
+      {
+        "text": "Viajamos _____ todo el mes de agosto.",
+        "answer": "durante",
+        "en": "We traveled during the whole month of August.",
+        "usage": "period"
+      },
+      {
+        "text": "Estudié español _____ tres años.",
+        "answer": "durante",
+        "en": "I studied Spanish for three years.",
+        "usage": "duration"
+      },
+      {
+        "text": "No hables _____ la película.",
+        "answer": "durante",
+        "en": "Don't talk during the movie.",
+        "usage": "period"
+      },
+      {
+        "text": "Llovió _____ toda la noche.",
+        "answer": "durante",
+        "en": "It rained during the entire night.",
+        "usage": "period"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p15",
+    "spanish": "según",
+    "primaryMeaning": "according to",
+    "usages": [
+      {
+        "category": "source",
+        "meaning": "according to (source of information)",
+        "example": "Según el periódico, va a llover.",
+        "exampleEn": "According to the newspaper, it's going to rain."
+      },
+      {
+        "category": "perspective",
+        "meaning": "according to (someone's view)",
+        "example": "Según mi madre, debo estudiar más.",
+        "exampleEn": "According to my mother, I should study more."
+      },
+      {
+        "category": "depending",
+        "meaning": "depending on",
+        "example": "Según el día, como en casa o fuera.",
+        "exampleEn": "Depending on the day, I eat at home or out."
+      }
+    ],
+    "confusionPairs": ["para", "de"],
+    "sentences": [
+      {
+        "text": "_____ las noticias, mañana hará sol.",
+        "answer": "Según",
+        "en": "According to the news, tomorrow will be sunny.",
+        "usage": "source"
+      },
+      {
+        "text": "_____ mi profesor, necesito practicar más.",
+        "answer": "Según",
+        "en": "According to my teacher, I need to practice more.",
+        "usage": "perspective"
+      },
+      {
+        "text": "El precio varía _____ la temporada.",
+        "answer": "según",
+        "en": "The price varies depending on the season.",
+        "usage": "depending"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p16",
+    "spanish": "tras",
+    "primaryMeaning": "after, behind",
+    "usages": [
+      {
+        "category": "time-after",
+        "meaning": "after (following in time)",
+        "example": "Tras la cena, fuimos a pasear.",
+        "exampleEn": "After dinner, we went for a walk."
+      },
+      {
+        "category": "pursuit",
+        "meaning": "after (in pursuit of)",
+        "example": "El perro corre tras el gato.",
+        "exampleEn": "The dog runs after the cat."
+      },
+      {
+        "category": "behind",
+        "meaning": "behind (position)",
+        "example": "Se escondió tras la puerta.",
+        "exampleEn": "He hid behind the door."
+      }
+    ],
+    "confusionPairs": ["después de", "detrás de"],
+    "sentences": [
+      {
+        "text": "_____ mucho trabajo, por fin terminamos el proyecto.",
+        "answer": "Tras",
+        "en": "After a lot of work, we finally finished the project.",
+        "usage": "time-after"
+      },
+      {
+        "text": "El policía corrió _____ el ladrón.",
+        "answer": "tras",
+        "en": "The police officer ran after the thief.",
+        "usage": "pursuit"
+      },
+      {
+        "text": "_____ la tormenta, salió el arcoíris.",
+        "answer": "Tras",
+        "en": "After the storm, the rainbow came out.",
+        "usage": "time-after"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p17",
+    "spanish": "ante",
+    "primaryMeaning": "before, in the presence of, faced with",
+    "usages": [
+      {
+        "category": "facing",
+        "meaning": "faced with / in the face of",
+        "example": "Ante el peligro, mantuvo la calma.",
+        "exampleEn": "Faced with danger, he remained calm."
+      },
+      {
+        "category": "presence",
+        "meaning": "before / in the presence of",
+        "example": "Declaró ante el juez.",
+        "exampleEn": "He testified before the judge."
+      }
+    ],
+    "confusionPairs": ["antes de", "frente a", "contra"],
+    "sentences": [
+      {
+        "text": "_____ la duda, es mejor preguntar.",
+        "answer": "Ante",
+        "en": "When in doubt, it's better to ask.",
+        "usage": "facing"
+      },
+      {
+        "text": "Compareció _____ el tribunal.",
+        "answer": "ante",
+        "en": "He appeared before the court.",
+        "usage": "presence"
+      },
+      {
+        "text": "Se mantuvo firme _____ las críticas.",
+        "answer": "ante",
+        "en": "She stood firm in the face of criticism.",
+        "usage": "facing"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p18",
+    "spanish": "bajo",
+    "primaryMeaning": "under, below",
+    "usages": [
+      {
+        "category": "position",
+        "meaning": "under/beneath (physical position)",
+        "example": "El gato duerme bajo la mesa.",
+        "exampleEn": "The cat sleeps under the table."
+      },
+      {
+        "category": "condition",
+        "meaning": "under (condition or circumstance)",
+        "example": "Trabaja bajo presión.",
+        "exampleEn": "He works under pressure."
+      },
+      {
+        "category": "authority",
+        "meaning": "under (authority or rule)",
+        "example": "El país vivió bajo una dictadura.",
+        "exampleEn": "The country lived under a dictatorship."
+      }
+    ],
+    "confusionPairs": ["debajo de", "sobre"],
+    "sentences": [
+      {
+        "text": "Encontré las llaves _____ el sofá.",
+        "answer": "bajo",
+        "en": "I found the keys under the sofa.",
+        "usage": "position"
+      },
+      {
+        "text": "Trabaja muy bien _____ presión.",
+        "answer": "bajo",
+        "en": "She works very well under pressure.",
+        "usage": "condition"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p19",
+    "spanish": "mediante",
+    "primaryMeaning": "by means of, through",
+    "usages": [
+      {
+        "category": "means",
+        "meaning": "by means of / through",
+        "example": "Lo consiguió mediante mucho esfuerzo.",
+        "exampleEn": "He achieved it through a lot of effort."
+      },
+      {
+        "category": "method",
+        "meaning": "by (method or process)",
+        "example": "Paga mediante transferencia bancaria.",
+        "exampleEn": "Pay by bank transfer."
+      }
+    ],
+    "confusionPairs": ["por", "con", "a través de"],
+    "sentences": [
+      {
+        "text": "Resolvieron el problema _____ el diálogo.",
+        "answer": "mediante",
+        "en": "They solved the problem through dialogue.",
+        "usage": "means"
+      },
+      {
+        "text": "Puedes inscribirte _____ la página web.",
+        "answer": "mediante",
+        "en": "You can register through the website.",
+        "usage": "method"
+      },
+      {
+        "text": "Se comunican _____ señales de humo.",
+        "answer": "mediante",
+        "en": "They communicate by means of smoke signals.",
+        "usage": "means"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p20",
+    "spanish": "excepto",
+    "primaryMeaning": "except",
+    "usages": [
+      {
+        "category": "exclusion",
+        "meaning": "except / except for",
+        "example": "Todos vinieron excepto María.",
+        "exampleEn": "Everyone came except Maria."
+      },
+      {
+        "category": "exception",
+        "meaning": "other than",
+        "example": "Como de todo excepto mariscos.",
+        "exampleEn": "I eat everything except seafood."
+      }
+    ],
+    "confusionPairs": ["salvo", "menos", "sin"],
+    "sentences": [
+      {
+        "text": "Todos aprobaron el examen _____ dos estudiantes.",
+        "answer": "excepto",
+        "en": "Everyone passed the exam except two students.",
+        "usage": "exclusion"
+      },
+      {
+        "text": "Abren todos los días _____ los lunes.",
+        "answer": "excepto",
+        "en": "They open every day except Mondays.",
+        "usage": "exclusion"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p21",
+    "spanish": "salvo",
+    "primaryMeaning": "except, save",
+    "usages": [
+      {
+        "category": "exclusion",
+        "meaning": "except / save for",
+        "example": "Todos están de acuerdo salvo Pedro.",
+        "exampleEn": "Everyone agrees except Pedro."
+      },
+      {
+        "category": "condition",
+        "meaning": "unless (salvo que)",
+        "example": "Iremos, salvo que llueva.",
+        "exampleEn": "We will go, unless it rains."
+      }
+    ],
+    "confusionPairs": ["excepto", "menos"],
+    "sentences": [
+      {
+        "text": "Todo salió bien, _____ un pequeño detalle.",
+        "answer": "salvo",
+        "en": "Everything went well, except for one small detail.",
+        "usage": "exclusion"
+      },
+      {
+        "text": "Viene toda la familia, _____ mi tío.",
+        "answer": "salvo",
+        "en": "The whole family is coming, except my uncle.",
+        "usage": "exclusion"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p22",
+    "spanish": "versus",
+    "primaryMeaning": "versus, against",
+    "usages": [
+      {
+        "category": "comparison",
+        "meaning": "versus (in comparisons)",
+        "example": "Calidad versus precio.",
+        "exampleEn": "Quality versus price."
+      },
+      {
+        "category": "competition",
+        "meaning": "versus (in competitions)",
+        "example": "Real Madrid versus Barcelona.",
+        "exampleEn": "Real Madrid versus Barcelona."
+      }
+    ],
+    "confusionPairs": ["contra"],
+    "sentences": [
+      {
+        "text": "El debate fue tradición _____ modernidad.",
+        "answer": "versus",
+        "en": "The debate was tradition versus modernity.",
+        "usage": "comparison"
+      },
+      {
+        "text": "El partido es España _____ Francia.",
+        "answer": "versus",
+        "en": "The match is Spain versus France.",
+        "usage": "competition"
+      }
+    ],
+    "collocations": []
+  },
+  {
+    "id": "p23",
+    "spanish": "vía",
+    "primaryMeaning": "via, through",
+    "usages": [
+      {
+        "category": "route",
+        "meaning": "via (route or path)",
+        "example": "Fuimos a París vía Londres.",
+        "exampleEn": "We went to Paris via London."
+      },
+      {
+        "category": "means",
+        "meaning": "via/by (means of communication)",
+        "example": "Te envío el documento vía correo electrónico.",
+        "exampleEn": "I send you the document via email."
+      }
+    ],
+    "confusionPairs": ["por", "mediante"],
+    "sentences": [
+      {
+        "text": "Viajamos a Roma _____ Madrid.",
+        "answer": "vía",
+        "en": "We traveled to Rome via Madrid.",
+        "usage": "route"
+      },
+      {
+        "text": "Confirmó su asistencia _____ mensaje de texto.",
+        "answer": "vía",
+        "en": "He confirmed his attendance via text message.",
+        "usage": "means"
+      }
+    ],
+    "collocations": []
+  }
+]

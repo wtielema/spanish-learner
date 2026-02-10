@@ -1,5 +1,6 @@
 import { Session } from '../session.js';
 import { VerbSession } from '../verb-session.js';
+import { PrepSession } from '../prep-session.js';
 import { DB } from '../db.js';
 import { normalizeAccents, extractStem } from '../cards.js';
 
@@ -10,8 +11,9 @@ export async function renderPractice(app, router, mode) {
   const practiceMode = (await db.getSetting('practiceMode')) || 'mixed';
   const showTranslations = (await db.getSetting('showTranslations')) !== false;
 
+  const isPrepMode = mode.startsWith('prep-');
   const isVerbMode = mode.startsWith('verb-');
-  const session = isVerbMode ? new VerbSession() : new Session();
+  const session = isPrepMode ? new PrepSession() : isVerbMode ? new VerbSession() : new Session();
   await session.init(mode);
 
   function shouldUseMultipleChoice() {
@@ -28,7 +30,7 @@ export async function renderPractice(app, router, mode) {
       app.innerHTML = `
         <div class="practice">
           <div class="practice-done">
-            <h2>${mode === 'review' ? 'Review Complete!' : mode === 'verb-review' ? 'Verb Review Complete!' : mode === 'verb-learn' ? 'Verb Training Complete!' : 'No More New Cards'}</h2>
+            <h2>${mode === 'review' ? 'Review Complete!' : mode === 'verb-review' ? 'Verb Review Complete!' : mode === 'verb-learn' ? 'Verb Training Complete!' : mode === 'prep-review' ? 'Prep Review Complete!' : mode === 'prep-learn' ? 'Preposition Training Complete!' : 'No More New Cards'}</h2>
             <p class="text-secondary">${progress.total > 0 ? `You reviewed ${progress.total} cards.` : 'Come back tomorrow for more.'}</p>
             <button class="btn-primary" id="btn-back" style="margin-top: 24px;">Back to Home</button>
           </div>
@@ -61,6 +63,15 @@ export async function renderPractice(app, router, mode) {
           return;
         case 'conjugation-mc':
           renderMultipleChoice(card, progress);
+          return;
+        case 'prep-fill-mc':
+          renderPrepFillMC(card, progress);
+          return;
+        case 'prep-contrastive':
+          renderPrepContrastive(card, progress);
+          return;
+        case 'prep-fill-typing':
+          renderPrepFillTyping(card, progress);
           return;
       }
     }
@@ -513,6 +524,212 @@ export async function renderPractice(app, router, mode) {
         await session.answer(correct ? 'good' : 'again');
         setTimeout(() => render(), correct ? 600 : 1500);
       });
+    });
+
+    document.getElementById('btn-close').addEventListener('click', () => router.navigate('/'));
+  }
+
+  // --- Preposition Exercise Renderers ---
+
+  function renderPrepFillMC(card, progress) {
+    const sentenceParts = card.sentence.split('_____');
+    const sentenceHtml = `<span class="fillin-text">${sentenceParts[0]}</span><span class="fillin-blank">_____</span><span class="fillin-text">${sentenceParts[1] || ''}</span>`;
+    const translationHtml = showTranslations && card.sentenceEn
+      ? `<div class="fillin-translation">${card.sentenceEn}</div>` : '';
+    const options = shuffle([card.answer, ...card.distractors]);
+
+    app.innerHTML = `
+      <div class="practice">
+        <div class="practice-header">
+          <button class="practice-close" id="btn-close">&times;</button>
+          <span class="practice-progress">${progress.current + 1} / ${progress.total}</span>
+        </div>
+        <div class="practice-card fillin-card">
+          <div class="card-front">
+            <span class="card-label">Fill in the preposition</span>
+            <div class="fillin-sentence">${sentenceHtml}</div>
+            ${translationHtml}
+          </div>
+        </div>
+        <div class="mc-options">
+          ${options.map(opt => `<button class="btn-mc-option" data-answer="${escapeAttr(opt)}">${opt}</button>`).join('')}
+        </div>
+      </div>
+    `;
+
+    let answered = false;
+    document.querySelectorAll('.btn-mc-option').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (answered) return;
+        answered = true;
+        const selected = btn.dataset.answer;
+        const correct = selected === card.answer;
+
+        btn.classList.add(correct ? 'mc-correct' : 'mc-wrong');
+        if (!correct) {
+          document.querySelectorAll('.btn-mc-option').forEach(b => {
+            if (b.dataset.answer === card.answer) b.classList.add('mc-correct');
+          });
+        }
+
+        // Show usage hint after answering
+        const hintEl = document.createElement('div');
+        hintEl.className = 'prep-usage-hint';
+        hintEl.textContent = card.usage ? `"${card.answer}" — ${card.usage}` : '';
+        document.querySelector('.fillin-card .card-front').appendChild(hintEl);
+
+        await session.answer(correct ? 'good' : 'again');
+        setTimeout(() => render(), correct ? 800 : 1800);
+      });
+    });
+
+    document.getElementById('btn-close').addEventListener('click', () => router.navigate('/'));
+  }
+
+  function renderPrepContrastive(card, progress) {
+    const sentenceParts = card.sentence.split('_____');
+    const sentenceHtml = `<span class="fillin-text">${sentenceParts[0]}</span><span class="fillin-blank">_____</span><span class="fillin-text">${sentenceParts[1] || ''}</span>`;
+    const translationHtml = showTranslations && card.sentenceEn
+      ? `<div class="fillin-translation">${card.sentenceEn}</div>` : '';
+    const options = shuffle([card.answer, card.partner]);
+
+    app.innerHTML = `
+      <div class="practice">
+        <div class="practice-header">
+          <button class="practice-close" id="btn-close">&times;</button>
+          <span class="practice-progress">${progress.current + 1} / ${progress.total}</span>
+        </div>
+        <div class="practice-card fillin-card">
+          <div class="card-front">
+            <span class="card-label">Which preposition?</span>
+            <div class="fillin-sentence">${sentenceHtml}</div>
+            ${translationHtml}
+          </div>
+        </div>
+        <div class="contrastive-options">
+          ${options.map(opt => `<button class="btn-contrastive" data-answer="${escapeAttr(opt)}">${opt}</button>`).join('')}
+        </div>
+        <div class="prep-explanation hidden" id="prep-explanation"></div>
+      </div>
+    `;
+
+    let answered = false;
+    document.querySelectorAll('.btn-contrastive').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (answered) return;
+        answered = true;
+        const selected = btn.dataset.answer;
+        const correct = selected === card.answer;
+
+        btn.classList.add(correct ? 'mc-correct' : 'mc-wrong');
+        if (!correct) {
+          document.querySelectorAll('.btn-contrastive').forEach(b => {
+            if (b.dataset.answer === card.answer) b.classList.add('mc-correct');
+          });
+        }
+
+        // Show explanation
+        const explEl = document.getElementById('prep-explanation');
+        explEl.classList.remove('hidden');
+        explEl.innerHTML = `<div class="${correct ? 'feedback-correct' : 'feedback-wrong'}">
+          <span class="feedback-icon">${correct ? '&#10003;' : '&#10007;'}</span>
+          <span>${card.explanation}</span>
+        </div>`;
+
+        await session.answer(correct ? 'good' : 'again');
+        setTimeout(() => render(), correct ? 1200 : 2500);
+      });
+    });
+
+    document.getElementById('btn-close').addEventListener('click', () => router.navigate('/'));
+  }
+
+  function renderPrepFillTyping(card, progress) {
+    const sentenceParts = card.sentence.split('_____');
+    const sentenceHtml = `<span class="fillin-text">${sentenceParts[0]}</span><span class="fillin-blank">_____</span><span class="fillin-text">${sentenceParts[1] || ''}</span>`;
+    const translationHtml = showTranslations && card.sentenceEn
+      ? `<div class="fillin-translation">${card.sentenceEn}</div>` : '';
+
+    app.innerHTML = `
+      <div class="practice">
+        <div class="practice-header">
+          <button class="practice-close" id="btn-close">&times;</button>
+          <span class="practice-progress">${progress.current + 1} / ${progress.total}</span>
+        </div>
+        <div class="practice-card fillin-card">
+          <div class="card-front">
+            <span class="card-label">Type the preposition</span>
+            <div class="fillin-sentence">${sentenceHtml}</div>
+            ${translationHtml}
+          </div>
+        </div>
+        <div class="production-input-area">
+          <input type="text" class="production-input" id="prep-input"
+            placeholder="Type the preposition..."
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <div class="accent-helpers">
+            ${['á','é','í','ó','ú','ñ'].map(c =>
+              `<button class="btn-accent" data-char="${c}">${c}</button>`
+            ).join('')}
+          </div>
+          <button class="btn-primary" id="btn-check" style="margin-top: 12px;">Check</button>
+        </div>
+        <div class="production-feedback hidden" id="prep-feedback"></div>
+      </div>
+    `;
+
+    const input = document.getElementById('prep-input');
+    input.focus();
+
+    document.querySelectorAll('.btn-accent').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const char = btn.dataset.char;
+        const pos = input.selectionStart;
+        input.value = input.value.slice(0, pos) + char + input.value.slice(pos);
+        input.focus();
+        input.setSelectionRange(pos + 1, pos + 1);
+      });
+    });
+
+    let checked = false;
+
+    async function checkAnswer() {
+      if (checked) return;
+      checked = true;
+
+      const userAnswer = input.value.trim().toLowerCase();
+      const correctAnswer = card.answer.toLowerCase();
+
+      let rating;
+      if (userAnswer === correctAnswer) {
+        rating = 'good';
+      } else if (normalizeAccents(userAnswer) === normalizeAccents(correctAnswer)) {
+        rating = 'hard';
+      } else {
+        rating = 'again';
+      }
+
+      const feedbackEl = document.getElementById('prep-feedback');
+      feedbackEl.classList.remove('hidden');
+
+      if (rating === 'good') {
+        feedbackEl.innerHTML = `<div class="feedback-correct"><span class="feedback-icon">&#10003;</span> <span class="feedback-word">${card.answer}</span></div>`;
+      } else if (rating === 'hard') {
+        feedbackEl.innerHTML = `<div class="feedback-close"><span class="feedback-icon">~</span> Close! Watch the accents: <span class="feedback-word">${card.answer}</span></div>`;
+      } else {
+        feedbackEl.innerHTML = `<div class="feedback-wrong"><span class="feedback-icon">&#10007;</span> Correct: <span class="feedback-word">${card.answer}</span></div>`;
+      }
+
+      input.disabled = true;
+      document.getElementById('btn-check').style.display = 'none';
+
+      await session.answer(rating);
+      setTimeout(() => render(), rating === 'again' ? 2000 : 1200);
+    }
+
+    document.getElementById('btn-check').addEventListener('click', checkAnswer);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkAnswer();
     });
 
     document.getElementById('btn-close').addEventListener('click', () => router.navigate('/'));

@@ -15,9 +15,10 @@ export async function renderProgress(app, router) {
   const db = new DB();
   await db.init();
 
-  const [nouns, verbs] = await Promise.all([
+  const [nouns, verbs, preps] = await Promise.all([
     fetch('data/nouns.json').then(r => r.json()),
     fetch('data/verbs.json').then(r => r.json()),
+    fetch('data/prepositions.json').then(r => r.json()).catch(() => []),
   ]);
 
   const allProgress = await db.getAllProgress();
@@ -52,7 +53,28 @@ export async function renderProgress(app, router) {
     return { ...v, type: 'verb', mastery, status, tenseMastery: vp?.tenseMastery };
   });
 
-  const allWords = [...nounData, ...verbData];
+  // Build preposition mastery data
+  const prepData = preps.map(p => {
+    const meaningId = `${p.id}-meaning`;
+    const prog = progressMap[meaningId];
+    let mastery = 0;
+    let status = 'new';
+    if (prog && prog.repetitions > 0) {
+      mastery = Math.min(100, Math.round(((prog.easeFactor - 1.3) / (2.5 - 1.3)) * 50 + (prog.repetitions >= 3 ? 50 : prog.repetitions * 15)));
+      status = mastery >= 80 ? 'mastered' : 'learning';
+    }
+    return { ...p, type: 'preposition', mastery, status, english: p.primaryMeaning };
+  });
+
+  const prepStats = {
+    total: prepData.length,
+    mastered: prepData.filter(p => p.status === 'mastered').length,
+    learning: prepData.filter(p => p.status === 'learning').length,
+    new: prepData.filter(p => p.status === 'new').length,
+    avgMastery: prepData.length > 0 ? Math.round(prepData.reduce((s, p) => s + p.mastery, 0) / prepData.length) : 0,
+  };
+
+  const allWords = [...nounData, ...verbData, ...prepData];
 
   // Stats
   const nounStats = {
@@ -71,7 +93,7 @@ export async function renderProgress(app, router) {
     avgMastery: verbData.length > 0 ? Math.round(verbData.reduce((s, v) => s + v.mastery, 0) / verbData.length) : 0,
   };
 
-  let currentView = 'overview'; // overview | nouns | verbs
+  let currentView = 'overview'; // overview | nouns | verbs | prepositions
   let sortBy = 'mastery-asc'; // mastery-asc | mastery-desc | alpha
 
   function renderView() {
@@ -88,7 +110,7 @@ export async function renderProgress(app, router) {
         </div>
 
         <div class="progress-summary-card">
-          <h3 class="progress-card-title">Nouns</h3>
+          <h3 class="progress-card-title">Vocabulary</h3>
           <div class="progress-ring-row">
             <div class="progress-ring-container">
               <svg class="progress-ring" viewBox="0 0 80 80">
@@ -104,7 +126,17 @@ export async function renderProgress(app, router) {
               <div class="progress-stat-row"><span class="dot-new"></span> Not started: <strong>${nounStats.new}</strong></div>
             </div>
           </div>
-          <button class="btn-secondary progress-detail-btn" data-view="nouns">View All Nouns</button>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <button class="btn-secondary progress-detail-btn" data-view="nouns" style="flex:1;">View Nouns</button>
+            <button class="btn-secondary progress-detail-btn" data-view="prepositions" style="flex:1;">View Prepositions</button>
+          </div>
+          ${prepStats.total > 0 ? `
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div class="progress-stat-row" style="justify-content: space-between;">
+              <span>Prepositions</span>
+              <strong>${prepStats.mastered + prepStats.learning} / ${prepStats.total}</strong>
+            </div>
+          </div>` : ''}
         </div>
 
         <div class="progress-summary-card">
@@ -170,14 +202,14 @@ export async function renderProgress(app, router) {
   }
 
   function renderWordList(type) {
-    const words = type === 'nouns' ? nounData : verbData;
+    const words = type === 'nouns' ? nounData : type === 'prepositions' ? prepData : verbData;
     const sorted = sortWords(words, sortBy);
 
     app.innerHTML = `
       <div class="progress-screen">
         <div class="browse-header">
           <button class="practice-close" id="btn-back">&larr;</button>
-          <h2>${type === 'nouns' ? 'Noun' : 'Verb'} Mastery</h2>
+          <h2>${type === 'nouns' ? 'Noun' : type === 'prepositions' ? 'Preposition' : 'Verb'} Mastery</h2>
         </div>
 
         <div class="progress-sort-bar">

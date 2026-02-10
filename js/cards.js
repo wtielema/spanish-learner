@@ -344,6 +344,118 @@ export function makeFillInTypingCards(verb) {
   }));
 }
 
+// --- Preposition Card Generators ---
+
+export function generatePrepCards(prep, allPreps) {
+  const cards = [];
+
+  // a) Meaning flashcard
+  cards.push({
+    id: `${prep.id}-meaning`,
+    wordId: prep.id,
+    type: 'preposition',
+    subtype: 'meaning',
+    front: prep.spanish,
+    back: prep.primaryMeaning,
+    direction: 'es-en',
+    prep,
+  });
+
+  // b) Fill-in MC cards — one per sentence
+  if (prep.sentences) {
+    prep.sentences.forEach((sentence, i) => {
+      const distractors = _prepDistractors(prep, allPreps, 3);
+      cards.push({
+        id: `${prep.id}-fill-${i}`,
+        wordId: prep.id,
+        type: 'preposition',
+        exerciseType: 'prep-fill-mc',
+        subtype: 'fill-in',
+        sentence: sentence.text,
+        sentenceEn: sentence.en || '',
+        answer: prep.spanish,
+        usage: sentence.usage,
+        prep,
+        distractors,
+      });
+    });
+  }
+
+  // c) Contrastive pair cards — sentences where confusionPairs overlap
+  if (prep.sentences && prep.confusionPairs && prep.confusionPairs.length > 0) {
+    prep.sentences.forEach((sentence, i) => {
+      // Find a confusion pair partner for this sentence
+      const partner = prep.confusionPairs[i % prep.confusionPairs.length];
+      const partnerPrep = allPreps.find(p => p.spanish === partner);
+      const explanation = sentence.usage
+        ? `"${prep.spanish}" is used here for ${_usageExplanation(prep, sentence.usage)}.`
+        : `The correct preposition here is "${prep.spanish}" (${prep.primaryMeaning}).`;
+
+      cards.push({
+        id: `${prep.id}-contrast-${i}`,
+        wordId: prep.id,
+        type: 'preposition',
+        exerciseType: 'prep-contrastive',
+        subtype: 'contrastive',
+        sentence: sentence.text,
+        sentenceEn: sentence.en || '',
+        answer: prep.spanish,
+        partner,
+        explanation,
+        usage: sentence.usage,
+        prep,
+      });
+    });
+  }
+
+  // d) Fill-in typing cards — same sentences, typed answer
+  if (prep.sentences) {
+    prep.sentences.forEach((sentence, i) => {
+      cards.push({
+        id: `${prep.id}-fill-type-${i}`,
+        wordId: prep.id,
+        type: 'preposition',
+        exerciseType: 'prep-fill-typing',
+        subtype: 'fill-typing',
+        sentence: sentence.text,
+        sentenceEn: sentence.en || '',
+        answer: prep.spanish,
+        usage: sentence.usage,
+        prep,
+      });
+    });
+  }
+
+  return cards;
+}
+
+function _prepDistractors(prep, allPreps, count) {
+  const distractors = [];
+
+  // Prioritize confusionPairs
+  if (prep.confusionPairs) {
+    for (const cp of prep.confusionPairs) {
+      if (distractors.length >= count) break;
+      if (cp !== prep.spanish) distractors.push(cp);
+    }
+  }
+
+  // Pad with other common prepositions
+  const common = ['a', 'de', 'en', 'con', 'por', 'para', 'sin', 'entre'];
+  for (const c of common) {
+    if (distractors.length >= count) break;
+    if (c !== prep.spanish && !distractors.includes(c)) distractors.push(c);
+  }
+
+  return distractors.slice(0, count);
+}
+
+function _usageExplanation(prep, usageCategory) {
+  if (!prep.usages) return prep.primaryMeaning;
+  const usage = prep.usages.find(u => u.category === usageCategory);
+  return usage ? usage.meaning : prep.primaryMeaning;
+}
+
 export function makePatternMatchCard(verb, patterns) {
   const patternNames = Object.keys(patterns);
   const correctPattern = verb.pattern;
