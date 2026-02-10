@@ -57,6 +57,7 @@ button {
   background: var(--bg-card);
   color: var(--text-primary);
   width: 100%;
+  font-weight: 600;
 }
 
 /* Dashboard */
@@ -101,15 +102,15 @@ button {
   margin-bottom: 80px;
 }
 
-/* Verb Training Section */
-.verb-training-section {
+/* Dashboard Sections (shared by Vocabulary & Verb Training) */
+.dash-section {
   background: var(--bg-secondary);
   border-radius: var(--radius);
   padding: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.verb-section-header {
+.dash-section-header {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -118,39 +119,122 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.verb-section-title {
+.dash-section-title {
   font-size: 18px;
   font-weight: 700;
   color: var(--accent);
   margin: 0;
 }
 
-.verb-section-summary {
+.dash-section-summary {
   flex: 1;
   font-size: 13px;
   color: var(--text-secondary);
   text-align: right;
 }
 
-.verb-toggle-icon {
+.dash-toggle-icon {
   font-size: 12px;
   color: var(--text-secondary);
   transition: transform 0.2s;
 }
 
-.verb-section-details {
+.dash-section-details {
   overflow: hidden;
   max-height: 500px;
   transition: max-height 0.3s ease, opacity 0.2s ease;
   opacity: 1;
 }
 
-.verb-section-details.collapsed {
+.dash-section-details.collapsed {
   max-height: 0;
   opacity: 0;
   margin: 0;
 }
 
+.dash-section-actions {
+  margin-top: 12px;
+}
+
+.dash-section-actions button {
+  margin-top: 8px;
+}
+
+.dash-section-actions button:first-child {
+  margin-top: 0;
+}
+
+/* Section progress bar (used in both Vocabulary & Verbs) */
+.dash-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.dash-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-progress-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dash-progress-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.dash-progress-bar {
+  height: 8px;
+  background: var(--bg-card);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dash-progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.dash-progress-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Vocabulary section stats */
+.vocab-stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.vocab-stat {
+  flex: 1;
+  text-align: center;
+}
+
+.vocab-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+
+.vocab-stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Verb tier list (extends dash-progress) */
 .tier-progress-list {
   display: flex;
   flex-direction: column;
@@ -168,48 +252,13 @@ button {
   opacity: 0.5;
 }
 
-.tier-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tier-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
 .tier-lock-icon {
   font-size: 12px;
 }
 
-.tier-percent {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.tier-bar {
-  height: 8px;
-  background: var(--bg-card);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.tier-bar-fill {
-  height: 100%;
-  background: var(--success);
-  border-radius: 4px;
-  transition: width 0.3s;
-}
-
-.tier-detail {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.verb-training-actions {
-  margin-top: 12px;
+/* Speed Round section */
+.speed-round-section {
+  margin-bottom: 16px;
 }
 
 /* Bottom nav */
@@ -1197,10 +1246,6 @@ button {
 }
 
 /* Speed Round — Dashboard Button */
-.speed-round-section {
-  margin-bottom: 24px;
-}
-
 .btn-speed-launch {
   width: 100%;
   background: linear-gradient(135deg, #e94560, #c03050);
@@ -1563,4 +1608,251 @@ button {
 
 .speed-actions {
   margin-top: 8px;
+}
+
+/* Paradigm Drill — Dashboard Button */
+.paradigm-drill-section {
+  margin-bottom: 24px;
+}
+
+.btn-paradigm-launch {
+  width: 100%;
+  background: linear-gradient(135deg, #4ecca3, #38b08a);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-height: 48px;
+}
+
+/* Paradigm Drill — Browse Icon */
+.btn-pd-browse {
+  background: none;
+  border: 1px solid var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 16px;
+  padding: 6px 10px;
+  min-height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Paradigm Drill — Prompt Card */
+.pd-prompt-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pd-verb-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pd-verb-meaning {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.pd-tense-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 12px;
+}
+
+/* Paradigm Drill — Tense Picker */
+.pd-tense-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Paradigm Drill — Form Grid */
+.pd-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pd-form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-person-label {
+  width: 90px;
+  text-align: right;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.pd-form-input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 2px solid var(--bg-card);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.pd-form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.pd-accent-helpers {
+  margin-bottom: 4px;
+}
+
+/* Paradigm Drill — Feedback States */
+.pd-result-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.pd-result-field.pd-correct {
+  background: rgba(78, 204, 163, 0.15);
+}
+
+.pd-result-field.pd-accent {
+  background: rgba(240, 192, 64, 0.15);
+}
+
+.pd-result-field.pd-wrong {
+  background: rgba(233, 69, 96, 0.15);
+}
+
+.pd-result-icon {
+  font-size: 18px;
+  font-weight: 700;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.pd-correct .pd-result-icon { color: var(--success); }
+.pd-accent .pd-result-icon { color: var(--warning); }
+.pd-wrong .pd-result-icon { color: var(--danger); }
+
+.pd-result-answers {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pd-user-answer {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pd-no-answer {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.pd-correct-answer {
+  font-size: 13px;
+  color: var(--success);
+}
+
+/* Paradigm Drill — Results */
+.pd-verb-results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.pd-result-verb-row {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-result-verb-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pd-result-verb-name {
+  font-weight: 700;
+  font-size: 16px;
+  display: block;
+}
+
+.pd-result-verb-tense {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.pd-result-verb-score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.pd-mastery-arrow {
+  font-size: 18px;
+}
+
+.pd-mini-form {
+  width: 100%;
+  display: flex;
+  gap: 6px;
+}
+
+.pd-mini-ok, .pd-mini-accent, .pd-mini-wrong {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pd-mini-ok {
+  background: rgba(78, 204, 163, 0.2);
+  color: var(--success);
+}
+
+.pd-mini-accent {
+  background: rgba(240, 192, 64, 0.2);
+  color: var(--warning);
+}
+
+.pd-mini-wrong {
+  background: rgba(233, 69, 96, 0.2);
+  color: var(--danger);
 }

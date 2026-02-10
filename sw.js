@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spanish-learner-v10';
+const CACHE_NAME = 'spanish-learner-v11';
 const ASSETS = [
   './',
   'index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   'js/screens/conjugation-ref.js',
   'js/screens/progress.js',
   'js/screens/speed-round.js',
+  'js/screens/paradigm-drill.js',
   'data/nouns.json',
   'data/verbs.json',
   'data/verb-patterns.json',

@@ -157,7 +157,7 @@ export async function renderSpeedRound(app, router) {
           items.push({
             type: 'noun',
             nounId: noun.id,
-            prompt: noun.english,
+            prompt: `the ${noun.english}`,
             answer: noun.spanish,
             displayInfo: `${article} ${noun.spanish}`,
             direction,
@@ -188,7 +188,7 @@ export async function renderSpeedRound(app, router) {
             items.push({
               type: 'verb',
               verbId: verb.id,
-              prompt: verb.english,
+              prompt: `to ${verb.english}`,
               answer: verb.spanish,
               displayInfo: verb.spanish,
               direction: dir,
@@ -409,11 +409,20 @@ export async function renderSpeedRound(app, router) {
     return m ? m[1].toLowerCase() : null;
   }
 
+  function stripPronoun(str) {
+    return str.replace(/^(yo|tú|tu|él|el|ella|nosotros|nosotras|vosotros|vosotras|ellos|ellas|usted|ustedes)\s+/i, '');
+  }
+
   function checkAnswer(userAnswer, item) {
     if (!userAnswer) return { correct: false, accentIssue: false, skipped: true };
 
-    const ua = userAnswer.toLowerCase().trim();
+    let ua = userAnswer.toLowerCase().trim();
     const ca = item.answer.toLowerCase().trim();
+
+    // Strip subject pronouns for conjugation answers
+    if (item.type === 'verb-conjugation') {
+      ua = stripPronoun(ua);
+    }
 
     // Exact match
     if (ua === ca) return { correct: true, accentIssue: false, skipped: false };
@@ -439,8 +448,15 @@ export async function renderSpeedRound(app, router) {
     // For es→en nouns/verbs: accept any "/" separated alternative
     if (item.direction === 'es-en') {
       const alts = ca.split('/').map(s => s.trim());
-      if (alts.some(a => ua === a || uaStripped === stripArticles(a))) return { correct: true, accentIssue: false, skipped: false };
-      if (alts.some(a => normalizeAccents(uaStripped) === normalizeAccents(stripArticles(a)))) {
+      // Carry forward "to " prefix to bare alternatives (e.g. "to wait/hope" → also accept "to hope")
+      const prefix = alts[0].match(/^(to )/i);
+      const allAlts = [...new Set(alts.flatMap(a => {
+        const expanded = [a];
+        if (prefix && !a.startsWith(prefix[1])) expanded.push(prefix[1] + a);
+        return expanded;
+      }))];
+      if (allAlts.some(a => ua === a || uaStripped === stripArticles(a))) return { correct: true, accentIssue: false, skipped: false };
+      if (allAlts.some(a => normalizeAccents(uaStripped) === normalizeAccents(stripArticles(a)))) {
         return { correct: true, accentIssue: true, skipped: false };
       }
     }

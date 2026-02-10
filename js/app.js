@@ -6,6 +6,7 @@ import { renderSettings } from './screens/settings.js';
 import { renderConjugationRef } from './screens/conjugation-ref.js';
 import { renderProgress } from './screens/progress.js';
 import { renderSpeedRound } from './screens/speed-round.js';
+import { renderParadigmDrill } from './screens/paradigm-drill.js';
 
 const app = document.getElementById('app');
 
@@ -20,6 +21,7 @@ const router = new Router({
   '/progress': () => renderProgress(app, router),
   '/settings': () => renderSettings(app, router),
   '/speed-round': () => renderSpeedRound(app, router),
+  '/paradigm-drill': () => renderParadigmDrill(app, router),
 });
 
 router.resolve();

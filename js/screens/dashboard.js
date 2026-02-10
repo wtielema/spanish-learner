@@ -7,17 +7,12 @@ export async function renderDashboard(app, router) {
   const allProgress = await db.getAllProgress();
   const today = new Date().toISOString().split('T')[0];
 
+  // Vocabulary stats
+  const totalNouns = 1000;
   const learned = allProgress.filter(p => p.repetitions > 0).length;
-  const reviewedToday = allProgress.filter(p =>
-    p.history.some(h => h.date === today)
-  ).length;
+  const nounMastered = allProgress.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).length;
   const dueNow = allProgress.filter(p => p.nextReview <= today).length;
-
-  const totalAnswers = allProgress.reduce((sum, p) => sum + p.history.length, 0);
-  const correctAnswers = allProgress.reduce((sum, p) =>
-    sum + p.history.filter(h => h.rating === 'good' || h.rating === 'easy').length, 0
-  );
-  const accuracy = totalAnswers > 0 ? Math.round((correctAnswers / totalAnswers) * 100) : 0;
+  const vocabPercent = totalNouns > 0 ? Math.round((learned / totalNouns) * 100) : 0;
 
   // Verb training data
   const allVerbProgress = await db.getAllVerbProgress();
@@ -38,7 +33,6 @@ export async function renderDashboard(app, router) {
       const p = verbProgressMap[v.id];
       return p && p.mastery >= TIER_UNLOCK_THRESHOLD;
     }).length;
-    // Show average mastery of all practiced verbs in tier (more encouraging)
     const avgMastery = practiced.length > 0
       ? practiced.reduce((sum, v) => sum + (verbProgressMap[v.id].mastery || 0), 0) / tierVerbs.length
       : 0;
@@ -63,65 +57,83 @@ export async function renderDashboard(app, router) {
   app.innerHTML = `
     <div class="dashboard">
       <h1 class="dashboard-title">Spanish Learner</h1>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-value">${learned}</span>
-          <span class="stat-label">Words Learned</span>
+
+      <div class="speed-round-section">
+        <button class="btn-speed-launch" id="btn-speed-round">&#9889; Speed Round</button>
+      </div>
+
+      <div class="dash-section">
+        <div class="dash-section-header" id="vocab-toggle">
+          <h2 class="dash-section-title">Vocabulary</h2>
+          <span class="dash-section-summary">${learned} learned${dueNow > 0 ? ` &middot; ${dueNow} due` : ''}</span>
+          <span class="dash-toggle-icon" id="vocab-toggle-icon">&#9654;</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-value">${reviewedToday}</span>
-          <span class="stat-label">Reviewed Today</span>
+        <div class="dash-section-details collapsed" id="vocab-details">
+          <div class="dash-progress-row">
+            <div class="dash-progress-header">
+              <span class="dash-progress-label">Overall</span>
+              <span class="dash-progress-pct">${vocabPercent}%</span>
+            </div>
+            <div class="dash-progress-bar">
+              <div class="dash-progress-fill" style="width: ${vocabPercent}%"></div>
+            </div>
+            <span class="dash-progress-detail">${learned} learned, ${nounMastered} mastered / ${totalNouns} words</span>
+          </div>
+          <div class="vocab-stats-row">
+            <div class="vocab-stat">
+              <span class="vocab-stat-value">${dueNow}</span>
+              <span class="vocab-stat-label">Due</span>
+            </div>
+            <div class="vocab-stat">
+              <span class="vocab-stat-value">${nounMastered}</span>
+              <span class="vocab-stat-label">Mastered</span>
+            </div>
+            <div class="vocab-stat">
+              <span class="vocab-stat-value">${totalNouns - learned}</span>
+              <span class="vocab-stat-label">Unseen</span>
+            </div>
+          </div>
         </div>
-        <div class="stat-card">
-          <span class="stat-value">${dueNow}</span>
-          <span class="stat-label">Due for Review</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value">${accuracy}%</span>
-          <span class="stat-label">Accuracy</span>
+        <div class="dash-section-actions">
+          <button class="btn-primary" id="btn-review">Start Review${dueNow > 0 ? ` (${dueNow})` : ''}</button>
+          <button class="btn-secondary" id="btn-learn">Learn New Words</button>
         </div>
       </div>
 
-      <div class="verb-training-section">
-        <div class="verb-section-header" id="verb-toggle">
-          <h2 class="verb-section-title">Verb Training</h2>
-          <span class="verb-section-summary">${allVerbProgress.length} practiced${verbsDue > 0 ? ` &middot; ${verbsDue} due` : ''}</span>
-          <span class="verb-toggle-icon" id="verb-toggle-icon">&#9654;</span>
+      <div class="dash-section">
+        <div class="dash-section-header" id="verb-toggle">
+          <h2 class="dash-section-title">Verb Training</h2>
+          <span class="dash-section-summary">${allVerbProgress.length} practiced${verbsDue > 0 ? ` &middot; ${verbsDue} due` : ''}</span>
+          <span class="dash-toggle-icon" id="verb-toggle-icon">&#9654;</span>
         </div>
-        <div class="verb-section-details collapsed" id="verb-details">
+        <div class="dash-section-details collapsed" id="verb-details">
           <div class="tier-progress-list">
             ${[1, 2, 3].map(tier => {
               const data = tierData[tier];
               const unlocked = tier === 1 || (tier === 2 && tier2Unlocked) || (tier === 3 && tier3Unlocked);
               return `
                 <div class="tier-progress-item ${unlocked ? '' : 'tier-locked'}">
-                  <div class="tier-header">
-                    <span class="tier-name">${unlocked ? '' : '<span class="tier-lock-icon">&#128274;</span> '}${tierNames[tier]}</span>
-                    <span class="tier-percent">${data.percent}%</span>
+                  <div class="dash-progress-header">
+                    <span class="dash-progress-label">${unlocked ? '' : '<span class="tier-lock-icon">&#128274;</span> '}${tierNames[tier]}</span>
+                    <span class="dash-progress-pct">${data.percent}%</span>
                   </div>
-                  <div class="tier-bar">
-                    <div class="tier-bar-fill" style="width: ${data.percent}%"></div>
+                  <div class="dash-progress-bar">
+                    <div class="dash-progress-fill" style="width: ${data.percent}%"></div>
                   </div>
-                  <span class="tier-detail">${data.practiced} practiced, ${data.mastered} mastered / ${data.total} verbs</span>
+                  <span class="dash-progress-detail">${data.practiced} practiced, ${data.mastered} mastered / ${data.total} verbs</span>
                 </div>
               `;
             }).join('')}
           </div>
         </div>
-        <div class="verb-training-actions">
+        <div class="dash-section-actions">
           <button class="btn-primary" id="btn-verb-learn">Train Verbs</button>
-          <button class="btn-secondary" id="btn-verb-review" style="margin-top: 8px;">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
+          <button class="btn-secondary" id="btn-verb-review">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
+          <button class="btn-paradigm-launch" id="btn-paradigm-drill">&#128221; Paradigm Drill</button>
         </div>
       </div>
 
-      <div class="speed-round-section">
-        <button class="btn-speed-launch" id="btn-speed-round">&#9889; Speed Round</button>
-      </div>
-
-      <div class="dashboard-actions">
-        <button class="btn-primary" id="btn-review">Start Review${dueNow > 0 ? ` (${dueNow})` : ''}</button>
-        <button class="btn-secondary" id="btn-learn" style="margin-top: 12px;">Learn New Words</button>
-      </div>
+      <div style="margin-bottom: 80px;"></div>
       <nav class="bottom-nav">
         <button class="nav-btn active" data-route="/">Home</button>
         <button class="nav-btn" data-route="/browse">Browse</button>
@@ -132,6 +144,14 @@ export async function renderDashboard(app, router) {
     </div>
   `;
 
+  // Section toggles
+  document.getElementById('vocab-toggle').addEventListener('click', () => {
+    const details = document.getElementById('vocab-details');
+    const icon = document.getElementById('vocab-toggle-icon');
+    const collapsed = details.classList.toggle('collapsed');
+    icon.innerHTML = collapsed ? '&#9654;' : '&#9660;';
+  });
+
   document.getElementById('verb-toggle').addEventListener('click', () => {
     const details = document.getElementById('verb-details');
     const icon = document.getElementById('verb-toggle-icon');
@@ -139,10 +159,7 @@ export async function renderDashboard(app, router) {
     icon.innerHTML = collapsed ? '&#9654;' : '&#9660;';
   });
 
-  document.getElementById('btn-speed-round').addEventListener('click', () => {
-    router.navigate('/speed-round');
-  });
-
+  // Navigation
   document.getElementById('btn-review').addEventListener('click', () => {
     router.navigate('/practice?mode=review');
   });
@@ -157,6 +174,14 @@ export async function renderDashboard(app, router) {
 
   document.getElementById('btn-verb-review').addEventListener('click', () => {
     router.navigate('/practice?mode=verb-review');
+  });
+
+  document.getElementById('btn-paradigm-drill').addEventListener('click', () => {
+    router.navigate('/paradigm-drill');
+  });
+
+  document.getElementById('btn-speed-round').addEventListener('click', () => {
+    router.navigate('/speed-round');
   });
 
   document.querySelectorAll('.nav-btn').forEach(btn => {

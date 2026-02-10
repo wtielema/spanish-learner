@@ -72,6 +72,7 @@ export async function renderBrowse(app, router) {
                   <span class="word-english">${w.english}</span>
                 </div>
                 ${patternLabel ? `<span class="pattern-badge">${patternLabel}</span>` : ''}
+                ${w.type === 'verb' ? `<button class="btn-pd-browse" data-drill-id="${w.id}" title="Paradigm Drill">&#9998;</button>` : ''}
                 <span class="word-type">${w.type === 'noun' ? (w.gender === 'm' ? 'el' : 'la') : 'verb'}</span>
               </li>
             `;
@@ -93,6 +94,13 @@ export async function renderBrowse(app, router) {
     });
 
     document.getElementById('btn-back').addEventListener('click', () => router.navigate('/'));
+
+    document.querySelectorAll('.btn-pd-browse').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        router.navigate(`/paradigm-drill?verbId=${btn.dataset.drillId}`);
+      });
+    });
 
     document.querySelectorAll('.word-item').forEach(item => {
       item.addEventListener('click', () => {
