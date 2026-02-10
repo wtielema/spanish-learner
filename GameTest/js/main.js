@@ -6,7 +6,7 @@ import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoo
 import { loadUnitDefs, getUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
-import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport } from './raids.js';
+import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport, executeRaid, generateRagnarokRaid } from './raids.js';
 import { loadExpeditionDefs, getExpeditionDefs, getAvailableExpeditions, getLockedExpeditions, startExpedition, tickExpeditions, getExpeditionTimeRemaining, formatDuration } from './expeditions.js';
 import { calculateOfflineProgress, formatElapsedTime } from './idle.js';
 
@@ -25,6 +25,11 @@ let buildMode = null; // null = not building, otherwise { defId, def } for the r
 
 // Selected unit for assignment
 let selectedUnitId = null;
+
+// End-game state
+let gameOver = false;
+let gameWon = false;
+let ragnarokPending = false; // set to true when Storm Asgard expedition succeeds
 
 // Attempt to dig at the given tile coordinates; returns true if successful
 function tryDig(tx, ty) {
@@ -48,6 +53,9 @@ resizeCanvas();
 
 // Game tick (1s interval) -- resource production, combat, timers
 function gameTick() {
+  // Stop ticking if game is over or won
+  if (gameOver || gameWon) return;
+
   gameState.tick++;
   tickProduction(gameState);
 
@@ -60,7 +68,29 @@ function gameTick() {
   // Expedition system: tick active expeditions; show results
   const expResults = tickExpeditions(gameState);
   for (const expResult of expResults) {
+    // Check for realm unlock notification
+    if (expResult.realmUnlocked) {
+      showRealmUnlockNotification(expResult.realmUnlocked);
+    }
+
+    // Check for Ragnarok trigger
+    if (expResult.ragnarokTriggered && expResult.isVictory) {
+      ragnarokPending = true;
+    }
+
     showExpeditionReport(expResult);
+  }
+
+  // Handle Ragnarok: trigger the final raid
+  if (ragnarokPending) {
+    ragnarokPending = false;
+    triggerRagnarokRaid();
+  }
+
+  // Check for game over: Mead Hall destroyed
+  if (gameState.meadHallHP <= 0) {
+    showGameOverScreen();
+    return;
   }
 
   // Refresh expedition panel if open (to update countdowns)
@@ -757,6 +787,183 @@ function closeExpeditionReport() {
     if (existing._dismissTimer) clearTimeout(existing._dismissTimer);
     existing.remove();
   }
+}
+
+// --- Realm Unlock Notification ---
+
+function showRealmUnlockNotification(realm) {
+  const existing = document.getElementById('realm-notification');
+  if (existing) existing.remove();
+
+  const realmNames = { jotunheim: 'Jotunheim', asgard: 'Asgard' };
+  const realmFlavor = {
+    jotunheim: 'The realm of giants trembles before your might. Raids grow fiercer as the giants take notice.',
+    asgard: 'The golden halls shimmer in the distance. The gods watch your approach with interest.',
+  };
+
+  const displayName = realmNames[realm] || realm;
+  const flavor = realmFlavor[realm] || 'A new realm awaits.';
+
+  const panel = document.createElement('div');
+  panel.id = 'realm-notification';
+
+  panel.innerHTML = `
+    <div class="realm-notif-header">
+      <h3>${displayName} Unlocked!</h3>
+    </div>
+    <div class="realm-notif-body">
+      <p>${flavor}</p>
+    </div>
+  `;
+
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'realm-notif-dismiss-btn';
+  dismissBtn.textContent = 'Onward!';
+  dismissBtn.addEventListener('click', () => {
+    const el = document.getElementById('realm-notification');
+    if (el) el.remove();
+  });
+  panel.appendChild(dismissBtn);
+
+  overlay.appendChild(panel);
+
+  // Auto-dismiss after 10 seconds
+  setTimeout(() => {
+    const el = document.getElementById('realm-notification');
+    if (el) el.remove();
+  }, 10000);
+}
+
+// --- Ragnarok Final Raid ---
+
+function triggerRagnarokRaid() {
+  const enemies = generateRagnarokRaid();
+  const raidResult = executeRaid(gameState, enemies);
+
+  // Mark this as the Ragnarok raid for display purposes
+  raidResult.isRagnarok = true;
+
+  // Check if player survived
+  if (raidResult.winner === 'defenders' || raidResult.winner === 'draw') {
+    // Victory! Player survived Ragnarok
+    showRaidReport(raidResult);
+    // Delay victory screen briefly so the raid report shows first
+    setTimeout(() => {
+      showVictoryScreen();
+    }, 2000);
+  } else {
+    // Ragnarok failed — Mead Hall is destroyed regardless of remaining HP
+    gameState.meadHallHP = 0;
+    showRaidReport(raidResult);
+    setTimeout(() => {
+      showGameOverScreen();
+    }, 2000);
+  }
+}
+
+// --- Game Over Screen ---
+
+function showGameOverScreen() {
+  if (gameOver) return;
+  gameOver = true;
+
+  const existing = document.getElementById('game-over-screen');
+  if (existing) existing.remove();
+
+  // Gather stats
+  const ticksSurvived = gameState.tick;
+  const roomsBuilt = gameState.rooms ? gameState.rooms.length : 0;
+  const totalRaids = gameState.raids ? gameState.raids.length : 0;
+  const raidsSurvived = gameState.raids
+    ? gameState.raids.filter(r => r.winner === 'defenders' || r.winner === 'draw').length
+    : 0;
+  const unitsRecruited = gameState.units ? gameState.units.length : 0;
+
+  const minutes = Math.floor(ticksSurvived / 60);
+  const seconds = ticksSurvived % 60;
+  const timeStr = `${minutes}m ${seconds}s`;
+
+  const panel = document.createElement('div');
+  panel.id = 'game-over-screen';
+
+  panel.innerHTML = `
+    <div class="endgame-bg"></div>
+    <div class="endgame-content">
+      <h2 class="game-over-title">Your Mead Hall Has Fallen</h2>
+      <p class="game-over-flavor">The gods weep as your stronghold crumbles to dust. The echoes of your warriors fade into the cold northern wind...</p>
+      <div class="endgame-stats">
+        <div class="endgame-stat"><span class="stat-label">Time Survived</span><span class="stat-value">${timeStr}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Rooms Built</span><span class="stat-value">${roomsBuilt}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Units Remaining</span><span class="stat-value">${unitsRecruited}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Raids Faced</span><span class="stat-value">${totalRaids}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Raids Survived</span><span class="stat-value">${raidsSurvived}</span></div>
+      </div>
+    </div>
+  `;
+
+  const restartBtn = document.createElement('button');
+  restartBtn.className = 'endgame-restart-btn';
+  restartBtn.textContent = 'Start New Game';
+  restartBtn.addEventListener('click', () => {
+    localStorage.removeItem('vikingKeeper');
+    window.location.reload();
+  });
+  panel.querySelector('.endgame-content').appendChild(restartBtn);
+
+  overlay.appendChild(panel);
+}
+
+// --- Victory Screen ---
+
+function showVictoryScreen() {
+  if (gameWon) return;
+  gameWon = true;
+
+  const existing = document.getElementById('victory-screen');
+  if (existing) existing.remove();
+
+  // Gather stats
+  const ticksPlayed = gameState.tick;
+  const roomsBuilt = gameState.rooms ? gameState.rooms.length : 0;
+  const totalRaids = gameState.raids ? gameState.raids.length : 0;
+  const raidsSurvived = gameState.raids
+    ? gameState.raids.filter(r => r.winner === 'defenders' || r.winner === 'draw').length
+    : 0;
+  const unitsAlive = gameState.units ? gameState.units.length : 0;
+
+  const minutes = Math.floor(ticksPlayed / 60);
+  const seconds = ticksPlayed % 60;
+  const timeStr = `${minutes}m ${seconds}s`;
+
+  const panel = document.createElement('div');
+  panel.id = 'victory-screen';
+
+  panel.innerHTML = `
+    <div class="endgame-bg victory-bg"></div>
+    <div class="endgame-content victory-content">
+      <h2 class="victory-title">Ragnarok Survived</h2>
+      <h3 class="victory-subtitle">Valhalla Awaits!</h3>
+      <p class="victory-flavor">The fires of Ragnarok have been quenched. Through cunning strategy and unyielding courage, you have forged a stronghold worthy of the gods themselves. Odin raises his horn in your honor — a seat among the Einherjar is yours for eternity.</p>
+      <div class="endgame-stats">
+        <div class="endgame-stat"><span class="stat-label">Time Played</span><span class="stat-value">${timeStr}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Rooms Built</span><span class="stat-value">${roomsBuilt}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Units Alive</span><span class="stat-value">${unitsAlive}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Raids Faced</span><span class="stat-value">${totalRaids}</span></div>
+        <div class="endgame-stat"><span class="stat-label">Raids Survived</span><span class="stat-value">${raidsSurvived}</span></div>
+      </div>
+    </div>
+  `;
+
+  const restartBtn = document.createElement('button');
+  restartBtn.className = 'endgame-restart-btn victory-restart-btn';
+  restartBtn.textContent = 'Play Again';
+  restartBtn.addEventListener('click', () => {
+    localStorage.removeItem('vikingKeeper');
+    window.location.reload();
+  });
+  panel.querySelector('.endgame-content').appendChild(restartBtn);
+
+  overlay.appendChild(panel);
 }
 
 // --- Offline Progress Panel ("While you were away...") ---

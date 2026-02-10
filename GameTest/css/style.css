@@ -1220,3 +1220,256 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   background: rgba(60, 80, 130, 0.9);
   border-color: #80a0e0;
 }
+
+/* Realm label in HUD */
+#realm-label {
+  color: #f0d070;
+  font-weight: bold;
+}
+
+/* Realm unlock notification */
+#realm-notification {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 360px;
+  background: rgba(15, 12, 25, 0.96);
+  border: 2px solid #f0c040;
+  border-radius: 8px;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 45;
+  animation: realmNotifIn 0.5s ease-out;
+  box-shadow: 0 0 50px rgba(240, 180, 40, 0.4);
+}
+
+@keyframes realmNotifIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.realm-notif-header {
+  padding: 16px 20px 10px;
+  text-align: center;
+  background: rgba(80, 60, 10, 0.6);
+  border-radius: 6px 6px 0 0;
+  border-bottom: 2px solid #c09020;
+}
+
+.realm-notif-header h3 {
+  font-size: 22px;
+  color: #f0d060;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(240, 200, 60, 0.5);
+}
+
+.realm-notif-body {
+  padding: 14px 20px;
+}
+
+.realm-notif-body p {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.realm-notif-dismiss-btn {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 4px 20px 16px;
+  padding: 10px;
+  background: rgba(100, 80, 20, 0.8);
+  border: 1px solid #c0a030;
+  border-radius: 4px;
+  color: #f0e0a0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.realm-notif-dismiss-btn:hover {
+  background: rgba(140, 110, 30, 0.9);
+  border-color: #e0c050;
+}
+
+/* Game Over & Victory Screens — Shared */
+#game-over-screen,
+#victory-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.endgame-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 5, 5, 0.92);
+  animation: endgameFadeIn 1s ease-out;
+}
+
+.victory-bg {
+  background: rgba(5, 5, 15, 0.92);
+}
+
+@keyframes endgameFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.endgame-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 440px;
+  padding: 40px;
+  background: rgba(20, 10, 10, 0.8);
+  border: 2px solid #8b0000;
+  border-radius: 12px;
+  box-shadow: 0 0 60px rgba(139, 0, 0, 0.5);
+  animation: endgameContentIn 1.2s ease-out;
+}
+
+.victory-content {
+  background: rgba(10, 10, 25, 0.8);
+  border: 2px solid #b08a20;
+  box-shadow: 0 0 60px rgba(200, 160, 40, 0.4);
+}
+
+@keyframes endgameContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-over-title {
+  font-size: 28px;
+  color: #cc2020;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(200, 30, 30, 0.6);
+}
+
+.game-over-flavor {
+  font-size: 14px;
+  color: #999;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.victory-title {
+  font-size: 30px;
+  color: #f0c840;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(240, 200, 40, 0.6);
+  animation: victoryGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes victoryGlow {
+  from { text-shadow: 0 0 20px rgba(240, 200, 40, 0.4); }
+  to { text-shadow: 0 0 40px rgba(240, 200, 40, 0.8); }
+}
+
+.victory-subtitle {
+  font-size: 18px;
+  color: #c0a040;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+}
+
+.victory-flavor {
+  font-size: 14px;
+  color: #b0a080;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.endgame-stats {
+  margin-bottom: 24px;
+  border-top: 1px solid rgba(120, 120, 120, 0.3);
+  padding-top: 16px;
+}
+
+.endgame-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(80, 80, 80, 0.2);
+}
+
+.stat-label {
+  color: #999;
+}
+
+.stat-value {
+  color: #e0e0e0;
+  font-weight: bold;
+}
+
+.endgame-restart-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: rgba(120, 20, 20, 0.8);
+  border: 2px solid #aa2020;
+  border-radius: 6px;
+  color: #ff8080;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.endgame-restart-btn:hover {
+  background: rgba(160, 30, 30, 0.9);
+  border-color: #dd3030;
+  color: #ffaaaa;
+}
+
+.victory-restart-btn {
+  background: rgba(100, 80, 20, 0.8);
+  border: 2px solid #c0a030;
+  color: #f0e0a0;
+}
+
+.victory-restart-btn:hover {
+  background: rgba(140, 110, 30, 0.9);
+  border-color: #e0c050;
+  color: #fff0c0;
+}

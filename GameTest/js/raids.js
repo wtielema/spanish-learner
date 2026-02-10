@@ -63,23 +63,36 @@ export function tickRaidTimer(state) {
 }
 
 /**
- * Generate a raid based on current game difficulty (scaled by state.tick).
+ * Get the realm difficulty multiplier.
+ * Midgard: 1x, Jotunheim: 1.5x, Asgard: 2x
+ */
+function getRealmMultiplier(realm) {
+  switch (realm) {
+    case 'jotunheim': return 1.5;
+    case 'asgard': return 2.0;
+    default: return 1.0; // midgard
+  }
+}
+
+/**
+ * Generate a raid based on current game difficulty (scaled by state.tick and realm).
  * Returns an array of enemy combatant objects ready for resolveBattle.
  */
 export function generateRaid(state) {
   const tick = state.tick || 0;
+  const realmMult = getRealmMultiplier(state.realm);
   const enemies = [];
 
   if (tick < 600) {
     // Early game: 2-3 draugr
-    const count = randInt(2, 3);
+    const count = Math.round(randInt(2, 3) * realmMult);
     for (let i = 0; i < count; i++) {
       enemies.push(makeEnemyCombatant('draugr'));
     }
   } else if (tick < 1800) {
     // Mid game: 3-5 draugr + 1-2 trolls
-    const draugrCount = randInt(3, 5);
-    const trollCount = randInt(1, 2);
+    const draugrCount = Math.round(randInt(3, 5) * realmMult);
+    const trollCount = Math.round(randInt(1, 2) * realmMult);
     for (let i = 0; i < draugrCount; i++) {
       enemies.push(makeEnemyCombatant('draugr'));
     }
@@ -88,9 +101,9 @@ export function generateRaid(state) {
     }
   } else {
     // Late game: 4-6 draugr + 2-3 trolls + 0-1 frost giant
-    const draugrCount = randInt(4, 6);
-    const trollCount = randInt(2, 3);
-    const giantCount = randInt(0, 1);
+    const draugrCount = Math.round(randInt(4, 6) * realmMult);
+    const trollCount = Math.round(randInt(2, 3) * realmMult);
+    const giantCount = Math.max(1, Math.round(randInt(0, 1) * realmMult));
     for (let i = 0; i < draugrCount; i++) {
       enemies.push(makeEnemyCombatant('draugr'));
     }
@@ -102,6 +115,18 @@ export function generateRaid(state) {
     }
   }
 
+  return enemies;
+}
+
+/**
+ * Generate the special Ragnarok raid: 6 draugr + 4 trolls + 3 frost giants.
+ * This is the final challenge in the game.
+ */
+export function generateRagnarokRaid() {
+  const enemies = [];
+  for (let i = 0; i < 6; i++) enemies.push(makeEnemyCombatant('draugr'));
+  for (let i = 0; i < 4; i++) enemies.push(makeEnemyCombatant('troll'));
+  for (let i = 0; i < 3; i++) enemies.push(makeEnemyCombatant('frostGiant'));
   return enemies;
 }
 

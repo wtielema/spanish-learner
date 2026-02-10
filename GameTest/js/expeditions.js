@@ -261,6 +261,7 @@ export function resolveExpedition(state, expedition) {
     // Handle Ragnarok trigger
     if (def.triggersRagnarok) {
       result.ragnarokTriggered = true;
+      state.realm = 'asgard';
       // The main game loop should check for this and handle end-game
     }
 

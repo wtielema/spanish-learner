@@ -6,8 +6,15 @@ let resIron = null;
 let resRunes = null;
 let unitCount = null;
 let meadHallHPEl = null;
+let realmEl = null;
 let warningEl = null;
 let warningTimer = 0;
+
+const REALM_DISPLAY_NAMES = {
+  midgard: 'Midgard',
+  jotunheim: 'Jotunheim',
+  asgard: 'Asgard',
+};
 
 /**
  * Creates the HUD HTML elements inside the ui-overlay container.
@@ -24,6 +31,7 @@ export function createHUD(container) {
       <span class="res-item" id="res-runes">Runes: 0/100</span>
     </div>
     <div class="res-group">
+      <span class="res-item" id="realm-label">Realm: Midgard</span>
       <span class="res-item" id="mead-hall-hp">Mead Hall: 100 HP</span>
       <span class="res-item" id="unit-count">Units: 0/6</span>
     </div>
@@ -38,6 +46,7 @@ export function createHUD(container) {
   resRunes = document.getElementById('res-runes');
   unitCount = document.getElementById('unit-count');
   meadHallHPEl = document.getElementById('mead-hall-hp');
+  realmEl = document.getElementById('realm-label');
 
   // Warning message element (e.g., "Not enough wood!")
   const warning = document.createElement('div');
@@ -71,6 +80,10 @@ export function updateHUD(state) {
   } else {
     meadHallHPEl.style.color = '#e04040';
   }
+
+  // Realm display
+  const realmName = REALM_DISPLAY_NAMES[state.realm] || state.realm;
+  realmEl.textContent = `Realm: ${realmName}`;
 
   // Unit count: current units vs max capacity (default max 6)
   const currentUnits = state.units ? state.units.length : 0;
