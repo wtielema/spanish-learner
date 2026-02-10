@@ -1473,3 +1473,154 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   border-color: #e0c050;
   color: #fff0c0;
 }
+
+/* Room info panel */
+#room-info-panel {
+  position: absolute;
+  right: 0;
+  top: 80px;
+  width: 240px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(20, 20, 40, 0.92);
+  border-left: 1px solid #556;
+  border-top: 1px solid #556;
+  border-bottom: 1px solid #556;
+  border-radius: 8px 0 0 8px;
+  padding: 10px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+#room-info-panel h3 {
+  font-size: 14px;
+  color: #ffcc00;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.room-info-production,
+.room-info-units,
+.room-info-workers,
+.room-info-mead {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.room-info-label {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.room-info-value {
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.room-info-value strong {
+  color: #ffcc00;
+}
+
+.room-info-detail {
+  font-size: 10px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.room-info-upgrade {
+  margin-bottom: 8px;
+}
+
+.room-upgrade-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(100, 80, 20, 0.8);
+  border: 1px solid #a08020;
+  border-radius: 4px;
+  color: #f0e0a0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.room-upgrade-btn:hover:not(:disabled) {
+  background: rgba(140, 110, 30, 0.9);
+  border-color: #d0b040;
+}
+
+.room-upgrade-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.upgrade-cost {
+  display: block;
+  font-size: 11px;
+  font-weight: normal;
+  color: #bba060;
+  margin-top: 3px;
+}
+
+.upgrade-cost span {
+  margin-right: 6px;
+}
+
+.room-info-max-level {
+  font-size: 12px;
+  color: #7ec87e;
+  font-weight: bold;
+  text-align: center;
+  padding: 6px 0;
+  margin-bottom: 8px;
+  background: rgba(40, 70, 40, 0.4);
+  border: 1px solid #4a6a4a;
+  border-radius: 4px;
+}
+
+.room-info-recruit-btn {
+  display: block;
+  width: 100%;
+  padding: 7px 10px;
+  margin-bottom: 6px;
+  background: rgba(40, 80, 40, 0.8);
+  border: 1px solid #4a8a4a;
+  border-radius: 4px;
+  color: #a0e0a0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.room-info-recruit-btn:hover {
+  background: rgba(60, 110, 60, 0.9);
+  border-color: #6ab06a;
+}
+
+.room-info-close-btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  background: rgba(80, 40, 40, 0.8);
+  border: 1px solid #664444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.room-info-close-btn:hover {
+  background: rgba(120, 50, 50, 0.9);
+}

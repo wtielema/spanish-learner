@@ -2,7 +2,7 @@ import { gameState, setState, createInitialState } from './state.js';
 import { camera, setupCameraControls, centerCamera, screenToWorld } from './camera.js';
 import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock, digTile } from './grid.js';
 import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview, renderUnits } from './renderer.js';
-import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds, tickProduction } from './rooms.js';
+import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds, tickProduction, upgradeRoom, getRoomProductionRate } from './rooms.js';
 import { loadUnitDefs, getUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
@@ -272,6 +272,150 @@ function closeRecruitPanel() {
   if (existing) existing.remove();
 }
 
+// --- Room Info Panel ---
+
+let roomInfoPanelRoom = null; // the room instance currently showing an info panel, or null
+
+function openRoomInfoPanel(room) {
+  closeRoomInfoPanel();
+  roomInfoPanelRoom = room;
+
+  const roomDefs = getRoomDefs();
+  const def = roomDefs.find(d => d.id === room.type);
+  if (!def) return;
+
+  const panel = document.createElement('div');
+  panel.id = 'room-info-panel';
+
+  const currentLevel = room.level || 1;
+  const maxLevel = def.maxLevel || 1;
+
+  panel.innerHTML = `<h3>${def.name} — Level ${currentLevel}</h3>`;
+
+  // Production info for production rooms
+  const prodInfo = getRoomProductionRate(room);
+  if (prodInfo) {
+    const prodDiv = document.createElement('div');
+    prodDiv.className = 'room-info-production';
+    prodDiv.innerHTML = `
+      <div class="room-info-label">Production</div>
+      <div class="room-info-value">${prodInfo.resource}: <strong>${prodInfo.rate.toFixed(1)}</strong>/tick</div>
+      <div class="room-info-detail">(base ${prodInfo.baseRate} + ${prodInfo.workerCount} workers x ${prodInfo.perWorker}) x Lv.${prodInfo.levelMultiplier}</div>
+    `;
+    panel.appendChild(prodDiv);
+  }
+
+  // Barracks / Shrine: show trainable unit types
+  if (def.unlocksUnits) {
+    const levelIndex = Math.min(currentLevel, def.unlocksUnits.length) - 1;
+    const unitTypes = def.unlocksUnits[levelIndex] || [];
+    const unitDefs = getUnitDefs();
+    const unitNames = unitTypes.map(uid => {
+      const uDef = unitDefs.find(d => d.id === uid);
+      return uDef ? uDef.name : uid;
+    });
+
+    const unitsDiv = document.createElement('div');
+    unitsDiv.className = 'room-info-units';
+    unitsDiv.innerHTML = `
+      <div class="room-info-label">Trainable Units</div>
+      <div class="room-info-value">${unitNames.join(', ')}</div>
+    `;
+    panel.appendChild(unitsDiv);
+  }
+
+  // Workers assigned
+  const workerCount = room.workers ? room.workers.length : 0;
+  const workersDiv = document.createElement('div');
+  workersDiv.className = 'room-info-workers';
+  workersDiv.innerHTML = `
+    <div class="room-info-label">Workers Assigned</div>
+    <div class="room-info-value">${workerCount}</div>
+  `;
+  panel.appendChild(workersDiv);
+
+  // Mead Hall: show HP and unit capacity
+  if (room.type === 'meadHall') {
+    const cap = getUnitCapacity(gameState);
+    const unitCount = gameState.units ? gameState.units.length : 0;
+    const meadDiv = document.createElement('div');
+    meadDiv.className = 'room-info-mead';
+    meadDiv.innerHTML = `
+      <div class="room-info-label">Mead Hall HP</div>
+      <div class="room-info-value">${gameState.meadHallHP}/100</div>
+      <div class="room-info-label" style="margin-top:4px">Unit Capacity</div>
+      <div class="room-info-value">${unitCount}/${cap}</div>
+    `;
+    panel.appendChild(meadDiv);
+  }
+
+  // Upgrade button
+  if (currentLevel < maxLevel) {
+    const costIndex = currentLevel - 1;
+    const upgradeCost = def.upgradeCost && def.upgradeCost[costIndex] ? def.upgradeCost[costIndex] : null;
+
+    if (upgradeCost) {
+      const affordable = canAfford(gameState.resources, upgradeCost);
+      const costParts = Object.entries(upgradeCost)
+        .map(([res, amt]) => `<span>${res}: ${amt}</span>`)
+        .join('');
+
+      const upgradeDiv = document.createElement('div');
+      upgradeDiv.className = 'room-info-upgrade';
+
+      const upgradeBtn = document.createElement('button');
+      upgradeBtn.className = 'room-upgrade-btn';
+      upgradeBtn.disabled = !affordable;
+      upgradeBtn.innerHTML = `Upgrade to Level ${currentLevel + 1} <span class="upgrade-cost">${costParts}</span>`;
+
+      upgradeBtn.addEventListener('click', () => {
+        const success = upgradeRoom(gameState, room.id);
+        if (success) {
+          openRoomInfoPanel(room); // refresh panel
+        } else {
+          showWarning('Cannot upgrade!');
+        }
+      });
+
+      upgradeDiv.appendChild(upgradeBtn);
+      panel.appendChild(upgradeDiv);
+    }
+  } else {
+    const maxDiv = document.createElement('div');
+    maxDiv.className = 'room-info-max-level';
+    maxDiv.textContent = 'Max Level';
+    panel.appendChild(maxDiv);
+  }
+
+  // Recruit button for rooms that can recruit
+  const recruits = getRecruitsForRoom(gameState, room);
+  if (recruits.length > 0) {
+    const recruitBtn = document.createElement('button');
+    recruitBtn.className = 'room-info-recruit-btn';
+    recruitBtn.textContent = 'Recruit Units';
+    recruitBtn.addEventListener('click', () => {
+      closeRoomInfoPanel();
+      openRecruitPanel(room);
+    });
+    panel.appendChild(recruitBtn);
+  }
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'room-info-close-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => closeRoomInfoPanel());
+  panel.appendChild(closeBtn);
+
+  overlay.appendChild(panel);
+}
+
+function closeRoomInfoPanel() {
+  roomInfoPanelRoom = null;
+  const existing = document.getElementById('room-info-panel');
+  if (existing) existing.remove();
+}
+
 // --- Forge Panel ---
 
 let forgePanelRoom = null; // the forge room instance currently showing the panel, or null
@@ -436,6 +580,7 @@ function createExpeditionButton() {
       // Close other panels first
       closeRecruitPanel();
       closeForgePanel();
+      closeRoomInfoPanel();
       openExpeditionPanel();
     }
   });
@@ -1272,22 +1417,22 @@ async function init() {
         return;
       }
 
-      // If clicking a room that can recruit (and no unit selected) → open recruit panel
+      // If clicking a room (and no unit selected) → open appropriate panel
       if (clickedRoom) {
-        const recruits = getRecruitsForRoom(gameState, clickedRoom);
-        if (recruits.length > 0) {
-          selectedUnitId = null;
-          closeForgePanel();
-          openRecruitPanel(clickedRoom);
+        selectedUnitId = null;
+
+        // Forge rooms: open forge panel directly
+        if (clickedRoom.type === 'forge') {
+          closeRecruitPanel();
+          closeRoomInfoPanel();
+          openForgePanel(clickedRoom);
           return;
         }
-      }
 
-      // If clicking a forge room (and no unit selected) → open forge panel
-      if (clickedRoom && clickedRoom.type === 'forge') {
-        selectedUnitId = null;
+        // All other rooms: open info panel (which has recruit button if applicable)
         closeRecruitPanel();
-        openForgePanel(clickedRoom);
+        closeForgePanel();
+        openRoomInfoPanel(clickedRoom);
         return;
       }
 
@@ -1301,6 +1446,9 @@ async function init() {
       }
       if (forgePanelRoom) {
         closeForgePanel();
+      }
+      if (roomInfoPanelRoom) {
+        closeRoomInfoPanel();
       }
       mouse.leftDown = true;
       tryDig(mouse.tileX, mouse.tileY);
@@ -1318,6 +1466,7 @@ async function init() {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
       if (forgePanelRoom) closeForgePanel();
+      if (roomInfoPanelRoom) closeRoomInfoPanel();
       if (expeditionPanelOpen) closeExpeditionPanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }
@@ -1330,6 +1479,7 @@ async function init() {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
       if (forgePanelRoom) closeForgePanel();
+      if (roomInfoPanelRoom) closeRoomInfoPanel();
       if (expeditionPanelOpen) closeExpeditionPanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }

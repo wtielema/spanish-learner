@@ -94,19 +94,18 @@ export function renderRoomLabels(ctx, rooms, canvasW, canvasH) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    // Build label text: include level for rooms that can be upgraded
+    const level = room.level || 1;
+    const label = (def.maxLevel && def.maxLevel > 1)
+      ? `${def.name} Lv.${level}`
+      : def.name;
+
     // Drop shadow for readability
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    ctx.fillText(def.name, cx + 1, cy + 1);
+    ctx.fillText(label, cx + 1, cy + 1);
 
     ctx.fillStyle = '#fff';
-    ctx.fillText(def.name, cx, cy);
-
-    // Level indicator below name
-    if (room.level > 1 || def.maxLevel > 1) {
-      ctx.font = '10px sans-serif';
-      ctx.fillStyle = '#ccc';
-      ctx.fillText(`Lv ${room.level}`, cx, cy + 14);
-    }
+    ctx.fillText(label, cx, cy);
   }
 
   ctx.restore();

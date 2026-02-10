@@ -138,6 +138,51 @@ export function tickProduction(state) {
 }
 
 /**
+ * Upgrade a room to the next level.
+ * Checks: room exists, below maxLevel, player can afford upgrade cost.
+ * Deducts cost, increments level, returns true/false.
+ */
+export function upgradeRoom(state, roomInstanceId) {
+  const room = state.rooms.find(r => r.id === roomInstanceId);
+  if (!room) return false;
+
+  const def = roomDefs.find(d => d.id === room.type);
+  if (!def) return false;
+
+  const currentLevel = room.level || 1;
+  const maxLevel = def.maxLevel || 1;
+  if (currentLevel >= maxLevel) return false;
+
+  // upgradeCost is an array: index 0 = cost for level 2, index 1 = cost for level 3
+  if (!def.upgradeCost) return false;
+  const costIndex = currentLevel - 1;
+  if (costIndex >= def.upgradeCost.length) return false;
+
+  const cost = def.upgradeCost[costIndex];
+  if (!canAfford(state.resources, cost)) return false;
+
+  deductCost(state.resources, cost);
+  room.level = currentLevel + 1;
+  return true;
+}
+
+/**
+ * Get the production rate info for a room at its current level.
+ * Returns { resource, rate } or null if the room has no production.
+ */
+export function getRoomProductionRate(room) {
+  const def = roomDefs.find(d => d.id === room.type);
+  if (!def || !def.production) return null;
+
+  const workerCount = room.workers ? room.workers.length : 0;
+  const { resource, baseRate, perWorker } = def.production;
+  const levelMultiplier = room.level || 1;
+  const rate = (baseRate + workerCount * perWorker) * levelMultiplier;
+
+  return { resource, rate, baseRate, perWorker, levelMultiplier, workerCount };
+}
+
+/**
  * Sync nextRoomId after loading a saved game so new rooms don't collide.
  */
 export function syncRoomIds(rooms) {
