@@ -1643,3 +1643,222 @@ h2, h3, .game-over-title, .victory-title, .victory-subtitle {
 .room-info-close-btn:hover {
   background: rgba(120, 50, 50, 0.9);
 }
+
+/* ============================================================
+   Tutorial / New Game Intro
+   ============================================================ */
+
+/* --- Intro Screen --- */
+#intro-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-out;
+}
+
+#intro-screen.intro-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(15, 10, 25, 0.95) 0%, rgba(5, 2, 10, 0.99) 80%);
+  animation: introBgFade 2s ease-out;
+}
+
+@keyframes introBgFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.intro-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 520px;
+  padding: 48px 40px;
+  animation: introContentIn 1.5s ease-out;
+}
+
+@keyframes introContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.intro-title {
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-size: 48px;
+  color: #f0c840;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  margin-bottom: 28px;
+  text-shadow: 0 0 30px rgba(240, 200, 60, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+  animation: introTitleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes introTitleGlow {
+  from { text-shadow: 0 0 20px rgba(240, 200, 60, 0.3), 0 2px 4px rgba(0, 0, 0, 0.8); }
+  to { text-shadow: 0 0 40px rgba(240, 200, 60, 0.7), 0 2px 4px rgba(0, 0, 0, 0.8); }
+}
+
+.intro-flavor {
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  color: #a09080;
+  line-height: 1.8;
+  margin-bottom: 36px;
+  font-style: italic;
+  animation: introFlavorIn 2.5s ease-out;
+}
+
+@keyframes introFlavorIn {
+  0% { opacity: 0; }
+  40% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.intro-begin-btn {
+  display: inline-block;
+  padding: 14px 48px;
+  background: rgba(100, 80, 20, 0.7);
+  border: 2px solid #c0a030;
+  border-radius: 6px;
+  color: #f0e0a0;
+  cursor: pointer;
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s, transform 0.15s;
+  animation: introBeginIn 3s ease-out;
+}
+
+@keyframes introBeginIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  60% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.intro-begin-btn:hover {
+  background: rgba(140, 110, 30, 0.9);
+  border-color: #e0c050;
+  color: #fff0c0;
+  box-shadow: 0 0 20px rgba(200, 160, 40, 0.4);
+  transform: translateY(-2px);
+}
+
+/* --- Tutorial Tooltips --- */
+#tutorial-tooltip {
+  position: absolute;
+  z-index: 50;
+  background: rgba(15, 12, 30, 0.95);
+  border: 2px solid #c0a030;
+  border-radius: 8px;
+  padding: 14px 18px;
+  max-width: 340px;
+  pointer-events: auto;
+  animation: tooltipIn 0.35s ease-out;
+  box-shadow: 0 0 24px rgba(200, 160, 40, 0.3);
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tutorial-text {
+  font-size: 14px;
+  color: #e0d8c0;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+}
+
+.tutorial-got-it {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  background: rgba(100, 80, 20, 0.7);
+  border: 1px solid #a08020;
+  border-radius: 4px;
+  color: #f0e0a0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tutorial-got-it:hover {
+  background: rgba(140, 110, 30, 0.9);
+  border-color: #d0b040;
+}
+
+/* Tooltip positioning per step */
+#tutorial-tooltip.tutorial-step-1 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#tutorial-tooltip.tutorial-step-2 {
+  top: 120px;
+  left: 210px;
+}
+
+#tutorial-tooltip.tutorial-step-3 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#tutorial-tooltip.tutorial-step-4 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* --- Skip Tutorial Button --- */
+#tutorial-skip-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  background: rgba(60, 50, 50, 0.8);
+  border: 1px solid #665;
+  border-radius: 4px;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 55;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+#tutorial-skip-btn:hover {
+  background: rgba(80, 60, 60, 0.9);
+  border-color: #887;
+  color: #ddd;
+}

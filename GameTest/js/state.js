@@ -14,6 +14,7 @@ export function createInitialState() {
     raidTimer: 0,       // seconds until next raid
     meadHallHP: 100,    // Mead Hall hit points (0 = destroyed)
     tick: 0,            // total game ticks
+    tutorialStep: 0,     // 0=intro, 1-4=tooltip steps, 5=complete
     lastSaved: Date.now(),
   };
 }

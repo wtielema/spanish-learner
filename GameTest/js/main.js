@@ -32,6 +32,103 @@ let gameOver = false;
 let gameWon = false;
 let ragnarokPending = false; // set to true when Storm Asgard expedition succeeds
 
+// --- Tutorial / New Game Flow ---
+
+const TUTORIAL_MESSAGES = [
+  '', // step 0 = intro screen (handled separately)
+  'Click on rock tiles adjacent to your hall to excavate them. Each tile costs 1 wood.',
+  'Open the Build panel on the left to construct rooms in excavated areas.',
+  'Click your Mead Hall to recruit Thralls \u2014 free workers that gather resources.',
+  'Select a unit, then click a production room to assign them to work.',
+];
+
+function showIntroScreen() {
+  const screen = document.createElement('div');
+  screen.id = 'intro-screen';
+
+  screen.innerHTML = `
+    <div class="intro-bg"></div>
+    <div class="intro-content">
+      <h1 class="intro-title">Viking Keeper</h1>
+      <p class="intro-flavor">The gods have granted you a mountain. Within its depths, carve a stronghold worthy of Odin's gaze. Train warriors, gather resources, and prepare for the coming of Ragnarok.</p>
+      <button class="intro-begin-btn">Begin</button>
+    </div>
+  `;
+
+  screen.querySelector('.intro-begin-btn').addEventListener('click', () => {
+    screen.classList.add('intro-fading');
+    setTimeout(() => {
+      screen.remove();
+      advanceTutorial(1);
+    }, 500);
+  });
+
+  overlay.appendChild(screen);
+}
+
+function advanceTutorial(step) {
+  if (gameState.tutorialStep >= 5) return; // tutorial already complete
+  if (step <= gameState.tutorialStep) return; // don't go backwards
+
+  gameState.tutorialStep = step;
+
+  // Remove any existing tooltip
+  const existing = document.getElementById('tutorial-tooltip');
+  if (existing) existing.remove();
+
+  if (step >= 5) {
+    // Tutorial complete — remove skip button
+    const skipBtn = document.getElementById('tutorial-skip-btn');
+    if (skipBtn) skipBtn.remove();
+    return;
+  }
+
+  // Show skip button on first tooltip step
+  if (step === 1 && !document.getElementById('tutorial-skip-btn')) {
+    createSkipTutorialButton();
+  }
+
+  showTutorialTooltip(step);
+}
+
+function showTutorialTooltip(step) {
+  const msg = TUTORIAL_MESSAGES[step];
+  if (!msg) return;
+
+  const tooltip = document.createElement('div');
+  tooltip.id = 'tutorial-tooltip';
+  tooltip.className = `tutorial-step-${step}`;
+
+  tooltip.innerHTML = `
+    <div class="tutorial-text">${msg}</div>
+    <button class="tutorial-got-it">Got it</button>
+  `;
+
+  tooltip.querySelector('.tutorial-got-it').addEventListener('click', () => {
+    tooltip.remove();
+  });
+
+  overlay.appendChild(tooltip);
+}
+
+function createSkipTutorialButton() {
+  const btn = document.createElement('button');
+  btn.id = 'tutorial-skip-btn';
+  btn.textContent = 'Skip Tutorial';
+  btn.addEventListener('click', () => {
+    advanceTutorial(5);
+    btn.remove();
+  });
+  overlay.appendChild(btn);
+}
+
+function skipTutorialForReturningPlayer() {
+  // Returning player with no tutorialStep field — set to complete
+  if (gameState.tutorialStep === undefined || gameState.tutorialStep === null) {
+    gameState.tutorialStep = 5;
+  }
+}
+
 // Attempt to dig at the given tile coordinates; returns true if successful
 function tryDig(tx, ty) {
   if (buildMode) return false; // no digging in build mode
@@ -42,6 +139,8 @@ function tryDig(tx, ty) {
     digFlashes.push({ x: tx, y: ty, timer: 0.25 }); // 250ms flash
     // Spawn mining spark particles at tile center
     spawnMiningSparks((tx + 0.5) * TILE_SIZE, (ty + 0.5) * TILE_SIZE);
+    // Tutorial: first dig advances to step 2
+    if (gameState.tutorialStep === 1) advanceTutorial(2);
     return true;
   }
   return false;
@@ -213,6 +312,8 @@ function tryPlaceRoom(tx, ty) {
   if (room) {
     exitBuildMode();
     updateBuildPanel();
+    // Tutorial: first room placed advances to step 3
+    if (gameState.tutorialStep === 2) advanceTutorial(3);
     return true;
   }
   return false;
@@ -273,6 +374,8 @@ function openRecruitPanel(room) {
     btn.addEventListener('click', () => {
       const unit = recruitUnit(gameState, unitDef.id);
       if (unit) {
+        // Tutorial: first recruit advances to step 4
+        if (gameState.tutorialStep === 3) advanceTutorial(4);
         // Refresh the panel to update costs and cap
         openRecruitPanel(room);
       } else {
@@ -1358,6 +1461,8 @@ async function init() {
     // Sync room and unit ID counters so new entries get unique IDs
     syncRoomIds(gameState.rooms);
     syncUnitIds(gameState.units);
+    // Returning players skip the tutorial entirely
+    skipTutorialForReturningPlayer();
   }
 
   // Initialize raid timer and Mead Hall HP (handles fresh + loaded games)
@@ -1429,6 +1534,8 @@ async function init() {
           unassignUnit(gameState, selectedUnitId);
         } else {
           assignUnitToRoom(gameState, selectedUnitId, clickedRoom);
+          // Tutorial: first assignment completes tutorial
+          if (gameState.tutorialStep === 4) advanceTutorial(5);
         }
         selectedUnitId = null;
         return;
@@ -1519,6 +1626,16 @@ async function init() {
   // Show offline progress report if applicable
   if (offlineSummary) {
     showOfflineReport(offlineSummary);
+  }
+
+  // Tutorial / New Game Flow
+  if (!loaded && gameState.tutorialStep === 0) {
+    // Brand new game — show intro screen
+    showIntroScreen();
+  } else if (gameState.tutorialStep > 0 && gameState.tutorialStep < 5) {
+    // Tutorial in progress (e.g. refreshed mid-tutorial) — show current tooltip and skip button
+    showTutorialTooltip(gameState.tutorialStep);
+    createSkipTutorialButton();
   }
 
   setInterval(gameTick, 1000);
