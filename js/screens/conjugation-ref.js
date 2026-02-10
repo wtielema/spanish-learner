@@ -141,6 +141,100 @@ export async function renderConjugationRef(app, router) {
     </div>
   `;
 
+  // Ser vs Estar section
+  const serVerb = verbs.find(v => v.spanish === 'ser');
+  const estarVerb = verbs.find(v => v.spanish === 'estar');
+
+  function miniConjTable(verb, tense, label) {
+    if (!verb) return '';
+    return `
+      <div class="ref-tense-block">
+        <h4 class="ref-tense-title">${label}</h4>
+        <table class="ref-table">
+          <thead><tr><th>Person</th><th>ser</th><th>estar</th></tr></thead>
+          <tbody>
+            ${PERSONS.map(p => `
+              <tr>
+                <td class="ref-person">${p}</td>
+                <td class="ref-form">${serVerb?.conjugations[tense][p] || '—'}</td>
+                <td class="ref-form">${estarVerb?.conjugations[tense][p] || '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  const serEstarSection = (serVerb && estarVerb) ? `
+    <div class="ref-collapsible collapsed" id="ser-estar-section">
+      <div class="ref-collapse-toggle ref-section-header-toggle">
+        <h2 class="ref-section-title" style="margin-bottom: 0;">Ser vs Estar</h2>
+        <span class="ref-collapse-icon">&#9654;</span>
+      </div>
+      <div class="ref-collapse-body">
+        <div class="ref-quick-rules">
+          <div class="ref-pattern-card" style="margin-bottom: 10px;">
+            <div class="ref-pattern-header">
+              <h3 class="ref-pattern-name">When to use each</h3>
+            </div>
+            <p class="ref-pattern-desc">Both mean "to be" in English, but they are not interchangeable.</p>
+            <div class="ref-por-para-grid">
+              <div class="ref-por-para-col">
+                <div class="ref-tense-block">
+                  <h4 class="ref-tense-title" style="color: var(--accent);">Ser</h4>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Identity / definition</span><span class="ref-prep-usage-ex">Soy profesor.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Origin / nationality</span><span class="ref-prep-usage-ex">Es de España.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Permanent traits</span><span class="ref-prep-usage-ex">Ella es alta.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Time / date</span><span class="ref-prep-usage-ex">Son las tres.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Material / possession</span><span class="ref-prep-usage-ex">Es de madera.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Events (location of)</span><span class="ref-prep-usage-ex">La fiesta es aquí.</span></div>
+                </div>
+              </div>
+              <div class="ref-por-para-col">
+                <div class="ref-tense-block">
+                  <h4 class="ref-tense-title" style="color: var(--success);">Estar</h4>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Location / position</span><span class="ref-prep-usage-ex">Estoy en casa.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Emotions / feelings</span><span class="ref-prep-usage-ex">Está contento.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Temporary states</span><span class="ref-prep-usage-ex">Estoy cansado.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Progressive (-ando/-iendo)</span><span class="ref-prep-usage-ex">Estoy comiendo.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Conditions / health</span><span class="ref-prep-usage-ex">Está enfermo.</span></div>
+                  <div class="ref-prep-usage"><span class="ref-prep-usage-label">Results of actions</span><span class="ref-prep-usage-ex">La puerta está abierta.</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ref-rule-card">
+            <h4>Adjectives that change meaning</h4>
+            <p>Some adjectives mean different things with ser vs estar:</p>
+            <table class="ref-table" style="margin-top: 8px;">
+              <thead><tr><th>Adjective</th><th>+ ser</th><th>+ estar</th></tr></thead>
+              <tbody>
+                <tr><td class="ref-ending">aburrido</td><td class="ref-form">boring</td><td class="ref-form">bored</td></tr>
+                <tr><td class="ref-ending">listo</td><td class="ref-form">clever</td><td class="ref-form">ready</td></tr>
+                <tr><td class="ref-ending">malo</td><td class="ref-form">bad (character)</td><td class="ref-form">sick / unwell</td></tr>
+                <tr><td class="ref-ending">rico</td><td class="ref-form">rich (wealthy)</td><td class="ref-form">delicious</td></tr>
+                <tr><td class="ref-ending">verde</td><td class="ref-form">green (color)</td><td class="ref-form">unripe</td></tr>
+                <tr><td class="ref-ending">vivo</td><td class="ref-form">lively / sharp</td><td class="ref-form">alive</td></tr>
+                <tr><td class="ref-ending">seguro</td><td class="ref-form">safe (inherently)</td><td class="ref-form">sure / certain</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ref-pattern-card" style="margin-bottom: 10px;">
+            <div class="ref-pattern-header">
+              <h3 class="ref-pattern-name">Conjugations</h3>
+            </div>
+            <div class="ref-tenses-grid">
+              ${miniConjTable(serVerb, 'present', 'Present')}
+              ${miniConjTable(serVerb, 'preterite', 'Preterite')}
+              ${miniConjTable(serVerb, 'future', 'Future')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
   // Preposition reference section
   const porPrep = preps.find(p => p.spanish === 'por');
   const paraPrep = preps.find(p => p.spanish === 'para');
@@ -282,6 +376,7 @@ export async function renderConjugationRef(app, router) {
         </div>
         ${activeTab === 'verbs' ? `
           ${quickRules}
+          ${serEstarSection}
           <h2 class="ref-section-title" style="margin-top: 32px;">All Patterns</h2>
           <div class="ref-nav-chips">
             ${patternOrder.map(id => `<button class="ref-chip" data-target="pattern-${id}">${patterns[id]?.name || id}</button>`).join('')}
