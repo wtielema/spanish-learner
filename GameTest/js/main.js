@@ -1,9 +1,13 @@
 import { gameState, setState, createInitialState } from './state.js';
-import { camera, setupCameraControls, centerCamera } from './camera.js';
-import { TILE_SIZE } from './grid.js';
+import { camera, setupCameraControls, centerCamera, screenToWorld } from './camera.js';
+import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock } from './grid.js';
+import { renderGrid, renderHoverTile } from './renderer.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
+
+// Mouse / hover tracking
+const mouse = { x: -1, y: -1, tileX: -1, tileY: -1, onCanvas: false };
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -23,22 +27,22 @@ function render() {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Apply camera transform
-  ctx.save();
-  ctx.scale(camera.zoom, camera.zoom);
-  ctx.translate(-camera.x, -camera.y);
+  // Draw grid with camera transform (visibility-culled)
+  renderGrid(ctx, gameState.grid, canvas.width, canvas.height);
 
-  // Draw grid tiles
-  const grid = gameState.grid;
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[y].length; x++) {
-      const tile = grid[y][x];
-      ctx.fillStyle = tile.type === 'rock' ? '#2d2d44' : '#4a4a3a';
-      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    }
+  // Draw hover tile indicator when mouse is over a valid tile
+  if (mouse.onCanvas && mouse.tileX >= 0 && mouse.tileX < GRID_WIDTH
+      && mouse.tileY >= 0 && mouse.tileY < GRID_HEIGHT) {
+    const tile = gameState.grid[mouse.tileY][mouse.tileX];
+    // canDig: tile is rock and has at least one floor neighbor
+    const canDig = tile.type === 'rock' && (
+      !isRock(gameState.grid, mouse.tileX - 1, mouse.tileY) ||
+      !isRock(gameState.grid, mouse.tileX + 1, mouse.tileY) ||
+      !isRock(gameState.grid, mouse.tileX, mouse.tileY - 1) ||
+      !isRock(gameState.grid, mouse.tileX, mouse.tileY + 1)
+    );
+    renderHoverTile(ctx, mouse.tileX, mouse.tileY, canDig);
   }
-
-  ctx.restore();
 
   // HUD text (drawn outside camera transform so it stays fixed on screen)
   ctx.fillStyle = '#e0e0e0';
@@ -70,6 +74,19 @@ function init() {
   loadGame();
   setupCameraControls(canvas);
   centerCamera(30, 20, TILE_SIZE, canvas.width, canvas.height);
+
+  // Mouse tracking for hover tile
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+    const world = screenToWorld(mouse.x, mouse.y, TILE_SIZE);
+    mouse.tileX = world.tileX;
+    mouse.tileY = world.tileY;
+  });
+  canvas.addEventListener('mouseenter', () => { mouse.onCanvas = true; });
+  canvas.addEventListener('mouseleave', () => { mouse.onCanvas = false; });
+
   setInterval(gameTick, 1000);
   setInterval(saveGame, 10000); // auto-save every 10s
   requestAnimationFrame(render);
