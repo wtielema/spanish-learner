@@ -1,0 +1,64 @@
+[
+  {
+    "id": "raidVillage",
+    "name": "Raid Coastal Village",
+    "description": "A quick raid on a nearby settlement",
+    "duration": 300,
+    "difficulty": "easy",
+    "minUnits": 1,
+    "maxUnits": 5,
+    "enemies": [
+      { "type": "draugr", "count": 2 }
+    ],
+    "rewards": { "wood": 40, "iron": 20 },
+    "realmRequired": "midgard"
+  },
+  {
+    "id": "plunderMonastery",
+    "name": "Plunder Monastery",
+    "description": "Raid a wealthy monastery for gold and knowledge",
+    "duration": 900,
+    "difficulty": "medium",
+    "minUnits": 2,
+    "maxUnits": 6,
+    "enemies": [
+      { "type": "draugr", "count": 3 },
+      { "type": "troll", "count": 1 }
+    ],
+    "rewards": { "iron": 30, "runes": 15 },
+    "realmRequired": "midgard"
+  },
+  {
+    "id": "enterJotunheim",
+    "name": "Enter Jotunheim",
+    "description": "Brave the realm of giants to prove your worth",
+    "duration": 1800,
+    "difficulty": "hard",
+    "minUnits": 3,
+    "maxUnits": 8,
+    "enemies": [
+      { "type": "troll", "count": 3 },
+      { "type": "frostGiant", "count": 1 }
+    ],
+    "rewards": { "runes": 40 },
+    "realmUnlock": "jotunheim",
+    "realmRequired": "midgard"
+  },
+  {
+    "id": "stormAsgard",
+    "name": "Storm Asgard",
+    "description": "The final journey to the realm of the gods",
+    "duration": 3600,
+    "difficulty": "boss",
+    "minUnits": 5,
+    "maxUnits": 10,
+    "enemies": [
+      { "type": "draugr", "count": 5 },
+      { "type": "troll", "count": 3 },
+      { "type": "frostGiant", "count": 2 }
+    ],
+    "rewards": { "runes": 100 },
+    "triggersRagnarok": true,
+    "realmRequired": "jotunheim"
+  }
+]

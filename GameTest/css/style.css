@@ -536,3 +536,531 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   background: rgba(80, 80, 110, 0.9);
   border-color: #888;
 }
+
+/* Expedition button */
+#expedition-btn {
+  position: absolute;
+  top: 48px;
+  right: 10px;
+  padding: 8px 16px;
+  background: rgba(60, 40, 100, 0.85);
+  border: 1px solid #7060b0;
+  border-radius: 4px;
+  color: #c0b0f0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, border-color 0.15s;
+  z-index: 15;
+}
+
+#expedition-btn:hover {
+  background: rgba(80, 60, 130, 0.9);
+  border-color: #9080d0;
+}
+
+/* Expedition panel */
+#expedition-panel {
+  position: absolute;
+  right: 0;
+  top: 80px;
+  width: 280px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: rgba(20, 15, 35, 0.92);
+  border-left: 1px solid #5040a0;
+  border-top: 1px solid #5040a0;
+  border-bottom: 1px solid #5040a0;
+  border-radius: 8px 0 0 8px;
+  padding: 10px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+#expedition-panel h3 {
+  font-size: 14px;
+  color: #c0a0f0;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.exp-section {
+  margin-bottom: 10px;
+}
+
+.exp-section-title {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+
+.exp-card {
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  background: rgba(50, 40, 80, 0.7);
+  border: 1px solid #555;
+  border-radius: 4px;
+  transition: border-color 0.15s;
+}
+
+.exp-card:hover {
+  border-color: #8070c0;
+}
+
+.exp-card.exp-locked {
+  opacity: 0.4;
+  border-color: #444;
+}
+
+.exp-card.exp-locked:hover {
+  border-color: #555;
+}
+
+.exp-card.exp-active {
+  border-color: #7060b0;
+  background: rgba(60, 50, 100, 0.7);
+}
+
+.exp-card.exp-in-progress {
+  border-color: #5050a0;
+}
+
+.exp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.exp-card-name {
+  font-weight: bold;
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.exp-card-difficulty {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.exp-diff-easy {
+  background: rgba(60, 140, 60, 0.7);
+  color: #a0f0a0;
+}
+
+.exp-diff-medium {
+  background: rgba(160, 120, 30, 0.7);
+  color: #f0d070;
+}
+
+.exp-diff-hard {
+  background: rgba(180, 60, 30, 0.7);
+  color: #f09070;
+}
+
+.exp-diff-boss {
+  background: rgba(140, 30, 140, 0.7);
+  color: #e080e0;
+}
+
+.exp-card-desc {
+  font-size: 11px;
+  color: #bbb;
+  margin-bottom: 4px;
+}
+
+.exp-card-info {
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 3px;
+  display: flex;
+  gap: 12px;
+}
+
+.exp-card-rewards {
+  font-size: 11px;
+  color: #c0a0f0;
+  margin-bottom: 6px;
+}
+
+.exp-card-timer {
+  font-size: 12px;
+  color: #e0c060;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.exp-card-units {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.exp-card-locked-msg {
+  font-size: 11px;
+  color: #888;
+  font-style: italic;
+}
+
+.exp-in-progress-label {
+  font-size: 11px;
+  color: #7060b0;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.exp-send-btn {
+  display: block;
+  width: 100%;
+  padding: 5px 8px;
+  margin-top: 6px;
+  background: rgba(80, 60, 140, 0.8);
+  border: 1px solid #7060b0;
+  border-radius: 3px;
+  color: #e0d0ff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.exp-send-btn:hover {
+  background: rgba(100, 80, 170, 0.9);
+  border-color: #9080d0;
+}
+
+.exp-close-btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin-top: 6px;
+  background: rgba(80, 40, 40, 0.8);
+  border: 1px solid #664444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.exp-close-btn:hover {
+  background: rgba(120, 50, 50, 0.9);
+}
+
+/* Expedition unit selection panel */
+#exp-unit-select {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: rgba(20, 15, 35, 0.95);
+  border: 2px solid #7060b0;
+  border-radius: 8px;
+  padding: 14px;
+  pointer-events: auto;
+  z-index: 35;
+  animation: expSelectSlideIn 0.2s ease-out;
+  box-shadow: 0 0 30px rgba(100, 60, 180, 0.4);
+}
+
+@keyframes expSelectSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+#exp-unit-select h3 {
+  font-size: 14px;
+  color: #c0a0f0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.exp-select-info {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #333;
+}
+
+.exp-unit-list {
+  margin-bottom: 10px;
+}
+
+.exp-unit-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(50, 40, 80, 0.7);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.exp-unit-btn:hover {
+  background: rgba(70, 60, 110, 0.9);
+  border-color: #8070c0;
+}
+
+.exp-unit-btn.selected {
+  background: rgba(80, 60, 140, 0.8);
+  border-color: #a090e0;
+  box-shadow: 0 0 8px rgba(120, 80, 200, 0.3);
+}
+
+.exp-unit-name {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.exp-unit-stats {
+  font-size: 11px;
+  color: #aaa;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.exp-unit-role {
+  font-size: 10px;
+  color: #888;
+  display: block;
+  text-transform: capitalize;
+}
+
+.exp-no-units {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.exp-confirm-btn {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 6px;
+  background: rgba(80, 60, 140, 0.8);
+  border: 1px solid #7060b0;
+  border-radius: 4px;
+  color: #e0d0ff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.exp-confirm-btn:hover:not(:disabled) {
+  background: rgba(100, 80, 170, 0.9);
+  border-color: #9080d0;
+}
+
+.exp-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.exp-cancel-btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  background: rgba(80, 40, 40, 0.8);
+  border: 1px solid #664444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  transition: background 0.15s;
+}
+
+.exp-cancel-btn:hover {
+  background: rgba(120, 50, 50, 0.9);
+}
+
+/* Expedition report panel */
+#expedition-report {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px;
+  background: rgba(20, 15, 35, 0.95);
+  border: 2px solid #7060b0;
+  border-radius: 8px;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 30;
+  animation: expReportSlideIn 0.3s ease-out;
+  box-shadow: 0 0 30px rgba(100, 60, 180, 0.4);
+}
+
+@keyframes expReportSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.exp-report-header {
+  padding: 10px 14px;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+}
+
+.exp-report-header h3 {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.exp-report-name {
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 4px;
+}
+
+.exp-report-header.exp-report-victory {
+  background: rgba(40, 100, 40, 0.8);
+  border-bottom: 2px solid #4a8a4a;
+}
+
+.exp-report-header.exp-report-victory h3 {
+  color: #7ef07e;
+}
+
+.exp-report-header.exp-report-defeat {
+  background: rgba(120, 30, 30, 0.8);
+  border-bottom: 2px solid #aa3030;
+}
+
+.exp-report-header.exp-report-defeat h3 {
+  color: #ff6060;
+}
+
+.exp-report-header.exp-report-draw {
+  background: rgba(100, 80, 20, 0.8);
+  border-bottom: 2px solid #aa8830;
+}
+
+.exp-report-header.exp-report-draw h3 {
+  color: #e0c060;
+}
+
+.exp-report-body {
+  padding: 12px 14px;
+}
+
+.exp-report-body > div {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.exp-report-body strong {
+  color: #e0e0e0;
+}
+
+.exp-report-enemies {
+  color: #e08080 !important;
+}
+
+.exp-report-sent {
+  color: #80b0e0 !important;
+}
+
+.exp-report-casualties {
+  color: #e06060 !important;
+  font-style: italic;
+}
+
+.exp-report-no-casualties {
+  color: #80e080 !important;
+}
+
+.exp-report-rewards {
+  color: #c0a0f0 !important;
+  font-weight: bold;
+}
+
+.exp-report-revived {
+  color: #c0a0f0 !important;
+}
+
+.exp-report-realm {
+  color: #f0d070 !important;
+  font-weight: bold;
+  font-size: 14px !important;
+}
+
+.exp-report-ragnarok {
+  color: #ff6060 !important;
+  font-weight: bold;
+  font-size: 16px !important;
+  text-align: center;
+  padding: 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: ragnarokPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes ragnarokPulse {
+  from { color: #ff6060; text-shadow: 0 0 10px rgba(255, 60, 60, 0.5); }
+  to { color: #ff3030; text-shadow: 0 0 20px rgba(255, 30, 30, 0.8); }
+}
+
+.exp-report-dismiss-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 4px 14px 12px;
+  padding: 8px;
+  background: rgba(60, 60, 80, 0.8);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.exp-report-dismiss-btn:hover {
+  background: rgba(80, 80, 110, 0.9);
+  border-color: #888;
+}

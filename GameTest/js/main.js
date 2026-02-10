@@ -3,10 +3,11 @@ import { camera, setupCameraControls, centerCamera, screenToWorld } from './came
 import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock, digTile } from './grid.js';
 import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview, renderUnits } from './renderer.js';
 import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds, tickProduction } from './rooms.js';
-import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
+import { loadUnitDefs, getUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
 import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport } from './raids.js';
+import { loadExpeditionDefs, getExpeditionDefs, getAvailableExpeditions, getLockedExpeditions, startExpedition, tickExpeditions, getExpeditionTimeRemaining, formatDuration } from './expeditions.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -53,6 +54,17 @@ function gameTick() {
   const raidResult = tickRaidTimer(gameState);
   if (raidResult) {
     showRaidReport(raidResult);
+  }
+
+  // Expedition system: tick active expeditions; show results
+  const expResults = tickExpeditions(gameState);
+  for (const expResult of expResults) {
+    showExpeditionReport(expResult);
+  }
+
+  // Refresh expedition panel if open (to update countdowns)
+  if (expeditionPanelOpen) {
+    refreshExpeditionPanel();
   }
 }
 
@@ -380,6 +392,372 @@ function closeRaidReport() {
   }
 }
 
+// --- Expedition Button ---
+
+function createExpeditionButton() {
+  const btn = document.createElement('button');
+  btn.id = 'expedition-btn';
+  btn.textContent = 'Expeditions';
+  btn.addEventListener('click', () => {
+    if (expeditionPanelOpen) {
+      closeExpeditionPanel();
+    } else {
+      // Close other panels first
+      closeRecruitPanel();
+      closeForgePanel();
+      openExpeditionPanel();
+    }
+  });
+  overlay.appendChild(btn);
+}
+
+// --- Expedition Panel ---
+
+let expeditionPanelOpen = false;
+let selectedExpeditionUnits = []; // unit IDs selected for an expedition
+
+function openExpeditionPanel() {
+  closeExpeditionPanel();
+  expeditionPanelOpen = true;
+  refreshExpeditionPanel();
+}
+
+function refreshExpeditionPanel() {
+  // Remove existing panel content (but keep the panel open)
+  const existing = document.getElementById('expedition-panel');
+  if (existing) existing.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'expedition-panel';
+
+  panel.innerHTML = `<h3>Expeditions</h3>`;
+
+  const unitDefs = getUnitDefs();
+
+  // --- Active Expeditions ---
+  const activeExps = gameState.expeditions || [];
+  if (activeExps.length > 0) {
+    const activeSection = document.createElement('div');
+    activeSection.className = 'exp-section';
+    activeSection.innerHTML = '<div class="exp-section-title">Active</div>';
+
+    for (const exp of activeExps) {
+      const def = getExpeditionDefs().find(d => d.id === exp.expeditionId);
+      if (!def) continue;
+
+      const remaining = getExpeditionTimeRemaining(exp);
+      const card = document.createElement('div');
+      card.className = 'exp-card exp-active';
+
+      const unitNames = exp.unitIds.map(uid => {
+        const unit = gameState.units.find(u => u.id === uid);
+        if (!unit) return '?';
+        const uDef = unitDefs.find(d => d.id === unit.type);
+        return uDef ? uDef.name : unit.type;
+      }).join(', ');
+
+      card.innerHTML = `
+        <div class="exp-card-name">${def.name}</div>
+        <div class="exp-card-timer">Time left: ${formatDuration(remaining)}</div>
+        <div class="exp-card-units">Units: ${unitNames}</div>
+      `;
+      activeSection.appendChild(card);
+    }
+
+    panel.appendChild(activeSection);
+  }
+
+  // --- Available Expeditions ---
+  const available = getAvailableExpeditions(gameState);
+  if (available.length > 0) {
+    const availSection = document.createElement('div');
+    availSection.className = 'exp-section';
+    availSection.innerHTML = '<div class="exp-section-title">Available</div>';
+
+    for (const def of available) {
+      // Check if this expedition is already active
+      const alreadyActive = activeExps.some(e => e.expeditionId === def.id);
+
+      const card = document.createElement('div');
+      card.className = 'exp-card';
+      if (alreadyActive) card.classList.add('exp-in-progress');
+
+      const rewardsStr = Object.entries(def.rewards)
+        .map(([res, amt]) => `${res}: ${amt}`)
+        .join(', ');
+
+      const difficultyClass = `exp-diff-${def.difficulty}`;
+
+      card.innerHTML = `
+        <div class="exp-card-header">
+          <span class="exp-card-name">${def.name}</span>
+          <span class="exp-card-difficulty ${difficultyClass}">${def.difficulty}</span>
+        </div>
+        <div class="exp-card-desc">${def.description}</div>
+        <div class="exp-card-info">
+          <span>Duration: ${formatDuration(def.duration)}</span>
+          <span>Units: ${def.minUnits}-${def.maxUnits}</span>
+        </div>
+        <div class="exp-card-rewards">Rewards: ${rewardsStr}</div>
+      `;
+
+      if (!alreadyActive) {
+        const sendBtn = document.createElement('button');
+        sendBtn.className = 'exp-send-btn';
+        sendBtn.textContent = 'Select Units';
+        sendBtn.addEventListener('click', () => {
+          openExpeditionUnitSelect(def);
+        });
+        card.appendChild(sendBtn);
+      } else {
+        const inProgLabel = document.createElement('div');
+        inProgLabel.className = 'exp-in-progress-label';
+        inProgLabel.textContent = 'In Progress';
+        card.appendChild(inProgLabel);
+      }
+
+      availSection.appendChild(card);
+    }
+
+    panel.appendChild(availSection);
+  }
+
+  // --- Locked Expeditions ---
+  const locked = getLockedExpeditions(gameState);
+  if (locked.length > 0) {
+    const lockedSection = document.createElement('div');
+    lockedSection.className = 'exp-section';
+    lockedSection.innerHTML = '<div class="exp-section-title">Locked</div>';
+
+    for (const def of locked) {
+      const card = document.createElement('div');
+      card.className = 'exp-card exp-locked';
+
+      card.innerHTML = `
+        <div class="exp-card-header">
+          <span class="exp-card-name">${def.name}</span>
+          <span class="exp-card-difficulty exp-diff-${def.difficulty}">${def.difficulty}</span>
+        </div>
+        <div class="exp-card-desc">${def.description}</div>
+        <div class="exp-card-locked-msg">Requires: ${def.realmRequired}</div>
+      `;
+
+      lockedSection.appendChild(card);
+    }
+
+    panel.appendChild(lockedSection);
+  }
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'exp-close-btn';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => closeExpeditionPanel());
+  panel.appendChild(closeBtn);
+
+  overlay.appendChild(panel);
+}
+
+function openExpeditionUnitSelect(expeditionDef) {
+  // Remove existing unit select panel
+  const existing = document.getElementById('exp-unit-select');
+  if (existing) existing.remove();
+
+  selectedExpeditionUnits = [];
+
+  const unitDefs = getUnitDefs();
+
+  const panel = document.createElement('div');
+  panel.id = 'exp-unit-select';
+
+  panel.innerHTML = `
+    <h3>Select Units for ${expeditionDef.name}</h3>
+    <div class="exp-select-info">Select ${expeditionDef.minUnits}-${expeditionDef.maxUnits} units</div>
+  `;
+
+  // Get idle units that can go on expeditions (fighters + seers)
+  const eligibleUnits = (gameState.units || []).filter(u => {
+    if (u.assignment === 'expedition' || u.assignment === 'working') return false;
+    const uDef = unitDefs.find(d => d.id === u.type);
+    if (!uDef) return false;
+    return uDef.canFight || uDef.id === 'seer';
+  });
+
+  if (eligibleUnits.length === 0) {
+    const noUnits = document.createElement('div');
+    noUnits.className = 'exp-no-units';
+    noUnits.textContent = 'No available units. Recruit fighters or unassign working units.';
+    panel.appendChild(noUnits);
+  } else {
+    const unitList = document.createElement('div');
+    unitList.className = 'exp-unit-list';
+
+    for (const unit of eligibleUnits) {
+      const uDef = unitDefs.find(d => d.id === unit.type);
+      const unitBtn = document.createElement('button');
+      unitBtn.className = 'exp-unit-btn';
+      unitBtn.dataset.unitId = unit.id;
+
+      const healthPct = Math.round((unit.health / unit.maxHealth) * 100);
+      unitBtn.innerHTML = `
+        <span class="exp-unit-name">${uDef.name} #${unit.id}</span>
+        <span class="exp-unit-stats">HP: ${unit.health}/${unit.maxHealth} (${healthPct}%)</span>
+        <span class="exp-unit-role">${uDef.canFight ? 'Fighter' : 'Seer (+30% rewards)'}</span>
+      `;
+
+      unitBtn.addEventListener('click', () => {
+        const idx = selectedExpeditionUnits.indexOf(unit.id);
+        if (idx === -1) {
+          if (selectedExpeditionUnits.length < expeditionDef.maxUnits) {
+            selectedExpeditionUnits.push(unit.id);
+            unitBtn.classList.add('selected');
+          }
+        } else {
+          selectedExpeditionUnits.splice(idx, 1);
+          unitBtn.classList.remove('selected');
+        }
+        // Update send button state
+        updateSendButtonState(expeditionDef);
+      });
+
+      unitList.appendChild(unitBtn);
+    }
+
+    panel.appendChild(unitList);
+  }
+
+  // Send button
+  const sendBtn = document.createElement('button');
+  sendBtn.className = 'exp-confirm-btn';
+  sendBtn.id = 'exp-confirm-send';
+  sendBtn.textContent = 'Send Expedition';
+  sendBtn.disabled = true;
+
+  sendBtn.addEventListener('click', () => {
+    const result = startExpedition(gameState, expeditionDef.id, selectedExpeditionUnits);
+    if (result.success) {
+      closeExpeditionUnitSelect();
+      refreshExpeditionPanel();
+    } else {
+      showWarning(result.error || 'Cannot start expedition');
+    }
+  });
+  panel.appendChild(sendBtn);
+
+  // Cancel button
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'exp-cancel-btn';
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.addEventListener('click', () => closeExpeditionUnitSelect());
+  panel.appendChild(cancelBtn);
+
+  overlay.appendChild(panel);
+}
+
+function updateSendButtonState(expeditionDef) {
+  const sendBtn = document.getElementById('exp-confirm-send');
+  if (!sendBtn) return;
+
+  const count = selectedExpeditionUnits.length;
+  sendBtn.disabled = count < expeditionDef.minUnits || count > expeditionDef.maxUnits;
+  sendBtn.textContent = count > 0
+    ? `Send Expedition (${count} unit${count !== 1 ? 's' : ''})`
+    : 'Send Expedition';
+}
+
+function closeExpeditionUnitSelect() {
+  selectedExpeditionUnits = [];
+  const existing = document.getElementById('exp-unit-select');
+  if (existing) existing.remove();
+}
+
+function closeExpeditionPanel() {
+  expeditionPanelOpen = false;
+  selectedExpeditionUnits = [];
+  const panel = document.getElementById('expedition-panel');
+  if (panel) panel.remove();
+  const unitSelect = document.getElementById('exp-unit-select');
+  if (unitSelect) unitSelect.remove();
+}
+
+// --- Expedition Report Panel ---
+
+function showExpeditionReport(expResult) {
+  // Remove any existing expedition report
+  closeExpeditionReport();
+
+  const panel = document.createElement('div');
+  panel.id = 'expedition-report';
+
+  const isVictory = expResult.isVictory;
+  const isDraw = expResult.winner === 'draw';
+  const headerClass = isVictory ? 'exp-report-victory' : isDraw ? 'exp-report-draw' : 'exp-report-defeat';
+  const headerText = isVictory ? 'Expedition Victorious!' : isDraw ? 'Expedition Stalemate' : 'Expedition Failed!';
+
+  let rewardsHtml = '';
+  if (expResult.rewards) {
+    const rewardsStr = Object.entries(expResult.rewards)
+      .map(([res, amt]) => `${res}: +${amt}`)
+      .join(', ');
+    rewardsHtml = `<div class="exp-report-rewards"><strong>Rewards:</strong> ${rewardsStr}${expResult.hasSeerBonus ? ' (Seer +30%)' : ''}</div>`;
+  }
+
+  let realmHtml = '';
+  if (expResult.realmUnlocked) {
+    realmHtml = `<div class="exp-report-realm"><strong>Realm Unlocked:</strong> ${expResult.realmUnlocked}!</div>`;
+  }
+
+  let ragnarokHtml = '';
+  if (expResult.ragnarokTriggered) {
+    ragnarokHtml = `<div class="exp-report-ragnarok"><strong>RAGNAROK HAS BEGUN!</strong></div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="exp-report-header ${headerClass}">
+      <h3>${headerText}</h3>
+      <div class="exp-report-name">${expResult.expeditionName}</div>
+    </div>
+    <div class="exp-report-body">
+      <div class="exp-report-enemies">
+        <strong>Enemies:</strong> ${expResult.enemyComposition}
+      </div>
+      <div class="exp-report-sent">
+        <strong>Units sent:</strong> ${expResult.unitsSent}
+      </div>
+      ${expResult.attackerLosses.length > 0
+        ? `<div class="exp-report-casualties"><strong>Fallen:</strong> ${expResult.attackerLosses.map(l => l.name).join(', ')}</div>`
+        : '<div class="exp-report-no-casualties">No casualties!</div>'
+      }
+      ${expResult.revivedUnit
+        ? `<div class="exp-report-revived"><strong>Valkyrie revived:</strong> ${expResult.revivedUnit}</div>`
+        : ''
+      }
+      ${rewardsHtml}
+      ${realmHtml}
+      ${ragnarokHtml}
+    </div>
+  `;
+
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'exp-report-dismiss-btn';
+  dismissBtn.textContent = 'Dismiss';
+  dismissBtn.addEventListener('click', () => closeExpeditionReport());
+  panel.appendChild(dismissBtn);
+
+  overlay.appendChild(panel);
+
+  // Auto-dismiss after 15 seconds
+  panel._dismissTimer = setTimeout(() => closeExpeditionReport(), 15000);
+}
+
+function closeExpeditionReport() {
+  const existing = document.getElementById('expedition-report');
+  if (existing) {
+    if (existing._dismissTimer) clearTimeout(existing._dismissTimer);
+    existing.remove();
+  }
+}
+
 // --- Pre-place starting Mead Hall ---
 
 function placeStartingMeadHall() {
@@ -494,6 +872,7 @@ async function init() {
   await loadUnitDefs();
   await loadUpgradeDefs();
   await loadEnemyDefs();
+  await loadExpeditionDefs();
 
   const loaded = loadGame();
   if (loaded) {
@@ -518,6 +897,9 @@ async function init() {
 
   // Create resource HUD
   createHUD(overlay);
+
+  // Create expedition button
+  createExpeditionButton();
 
   // Mouse tracking for hover tile
   canvas.addEventListener('mousemove', (e) => {
@@ -624,6 +1006,7 @@ async function init() {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
       if (forgePanelRoom) closeForgePanel();
+      if (expeditionPanelOpen) closeExpeditionPanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }
   });
@@ -634,6 +1017,7 @@ async function init() {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
       if (forgePanelRoom) closeForgePanel();
+      if (expeditionPanelOpen) closeExpeditionPanel();
       if (selectedUnitId != null) selectedUnitId = null;
     }
   });
