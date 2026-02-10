@@ -7,14 +7,12 @@ export async function renderDashboard(app, router) {
   const allProgress = await db.getAllProgress();
   const today = new Date().toISOString().split('T')[0];
 
-  // Vocabulary stats — count unique nouns (n-prefix cards only, deduplicated by noun ID)
-  const nounCards = allProgress.filter(p => p.cardId && p.cardId.startsWith('n'));
+  // Vocabulary stats — use only -es cards to match progress screen counting
+  const nounEsCards = allProgress.filter(p => p.cardId && p.cardId.startsWith('n') && p.cardId.endsWith('-es'));
   const totalNouns = 1000;
-  const learnedNounIds = new Set(nounCards.filter(p => p.repetitions > 0).map(p => p.cardId.split('-')[0]));
-  const nounLearned = learnedNounIds.size;
-  const masteredNounIds = new Set(nounCards.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).map(p => p.cardId.split('-')[0]));
-  const nounMastered = masteredNounIds.size;
-  const nounDue = nounCards.filter(p => p.nextReview <= today).length;
+  const nounLearned = nounEsCards.filter(p => p.repetitions > 0).length;
+  const nounMastered = nounEsCards.filter(p => p.easeFactor >= 2.3 && p.repetitions >= 3).length;
+  const nounDue = nounEsCards.filter(p => p.nextReview <= today).length;
 
   // Preposition stats (sub-part of vocabulary, p-prefix cards)
   const prepProgress = allProgress.filter(p => p.cardId && p.cardId.startsWith('p'));
