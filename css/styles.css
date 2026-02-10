@@ -109,11 +109,46 @@ button {
   margin-bottom: 24px;
 }
 
+.verb-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .verb-section-title {
   font-size: 18px;
   font-weight: 700;
-  margin-bottom: 16px;
   color: var(--accent);
+  margin: 0;
+}
+
+.verb-section-summary {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.verb-toggle-icon {
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.verb-section-details {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  opacity: 1;
+}
+
+.verb-section-details.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
 }
 
 .tier-progress-list {
@@ -1159,4 +1194,305 @@ button {
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* Speed Round — Dashboard Button */
+.speed-round-section {
+  margin-bottom: 24px;
+}
+
+.btn-speed-launch {
+  width: 100%;
+  background: linear-gradient(135deg, #e94560, #c03050);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px 24px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-height: 48px;
+}
+
+/* Speed Round — Screen */
+.speed-round {
+  padding-bottom: 32px;
+}
+
+.speed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.speed-title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.speed-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.speed-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-speed-mode {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  min-height: 48px;
+}
+
+.btn-speed-mode:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.speed-mode-icon {
+  font-size: 28px;
+}
+
+.speed-mode-label {
+  font-weight: 700;
+  font-size: 18px;
+  flex: 1;
+  text-align: left;
+}
+
+.speed-mode-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.speed-hint {
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* Speed Round — Playing */
+.speed-play-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.speed-progress {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.speed-timer {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-timer.warning {
+  color: var(--warning);
+}
+
+.speed-timer.danger {
+  color: var(--danger);
+  animation: pulse-timer 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-timer {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}
+
+.speed-skip-btn {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 8px 16px;
+  min-height: 40px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.speed-prompt-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.speed-prompt-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.speed-prompt-text {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.speed-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.speed-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--bg-card);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 20px;
+  font-family: inherit;
+  text-align: center;
+}
+
+.speed-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Speed Round — Results */
+.speed-score-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.speed-score-item {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.speed-score-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.speed-accent-warn {
+  color: var(--warning);
+}
+
+.speed-score-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.speed-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.speed-result-row {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.speed-result-icon {
+  font-size: 18px;
+  font-weight: 700;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.sr-correct { color: var(--success); }
+.sr-accent { color: var(--warning); }
+.sr-wrong { color: var(--danger); }
+.sr-skipped, .sr-timed-out { color: var(--text-secondary); }
+
+.speed-result-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.speed-result-prompt {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.speed-result-user {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sr-no-answer {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.speed-result-correct {
+  font-size: 13px;
+  color: var(--success);
+}
+
+.sr-accent-char {
+  color: var(--warning);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sr-article-fix {
+  font-weight: 700;
+  color: var(--warning);
+}
+
+.sr-gender-hint {
+  font-size: 12px;
+  color: var(--warning);
+  font-style: italic;
+}
+
+.speed-actions {
+  margin-top: 8px;
 }

@@ -83,29 +83,39 @@ export async function renderDashboard(app, router) {
       </div>
 
       <div class="verb-training-section">
-        <h2 class="verb-section-title">Verb Training</h2>
-        <div class="tier-progress-list">
-          ${[1, 2, 3].map(tier => {
-            const data = tierData[tier];
-            const unlocked = tier === 1 || (tier === 2 && tier2Unlocked) || (tier === 3 && tier3Unlocked);
-            return `
-              <div class="tier-progress-item ${unlocked ? '' : 'tier-locked'}">
-                <div class="tier-header">
-                  <span class="tier-name">${unlocked ? '' : '<span class="tier-lock-icon">&#128274;</span> '}${tierNames[tier]}</span>
-                  <span class="tier-percent">${data.percent}%</span>
+        <div class="verb-section-header" id="verb-toggle">
+          <h2 class="verb-section-title">Verb Training</h2>
+          <span class="verb-section-summary">${allVerbProgress.length} practiced${verbsDue > 0 ? ` &middot; ${verbsDue} due` : ''}</span>
+          <span class="verb-toggle-icon" id="verb-toggle-icon">&#9654;</span>
+        </div>
+        <div class="verb-section-details collapsed" id="verb-details">
+          <div class="tier-progress-list">
+            ${[1, 2, 3].map(tier => {
+              const data = tierData[tier];
+              const unlocked = tier === 1 || (tier === 2 && tier2Unlocked) || (tier === 3 && tier3Unlocked);
+              return `
+                <div class="tier-progress-item ${unlocked ? '' : 'tier-locked'}">
+                  <div class="tier-header">
+                    <span class="tier-name">${unlocked ? '' : '<span class="tier-lock-icon">&#128274;</span> '}${tierNames[tier]}</span>
+                    <span class="tier-percent">${data.percent}%</span>
+                  </div>
+                  <div class="tier-bar">
+                    <div class="tier-bar-fill" style="width: ${data.percent}%"></div>
+                  </div>
+                  <span class="tier-detail">${data.practiced} practiced, ${data.mastered} mastered / ${data.total} verbs</span>
                 </div>
-                <div class="tier-bar">
-                  <div class="tier-bar-fill" style="width: ${data.percent}%"></div>
-                </div>
-                <span class="tier-detail">${data.practiced} practiced, ${data.mastered} mastered / ${data.total} verbs</span>
-              </div>
-            `;
-          }).join('')}
+              `;
+            }).join('')}
+          </div>
         </div>
         <div class="verb-training-actions">
           <button class="btn-primary" id="btn-verb-learn">Train Verbs</button>
           <button class="btn-secondary" id="btn-verb-review" style="margin-top: 8px;">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
         </div>
+      </div>
+
+      <div class="speed-round-section">
+        <button class="btn-speed-launch" id="btn-speed-round">&#9889; Speed Round</button>
       </div>
 
       <div class="dashboard-actions">
@@ -121,6 +131,17 @@ export async function renderDashboard(app, router) {
       </nav>
     </div>
   `;
+
+  document.getElementById('verb-toggle').addEventListener('click', () => {
+    const details = document.getElementById('verb-details');
+    const icon = document.getElementById('verb-toggle-icon');
+    const collapsed = details.classList.toggle('collapsed');
+    icon.innerHTML = collapsed ? '&#9654;' : '&#9660;';
+  });
+
+  document.getElementById('btn-speed-round').addEventListener('click', () => {
+    router.navigate('/speed-round');
+  });
 
   document.getElementById('btn-review').addEventListener('click', () => {
     router.navigate('/practice?mode=review');
