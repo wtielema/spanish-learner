@@ -1,0 +1,80 @@
+[
+  {
+    "id": "meadHall",
+    "name": "Mead Hall",
+    "size": [5, 5],
+    "cost": { "wood": 30, "iron": 10 },
+    "maxLevel": 3,
+    "unitCapBonus": [6, 8, 10],
+    "upgradeCost": [
+      { "wood": 50, "iron": 20 },
+      { "wood": 80, "iron": 40, "runes": 10 }
+    ],
+    "color": "meadHall"
+  },
+  {
+    "id": "mine",
+    "name": "Mine",
+    "size": [3, 3],
+    "cost": { "wood": 20 },
+    "maxLevel": 3,
+    "production": { "resource": "iron", "baseRate": 1, "perWorker": 0.5 },
+    "upgradeCost": [
+      { "wood": 30, "iron": 15 },
+      { "wood": 50, "iron": 30 }
+    ],
+    "color": "mine"
+  },
+  {
+    "id": "lumberYard",
+    "name": "Lumber Yard",
+    "size": [3, 3],
+    "cost": { "wood": 15 },
+    "maxLevel": 3,
+    "production": { "resource": "wood", "baseRate": 1, "perWorker": 0.5 },
+    "upgradeCost": [
+      { "wood": 25, "iron": 10 },
+      { "wood": 40, "iron": 25 }
+    ],
+    "color": "lumberYard"
+  },
+  {
+    "id": "barracks",
+    "name": "Barracks",
+    "size": [4, 3],
+    "cost": { "wood": 25, "iron": 15 },
+    "maxLevel": 3,
+    "unlocksUnits": [["karl"], ["karl", "berserker"], ["karl", "berserker"]],
+    "upgradeCost": [
+      { "wood": 40, "iron": 30 },
+      { "wood": 60, "iron": 50, "runes": 10 }
+    ],
+    "color": "barracks"
+  },
+  {
+    "id": "shrine",
+    "name": "Shrine of Odin",
+    "size": [3, 3],
+    "cost": { "wood": 20, "iron": 10, "runes": 5 },
+    "maxLevel": 3,
+    "production": { "resource": "runes", "baseRate": 0.2, "perWorker": 0.3 },
+    "unlocksUnits": [["seer"], ["seer", "valkyrie"], ["seer", "valkyrie"]],
+    "upgradeCost": [
+      { "wood": 30, "iron": 20, "runes": 15 },
+      { "wood": 50, "iron": 30, "runes": 30 }
+    ],
+    "color": "shrine"
+  },
+  {
+    "id": "forge",
+    "name": "Forge",
+    "size": [3, 3],
+    "cost": { "wood": 20, "iron": 20 },
+    "maxLevel": 3,
+    "upgradeCost": [
+      { "wood": 40, "iron": 40 },
+      { "wood": 60, "iron": 60, "runes": 15 }
+    ],
+    "color": "forge"
+  }
+]
