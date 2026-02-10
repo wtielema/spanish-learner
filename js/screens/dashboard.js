@@ -18,12 +18,11 @@ export async function renderDashboard(app, router) {
   }).length;
   const nounDue = nounEsCards.filter(p => p.nextReview <= today).length;
 
-  // Preposition stats (sub-part of vocabulary, p-prefix cards)
-  const prepProgress = allProgress.filter(p => p.cardId && p.cardId.startsWith('p'));
-  const prepLearnedIds = new Set(prepProgress.filter(p => p.repetitions > 0).map(p => p.cardId.split('-')[0]));
-  const prepLearned = prepLearnedIds.size;
+  // Preposition stats — only count -meaning cards to match progress screen
+  const prepMeaningCards = allProgress.filter(p => p.cardId && p.cardId.startsWith('p') && p.cardId.endsWith('-meaning'));
+  const prepLearned = prepMeaningCards.filter(p => p.repetitions > 0).length;
   const totalPreps = 23;
-  const prepDue = prepProgress.filter(p => p.nextReview <= today).length;
+  const prepDue = prepMeaningCards.filter(p => p.nextReview <= today).length;
 
   // Combined vocabulary numbers for header
   const totalVocabLearned = nounLearned + prepLearned;
