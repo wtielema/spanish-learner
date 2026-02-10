@@ -12,6 +12,7 @@ export function createInitialState() {
     forge: {},          // unlocked upgrades
     realm: 'midgard',   // current realm progress
     raidTimer: 0,       // seconds until next raid
+    meadHallHP: 100,    // Mead Hall hit points (0 = destroyed)
     tick: 0,            // total game ticks
     lastSaved: Date.now(),
   };

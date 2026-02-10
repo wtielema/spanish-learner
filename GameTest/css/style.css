@@ -401,3 +401,138 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
 .forge-close-btn:hover {
   background: rgba(120, 50, 50, 0.9);
 }
+
+/* Raid report panel */
+#raid-report {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  background: rgba(20, 15, 30, 0.95);
+  border: 2px solid #883030;
+  border-radius: 8px;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 30;
+  animation: raidSlideIn 0.3s ease-out;
+  box-shadow: 0 0 30px rgba(180, 40, 40, 0.4);
+}
+
+@keyframes raidSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.raid-header {
+  padding: 10px 14px;
+  border-radius: 6px 6px 0 0;
+  text-align: center;
+}
+
+.raid-header h3 {
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.raid-header.raid-victory {
+  background: rgba(40, 100, 40, 0.8);
+  border-bottom: 2px solid #4a8a4a;
+}
+
+.raid-header.raid-victory h3 {
+  color: #7ef07e;
+}
+
+.raid-header.raid-defeat {
+  background: rgba(120, 30, 30, 0.8);
+  border-bottom: 2px solid #aa3030;
+}
+
+.raid-header.raid-defeat h3 {
+  color: #ff6060;
+}
+
+.raid-header.raid-draw {
+  background: rgba(100, 80, 20, 0.8);
+  border-bottom: 2px solid #aa8830;
+}
+
+.raid-header.raid-draw h3 {
+  color: #e0c060;
+}
+
+.raid-body {
+  padding: 12px 14px;
+}
+
+.raid-body > div {
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.raid-body strong {
+  color: #e0e0e0;
+}
+
+.raid-enemies {
+  color: #e08080 !important;
+}
+
+.raid-defenders {
+  color: #80b0e0 !important;
+}
+
+.raid-casualties {
+  color: #e06060 !important;
+  font-style: italic;
+}
+
+.raid-no-casualties {
+  color: #80e080 !important;
+}
+
+.raid-no-defenders {
+  color: #e0a040 !important;
+  font-style: italic;
+}
+
+.raid-revived {
+  color: #c0a0f0 !important;
+}
+
+.raid-damage {
+  color: #ff8040 !important;
+  font-weight: bold;
+}
+
+.raid-dismiss-btn {
+  display: block;
+  width: calc(100% - 28px);
+  margin: 4px 14px 12px;
+  padding: 8px;
+  background: rgba(60, 60, 80, 0.8);
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.raid-dismiss-btn:hover {
+  background: rgba(80, 80, 110, 0.9);
+  border-color: #888;
+}

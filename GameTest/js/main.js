@@ -6,6 +6,7 @@ import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoo
 import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade, isUpgradePurchased } from './forge.js';
+import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport } from './raids.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -47,7 +48,12 @@ resizeCanvas();
 function gameTick() {
   gameState.tick++;
   tickProduction(gameState);
-  // TODO: raids, expeditions
+
+  // Raid system: tick the timer; if a raid triggers, show the report
+  const raidResult = tickRaidTimer(gameState);
+  if (raidResult) {
+    showRaidReport(raidResult);
+  }
 }
 
 // --- Build Panel ---
@@ -308,6 +314,72 @@ function closeForgePanel() {
   if (existing) existing.remove();
 }
 
+// --- Raid Report Panel ---
+
+function showRaidReport(raidResult) {
+  // Remove any existing raid report
+  closeRaidReport();
+
+  const report = getRaidReport(raidResult);
+
+  const panel = document.createElement('div');
+  panel.id = 'raid-report';
+
+  // Header with outcome styling
+  const isVictory = raidResult.winner === 'defenders';
+  const isDraw = raidResult.winner === 'draw';
+  const headerClass = isVictory ? 'raid-victory' : isDraw ? 'raid-draw' : 'raid-defeat';
+
+  const headerText = isVictory ? 'Raid Repelled!' : isDraw ? 'Raid Stalemate' : 'Raid Breach!';
+
+  panel.innerHTML = `
+    <div class="raid-header ${headerClass}">
+      <h3>${headerText}</h3>
+    </div>
+    <div class="raid-body">
+      <div class="raid-enemies">
+        <strong>Enemy Force:</strong> ${raidResult.enemyComposition}
+      </div>
+      <div class="raid-defenders">
+        <strong>Defenders:</strong> ${raidResult.defenderCount} unit${raidResult.defenderCount !== 1 ? 's' : ''}
+      </div>
+      ${raidResult.defenderLosses.length > 0
+        ? `<div class="raid-casualties"><strong>Casualties:</strong> ${raidResult.defenderLosses.map(l => l.name).join(', ')}</div>`
+        : raidResult.defenderCount > 0
+          ? '<div class="raid-no-casualties">No casualties!</div>'
+          : '<div class="raid-no-defenders">No defenders available!</div>'
+      }
+      ${raidResult.revivedUnit
+        ? `<div class="raid-revived"><strong>Valkyrie revived:</strong> ${raidResult.revivedUnit}</div>`
+        : ''
+      }
+      ${raidResult.meadHallDamage > 0
+        ? `<div class="raid-damage"><strong>Mead Hall damage:</strong> ${raidResult.meadHallDamage} (HP: ${gameState.meadHallHP}/100)</div>`
+        : ''
+      }
+    </div>
+  `;
+
+  const dismissBtn = document.createElement('button');
+  dismissBtn.className = 'raid-dismiss-btn';
+  dismissBtn.textContent = 'Dismiss';
+  dismissBtn.addEventListener('click', () => closeRaidReport());
+  panel.appendChild(dismissBtn);
+
+  overlay.appendChild(panel);
+
+  // Auto-dismiss after 15 seconds
+  panel._dismissTimer = setTimeout(() => closeRaidReport(), 15000);
+}
+
+function closeRaidReport() {
+  const existing = document.getElementById('raid-report');
+  if (existing) {
+    if (existing._dismissTimer) clearTimeout(existing._dismissTimer);
+    existing.remove();
+  }
+}
+
 // --- Pre-place starting Mead Hall ---
 
 function placeStartingMeadHall() {
@@ -417,10 +489,11 @@ function loadGame() {
 
 // Boot
 async function init() {
-  // Load room, unit, and upgrade definitions before anything else
+  // Load room, unit, upgrade, and enemy definitions before anything else
   await loadRoomDefs();
   await loadUnitDefs();
   await loadUpgradeDefs();
+  await loadEnemyDefs();
 
   const loaded = loadGame();
   if (loaded) {
@@ -428,6 +501,9 @@ async function init() {
     syncRoomIds(gameState.rooms);
     syncUnitIds(gameState.units);
   }
+
+  // Initialize raid timer and Mead Hall HP (handles fresh + loaded games)
+  initRaidTimer(gameState);
 
   // If no rooms exist (fresh game), place the starting Mead Hall
   if (gameState.rooms.length === 0) {
