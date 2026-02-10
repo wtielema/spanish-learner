@@ -9,6 +9,7 @@ import { loadUpgradeDefs, getUpgradeDefs, getAvailableUpgrades, purchaseUpgrade,
 import { loadEnemyDefs, initRaidTimer, tickRaidTimer, getRaidReport, executeRaid, generateRagnarokRaid } from './raids.js';
 import { loadExpeditionDefs, getExpeditionDefs, getAvailableExpeditions, getLockedExpeditions, startExpedition, tickExpeditions, getExpeditionTimeRemaining, formatDuration } from './expeditions.js';
 import { calculateOfflineProgress, formatElapsedTime } from './idle.js';
+import { spawnMiningSparks, spawnResourceSparkle, spawnCombatFlash, tickParticles, renderParticles } from './particles.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -39,6 +40,8 @@ function tryDig(tx, ty) {
   if (digTile(gameState.grid, tx, ty)) {
     gameState.resources.wood -= 1;
     digFlashes.push({ x: tx, y: ty, timer: 0.25 }); // 250ms flash
+    // Spawn mining spark particles at tile center
+    spawnMiningSparks((tx + 0.5) * TILE_SIZE, (ty + 0.5) * TILE_SIZE);
     return true;
   }
   return false;
@@ -59,9 +62,33 @@ function gameTick() {
   gameState.tick++;
   tickProduction(gameState);
 
+  // Spawn resource sparkles on production rooms (every 3 ticks to avoid spam)
+  if (gameState.tick % 3 === 0) {
+    const roomDefs = getRoomDefs();
+    for (const room of gameState.rooms) {
+      const def = roomDefs.find(d => d.id === room.type);
+      if (!def || !def.production) continue;
+      const [w, h] = def.size;
+      const cx = (room.x + w / 2) * TILE_SIZE;
+      const cy = (room.y + h / 2) * TILE_SIZE;
+      spawnResourceSparkle(cx, cy, def.production.resource);
+    }
+  }
+
   // Raid system: tick the timer; if a raid triggers, show the report
   const raidResult = tickRaidTimer(gameState);
   if (raidResult) {
+    // Spawn combat flash particles at the Mead Hall location
+    const meadHall = gameState.rooms.find(r => r.type === 'meadHall');
+    if (meadHall) {
+      const mhDef = getRoomDefs().find(d => d.id === 'meadHall');
+      if (mhDef) {
+        const [mw, mh] = mhDef.size;
+        const cx = (meadHall.x + mw / 2) * TILE_SIZE;
+        const cy = (meadHall.y + mh / 2) * TILE_SIZE;
+        spawnCombatFlash(cx, cy);
+      }
+    }
     showRaidReport(raidResult);
   }
 
@@ -1233,6 +1260,10 @@ function render() {
 
   // Draw room name labels
   renderRoomLabels(ctx, gameState.rooms, canvas.width, canvas.height);
+
+  // Update and render particles (after grid, before HUD)
+  tickParticles(dt);
+  renderParticles(ctx);
 
   // Draw units on the grid
   renderUnits(ctx, gameState.units, canvas.width, canvas.height, selectedUnitId);

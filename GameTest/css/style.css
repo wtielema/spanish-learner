@@ -1,8 +1,13 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-serif; color: #e0e0e0; }
+body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; color: #e0e0e0; }
 #game-canvas { display: block; width: 100vw; height: 100vh; }
 #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
 #ui-overlay > * { pointer-events: auto; }
+
+/* Norse/medieval thematic styling */
+h2, h3, .game-over-title, .victory-title, .victory-subtitle {
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
+}
 
 /* Build panel */
 #build-panel {
@@ -12,13 +17,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   width: 200px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
-  background: rgba(20, 20, 40, 0.85);
-  border-right: 1px solid #444;
-  border-top: 1px solid #444;
-  border-bottom: 1px solid #444;
+  background: rgba(20, 20, 40, 0.88);
+  border-right: 2px solid #554;
+  border-top: 2px solid #665;
+  border-bottom: 2px solid #443;
   border-radius: 0 8px 8px 0;
   padding: 10px;
   pointer-events: auto;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 2px 0 8px rgba(0,0,0,0.4);
 }
 
 #build-panel h3 {
@@ -41,12 +47,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   cursor: pointer;
   text-align: left;
   font-size: 13px;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .build-btn:hover:not(:disabled) {
   background: rgba(80, 80, 110, 0.9);
   border-color: #ffcc00;
+  transform: translateX(2px);
+  box-shadow: 0 0 6px rgba(255, 204, 0, 0.15);
 }
 
 .build-btn.active {
@@ -107,8 +115,9 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   left: 0;
   right: 0;
   height: 40px;
-  background: rgba(26, 26, 46, 0.88);
-  border-bottom: 1px solid #444;
+  background: rgba(20, 18, 35, 0.92);
+  border-bottom: 2px solid #554;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.03);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -165,13 +174,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   background: rgba(20, 20, 40, 0.9);
-  border-left: 1px solid #444;
-  border-top: 1px solid #444;
-  border-bottom: 1px solid #444;
+  border-left: 2px solid #554;
+  border-top: 2px solid #665;
+  border-bottom: 2px solid #443;
   border-radius: 8px 0 0 8px;
   padding: 10px;
   pointer-events: auto;
   z-index: 10;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), -2px 0 8px rgba(0,0,0,0.4);
 }
 
 #recruit-panel h3 {
@@ -202,12 +212,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   cursor: pointer;
   text-align: left;
   font-size: 13px;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
 .recruit-btn:hover:not(:disabled) {
   background: rgba(60, 100, 60, 0.9);
   border-color: #7ec87e;
+  transform: translateX(-2px);
+  box-shadow: 0 0 6px rgba(126, 200, 126, 0.15);
 }
 
 .recruit-btn:disabled {
@@ -250,11 +262,12 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   cursor: pointer;
   font-size: 12px;
   text-align: center;
-  transition: background 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .recruit-close-btn:hover {
   background: rgba(120, 50, 50, 0.9);
+  border-color: #884444;
 }
 
 /* Forge panel */
@@ -266,13 +279,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   background: rgba(20, 20, 40, 0.9);
-  border-left: 1px solid #444;
-  border-top: 1px solid #444;
-  border-bottom: 1px solid #444;
+  border-left: 2px solid #654;
+  border-top: 2px solid #765;
+  border-bottom: 2px solid #543;
   border-radius: 8px 0 0 8px;
   padding: 10px;
   pointer-events: auto;
   z-index: 10;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), -2px 0 8px rgba(0,0,0,0.4);
 }
 
 #forge-panel h3 {
@@ -552,13 +566,15 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
   z-index: 15;
 }
 
 #expedition-btn:hover {
   background: rgba(80, 60, 130, 0.9);
   border-color: #9080d0;
+  box-shadow: 0 0 10px rgba(120, 80, 200, 0.3);
+  transform: translateY(-1px);
 }
 
 /* Expedition panel */
@@ -570,13 +586,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   background: rgba(20, 15, 35, 0.92);
-  border-left: 1px solid #5040a0;
-  border-top: 1px solid #5040a0;
-  border-bottom: 1px solid #5040a0;
+  border-left: 2px solid #5040a0;
+  border-top: 2px solid #6050b0;
+  border-bottom: 2px solid #403090;
   border-radius: 8px 0 0 8px;
   padding: 10px;
   pointer-events: auto;
   z-index: 10;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), -2px 0 8px rgba(0,0,0,0.4);
 }
 
 #expedition-panel h3 {
@@ -1372,6 +1389,7 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
 
 .game-over-title {
   font-size: 28px;
+  font-family: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
   color: #cc2020;
   text-transform: uppercase;
   letter-spacing: 3px;
@@ -1483,13 +1501,14 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   background: rgba(20, 20, 40, 0.92);
-  border-left: 1px solid #556;
-  border-top: 1px solid #556;
-  border-bottom: 1px solid #556;
+  border-left: 2px solid #554;
+  border-top: 2px solid #665;
+  border-bottom: 2px solid #443;
   border-radius: 8px 0 0 8px;
   padding: 10px;
   pointer-events: auto;
   z-index: 10;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), -2px 0 8px rgba(0,0,0,0.4);
 }
 
 #room-info-panel h3 {
