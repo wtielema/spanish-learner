@@ -1,4 +1,6 @@
 import { gameState, setState, createInitialState } from './state.js';
+import { camera, setupCameraControls, centerCamera } from './camera.js';
+import { TILE_SIZE } from './grid.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -21,17 +23,24 @@ function render() {
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Apply camera transform
+  ctx.save();
+  ctx.scale(camera.zoom, camera.zoom);
+  ctx.translate(-camera.x, -camera.y);
+
   // Draw grid tiles
   const grid = gameState.grid;
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       const tile = grid[y][x];
       ctx.fillStyle = tile.type === 'rock' ? '#2d2d44' : '#4a4a3a';
-      ctx.fillRect(x * 32, y * 32, 32, 32);
+      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
   }
 
-  // Placeholder text
+  ctx.restore();
+
+  // HUD text (drawn outside camera transform so it stays fixed on screen)
   ctx.fillStyle = '#e0e0e0';
   ctx.font = '24px sans-serif';
   ctx.fillText('Viking Keeper — Game Loop Running', 20, 40);
@@ -59,6 +68,8 @@ function loadGame() {
 // Boot
 function init() {
   loadGame();
+  setupCameraControls(canvas);
+  centerCamera(30, 20, TILE_SIZE, canvas.width, canvas.height);
   setInterval(gameTick, 1000);
   setInterval(saveGame, 10000); // auto-save every 10s
   requestAnimationFrame(render);
