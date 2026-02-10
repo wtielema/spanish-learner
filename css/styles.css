@@ -936,11 +936,52 @@ button {
   margin-bottom: 16px;
 }
 
+/* Collapsible reference cards */
+.ref-collapsible .ref-collapse-body {
+  overflow: hidden;
+  max-height: 2000px;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  opacity: 1;
+}
+
+.ref-collapsible.collapsed .ref-collapse-body {
+  max-height: 0;
+  opacity: 0;
+}
+
+.ref-collapse-toggle {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-collapse-icon {
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.ref-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ref-section-header-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .ref-pattern-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+}
+
+.ref-collapsible.collapsed .ref-pattern-header {
+  margin-bottom: 0;
 }
 
 .ref-pattern-name {
