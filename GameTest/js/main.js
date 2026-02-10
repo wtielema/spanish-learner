@@ -2,8 +2,8 @@ import { gameState, setState, createInitialState } from './state.js';
 import { camera, setupCameraControls, centerCamera, screenToWorld } from './camera.js';
 import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock, digTile } from './grid.js';
 import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview, renderUnits } from './renderer.js';
-import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds } from './rooms.js';
-import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds } from './units.js';
+import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds, tickProduction } from './rooms.js';
+import { loadUnitDefs, getUnitCapacity, recruitUnit, getRecruitsForRoom, syncUnitIds, assignUnitToRoom, unassignUnit, getUnitAtTile } from './units.js';
 import { createHUD, updateHUD, showWarning } from './ui.js';
 
 const canvas = document.getElementById('game-canvas');
@@ -18,6 +18,9 @@ const digFlashes = []; // { x, y, timer }
 
 // Build mode state
 let buildMode = null; // null = not building, otherwise { defId, def } for the room being placed
+
+// Selected unit for assignment
+let selectedUnitId = null;
 
 // Attempt to dig at the given tile coordinates; returns true if successful
 function tryDig(tx, ty) {
@@ -42,7 +45,8 @@ resizeCanvas();
 // Game tick (1s interval) -- resource production, combat, timers
 function gameTick() {
   gameState.tick++;
-  // TODO: production, raids, expeditions
+  tickProduction(gameState);
+  // TODO: raids, expeditions
 }
 
 // --- Build Panel ---
@@ -247,7 +251,7 @@ function render() {
   renderRoomLabels(ctx, gameState.rooms, canvas.width, canvas.height);
 
   // Draw units on the grid
-  renderUnits(ctx, gameState.units, canvas.width, canvas.height);
+  renderUnits(ctx, gameState.units, canvas.width, canvas.height, selectedUnitId);
 
   // Draw dig flash effects (brief white flash on newly dug tiles)
   if (digFlashes.length > 0) {
@@ -372,28 +376,65 @@ async function init() {
     mouse.leftDown = false;
   });
 
-  // Left-click: dig (no build mode) or place room (build mode) or recruit (click room)
+  // Left-click: priorities: build mode > recruit panel > unit selection/assignment > dig
   canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0) {
+      // Priority 1: Build mode — place rooms
       if (buildMode) {
         tryPlaceRoom(mouse.tileX, mouse.tileY);
-      } else {
-        // Check if clicking a room that supports recruitment
-        const clickedRoom = getRoomAtTile(mouse.tileX, mouse.tileY);
-        if (clickedRoom) {
-          const recruits = getRecruitsForRoom(gameState, clickedRoom);
-          if (recruits.length > 0) {
-            openRecruitPanel(clickedRoom);
-            return; // don't dig
-          }
-        }
-        // Close recruit panel if clicking elsewhere
-        if (recruitPanelRoom) {
-          closeRecruitPanel();
-        }
-        mouse.leftDown = true;
-        tryDig(mouse.tileX, mouse.tileY);
+        return;
       }
+
+      // Priority 2: Check if clicking a room that supports recruitment (opens panel)
+      const clickedRoom = getRoomAtTile(mouse.tileX, mouse.tileY);
+
+      // Priority 3: Unit selection and assignment
+      // If a unit is selected and clicking on a room → assign unit to room
+      if (selectedUnitId != null && clickedRoom) {
+        // Don't assign to Mead Hall — that is "unassign" (go idle)
+        if (clickedRoom.type === 'meadHall') {
+          unassignUnit(gameState, selectedUnitId);
+        } else {
+          assignUnitToRoom(gameState, selectedUnitId, clickedRoom);
+        }
+        selectedUnitId = null;
+        return;
+      }
+
+      // If clicking on a tile with a unit → select that unit
+      const clickedUnit = getUnitAtTile(gameState.units, mouse.tileX, mouse.tileY);
+      if (clickedUnit) {
+        // Toggle selection: clicking the same unit deselects it
+        if (selectedUnitId === clickedUnit.id) {
+          selectedUnitId = null;
+        } else {
+          selectedUnitId = clickedUnit.id;
+        }
+        // Close recruit panel if open
+        if (recruitPanelRoom) closeRecruitPanel();
+        return;
+      }
+
+      // If clicking a room that can recruit (and no unit selected) → open recruit panel
+      if (clickedRoom) {
+        const recruits = getRecruitsForRoom(gameState, clickedRoom);
+        if (recruits.length > 0) {
+          selectedUnitId = null;
+          openRecruitPanel(clickedRoom);
+          return;
+        }
+      }
+
+      // Clicking empty space → deselect unit, close recruit panel, then dig
+      if (selectedUnitId != null) {
+        selectedUnitId = null;
+        return;
+      }
+      if (recruitPanelRoom) {
+        closeRecruitPanel();
+      }
+      mouse.leftDown = true;
+      tryDig(mouse.tileX, mouse.tileY);
     }
   });
   canvas.addEventListener('mouseup', (e) => {
@@ -402,19 +443,21 @@ async function init() {
     }
   });
 
-  // Right-click to cancel build mode or close recruit panel
+  // Right-click to cancel build mode, close recruit panel, or deselect unit
   canvas.addEventListener('mouseup', (e) => {
     if (e.button === 2) {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
+      if (selectedUnitId != null) selectedUnitId = null;
     }
   });
 
-  // Escape to cancel build mode or close recruit panel
+  // Escape to cancel build mode, close recruit panel, or deselect unit
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (buildMode) exitBuildMode();
       if (recruitPanelRoom) closeRecruitPanel();
+      if (selectedUnitId != null) selectedUnitId = null;
     }
   });
 

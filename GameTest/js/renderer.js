@@ -129,8 +129,9 @@ const UNIT_INITIALS = {
   valkyrie:  'V',
 };
 
-/** Draw all units on the grid as colored circles with type initials */
-export function renderUnits(ctx, units, canvasW, canvasH) {
+/** Draw all units on the grid as colored circles with type initials.
+ *  selectedUnitId (optional) — if set, draw a golden highlight ring around that unit. */
+export function renderUnits(ctx, units, canvasW, canvasH, selectedUnitId) {
   if (!units || units.length === 0) return;
 
   ctx.save();
@@ -150,6 +151,23 @@ export function renderUnits(ctx, units, canvasW, canvasH) {
 
     const color = UNIT_COLORS[unit.type] || '#888888';
     const initial = UNIT_INITIALS[unit.type] || '?';
+    const isSelected = unit.id === selectedUnitId;
+
+    // Selection highlight: golden pulsing ring behind the unit
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(px, py, radius + 4, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffcc00';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Soft golden glow
+      ctx.beginPath();
+      ctx.arc(px, py, radius + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255, 204, 0, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
 
     // Filled circle
     ctx.beginPath();
@@ -157,9 +175,9 @@ export function renderUnits(ctx, units, canvasW, canvasH) {
     ctx.fillStyle = color;
     ctx.fill();
 
-    // Dark outline for contrast
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.lineWidth = 1.5;
+    // Dark outline for contrast (or golden for selected)
+    ctx.strokeStyle = isSelected ? '#ffcc00' : 'rgba(0, 0, 0, 0.5)';
+    ctx.lineWidth = isSelected ? 2 : 1.5;
     ctx.stroke();
 
     // Letter initial
@@ -168,6 +186,13 @@ export function renderUnits(ctx, units, canvasW, canvasH) {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#fff';
     ctx.fillText(initial, px, py);
+
+    // Small assignment indicator below the unit
+    if (unit.assignment === 'working') {
+      ctx.font = '8px sans-serif';
+      ctx.fillStyle = '#88ff88';
+      ctx.fillText('\u2692', px, py + radius + 8); // hammer and pick symbol
+    }
   }
 
   ctx.restore();
