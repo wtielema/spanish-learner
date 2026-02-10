@@ -37,9 +37,12 @@ export async function renderSpeedRound(app, router) {
   const verbProgressIds = new Set(allVerbProgress.map(p => p.verbId));
   const practicedVerbs = verbs.filter(v => verbProgressIds.has(v.id));
 
+  const isMobile = 'ontouchstart' in window || window.matchMedia('(max-width: 768px)').matches;
+
   let state = {
     phase: 'select',
     contentMode: null,
+    answerMode: isMobile ? 'mc' : 'typing',
     items: [],
     currentIndex: 0,
     results: [],
@@ -62,7 +65,8 @@ export async function renderSpeedRound(app, router) {
 
   function renderModeSelect() {
     cleanup();
-    state = { phase: 'select', contentMode: null, items: [], currentIndex: 0, results: [], timeRemaining: 60, timerId: null, startTime: null };
+    const savedMode = state.answerMode;
+    state = { phase: 'select', contentMode: null, answerMode: savedMode, items: [], currentIndex: 0, results: [], timeRemaining: 60, timerId: null, startTime: null };
 
     const nounCount = practicedNouns.length;
     const verbCount = practicedVerbs.length;
@@ -74,7 +78,16 @@ export async function renderSpeedRound(app, router) {
           <h2 class="speed-title">Speed Round</h2>
           <button class="practice-close" id="sr-close">&times;</button>
         </div>
-        <p class="speed-subtitle">Answer 20 questions as fast as you can! Type your answers — no multiple choice.</p>
+        <p class="speed-subtitle">Answer 20 questions as fast as you can in 60 seconds!</p>
+
+        <div class="sr-setting-group">
+          <span class="sr-setting-label">Answer Mode</span>
+          <div class="sr-setting-options">
+            <button class="sr-setting-opt ${state.answerMode === 'mc' ? 'active' : ''}" id="sr-opt-mc">Multiple Choice</button>
+            <button class="sr-setting-opt ${state.answerMode === 'typing' ? 'active' : ''}" id="sr-opt-typing" ${isMobile ? 'disabled' : ''}>Typing${isMobile ? ' (desktop only)' : ''}</button>
+          </div>
+        </div>
+
         <div class="speed-modes">
           <button class="btn-speed-mode" id="sr-nouns" ${nounCount < 5 ? 'disabled' : ''}>
             <span class="speed-mode-icon">&#128218;</span>
@@ -97,6 +110,22 @@ export async function renderSpeedRound(app, router) {
     `;
 
     document.getElementById('sr-close').addEventListener('click', () => router.navigate('/'));
+
+    // Answer mode toggle
+    document.getElementById('sr-opt-mc').addEventListener('click', () => {
+      state.answerMode = 'mc';
+      document.getElementById('sr-opt-mc').classList.add('active');
+      document.getElementById('sr-opt-typing').classList.remove('active');
+    });
+    const typingBtn = document.getElementById('sr-opt-typing');
+    if (!typingBtn.disabled) {
+      typingBtn.addEventListener('click', () => {
+        state.answerMode = 'typing';
+        typingBtn.classList.add('active');
+        document.getElementById('sr-opt-mc').classList.remove('active');
+      });
+    }
+
     const bind = (id, mode) => {
       const btn = document.getElementById(id);
       if (btn && !btn.disabled) btn.addEventListener('click', () => startRound(mode));
@@ -192,7 +221,62 @@ export async function renderSpeedRound(app, router) {
       }
     }
 
-    return shuffle(items).slice(0, 20);
+    const final = shuffle(items).slice(0, 20);
+
+    // Generate distractors for MC mode
+    if (state.answerMode === 'mc') {
+      for (const item of final) {
+        item.options = buildDistractors(item, final);
+      }
+    }
+
+    return final;
+  }
+
+  function buildDistractors(item, allItems) {
+    const answer = item.answer.toLowerCase().trim();
+    let pool = [];
+
+    if (item.type === 'noun') {
+      if (item.direction === 'en-es') {
+        pool = practicedNouns.map(n => n.spanish).filter(w => w.toLowerCase() !== answer);
+      } else {
+        pool = practicedNouns.map(n => n.english).filter(w => w.toLowerCase() !== answer);
+      }
+    } else if (item.type === 'verb') {
+      if (item.direction === 'en-es') {
+        pool = practicedVerbs.map(v => v.spanish).filter(w => w.toLowerCase() !== answer);
+      } else {
+        pool = practicedVerbs.map(v => v.english).filter(w => w.toLowerCase() !== answer);
+      }
+    } else if (item.type === 'verb-conjugation') {
+      // Pull forms from all practiced verbs for the same tense but different results
+      for (const v of practicedVerbs) {
+        for (const t of TENSES) {
+          for (const p of PERSONS) {
+            const form = v.conjugations[t][p];
+            if (form.toLowerCase() !== answer && !pool.includes(form)) {
+              pool.push(form);
+            }
+          }
+        }
+      }
+    }
+
+    const distractors = shuffle(pool).slice(0, 3);
+    // If not enough distractors, pull answers from other items in this round
+    if (distractors.length < 3) {
+      const others = allItems
+        .filter(i => i.answer.toLowerCase() !== answer)
+        .map(i => i.answer);
+      for (const o of shuffle(others)) {
+        if (distractors.length >= 3) break;
+        if (!distractors.includes(o)) distractors.push(o);
+      }
+    }
+
+    const options = shuffle([item.answer, ...distractors]);
+    return options;
   }
 
   function startRound(mode) {
@@ -224,7 +308,16 @@ export async function renderSpeedRound(app, router) {
   function renderPlaying() {
     const item = state.items[state.currentIndex];
     const progress = `${state.currentIndex + 1} / ${state.items.length}`;
+    const label = item.type === 'verb-conjugation' ? 'Conjugate' : item.direction === 'en-es' ? 'Translate to Spanish' : 'Translate to English';
 
+    if (state.answerMode === 'mc') {
+      renderPlayingMC(item, progress, label);
+    } else {
+      renderPlayingTyping(item, progress, label);
+    }
+  }
+
+  function renderPlayingTyping(item, progress, label) {
     app.innerHTML = `
       <div class="speed-round">
         <div class="speed-play-header">
@@ -233,7 +326,7 @@ export async function renderSpeedRound(app, router) {
           <button class="speed-skip-btn" id="sr-skip">Skip</button>
         </div>
         <div class="speed-prompt-card">
-          <span class="speed-prompt-label">${item.type === 'verb-conjugation' ? 'Conjugate' : item.direction === 'en-es' ? 'Translate to Spanish' : 'Translate to English'}</span>
+          <span class="speed-prompt-label">${label}</span>
           <span class="speed-prompt-text">${item.prompt}</span>
         </div>
         <div class="speed-input-area">
@@ -266,6 +359,35 @@ export async function renderSpeedRound(app, router) {
         input.value = input.value.slice(0, pos) + char + input.value.slice(input.selectionEnd);
         input.selectionStart = input.selectionEnd = pos + 1;
         input.focus();
+      });
+    });
+  }
+
+  function renderPlayingMC(item, progress, label) {
+    app.innerHTML = `
+      <div class="speed-round">
+        <div class="speed-play-header">
+          <span class="speed-progress">${progress}</span>
+          <span class="speed-timer ${timerClass()}" id="sr-timer">${state.timeRemaining}s</span>
+          <button class="speed-skip-btn" id="sr-skip">Skip</button>
+        </div>
+        <div class="speed-prompt-card">
+          <span class="speed-prompt-label">${label}</span>
+          <span class="speed-prompt-text">${item.prompt}</span>
+        </div>
+        <div class="sr-mc-options">
+          ${item.options.map((opt, i) => `<button class="btn-sr-mc" data-answer="${escapeHtml(opt)}">${escapeHtml(opt)}</button>`).join('')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('sr-skip').addEventListener('click', () => {
+      submitAnswer('');
+    });
+
+    document.querySelectorAll('.btn-sr-mc').forEach(btn => {
+      btn.addEventListener('click', () => {
+        submitAnswer(btn.dataset.answer);
       });
     });
   }
