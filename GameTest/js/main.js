@@ -3,6 +3,7 @@ import { camera, setupCameraControls, centerCamera, screenToWorld } from './came
 import { TILE_SIZE, GRID_WIDTH, GRID_HEIGHT, isRock, digTile } from './grid.js';
 import { renderGrid, renderHoverTile, renderRoomLabels, renderRoomPreview } from './renderer.js';
 import { loadRoomDefs, getRoomDefs, canPlaceRoom, canAfford, placeRoom, placeRoomFree, syncRoomIds } from './rooms.js';
+import { createHUD, updateHUD, showWarning } from './ui.js';
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
@@ -207,18 +208,12 @@ function render() {
     renderHoverTile(ctx, mouse.tileX, mouse.tileY, canDig);
   }
 
-  // HUD text (drawn outside camera transform so it stays fixed on screen)
-  ctx.fillStyle = '#e0e0e0';
-  ctx.font = '24px sans-serif';
-  ctx.fillText('Viking Keeper', 20, 40);
-  ctx.font = '16px sans-serif';
-  ctx.fillText(`Tick: ${gameState.tick} | Wood: ${gameState.resources.wood} | Iron: ${gameState.resources.iron} | Runes: ${gameState.resources.runes}`, 20, 70);
+  // Update HTML HUD with current resource values
+  updateHUD(gameState);
 
   // "No wood!" warning when trying to dig without resources
   if (!buildMode && mouse.leftDown && gameState.resources.wood < 1) {
-    ctx.fillStyle = '#ff4444';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('Not enough wood!', 20, 100);
+    showWarning('Not enough wood!');
   }
 
   // Periodically refresh build panel button states (every frame is fine, it's lightweight)
@@ -263,6 +258,9 @@ async function init() {
 
   // Create build panel UI
   createBuildPanel();
+
+  // Create resource HUD
+  createHUD(overlay);
 
   // Mouse tracking for hover tile
   canvas.addEventListener('mousemove', (e) => {

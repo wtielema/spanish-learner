@@ -82,7 +82,7 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
 /* Build mode indicator */
 #build-mode-indicator {
   position: absolute;
-  top: 10px;
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(200, 160, 0, 0.9);
@@ -93,8 +93,65 @@ body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', sans-seri
   font-weight: bold;
   display: none;
   pointer-events: none;
+  z-index: 10;
 }
 
 #build-mode-indicator.visible {
   display: block;
+}
+
+/* Resource HUD bar */
+#resource-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: rgba(26, 26, 46, 0.88);
+  border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.res-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.res-item {
+  font-size: 14px;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+
+#res-wood { color: #c8a86e; }
+#res-iron { color: #a0b0c0; }
+#res-runes { color: #b08ae0; }
+#unit-count { color: #7ec87e; }
+
+/* HUD warning message */
+#hud-warning {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  background: rgba(180, 30, 30, 0.9);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 15;
+}
+
+#hud-warning.visible {
+  opacity: 1;
 }
