@@ -157,7 +157,7 @@ export async function renderSpeedRound(app, router) {
           items.push({
             type: 'noun',
             nounId: noun.id,
-            prompt: `the ${noun.english}`,
+            prompt: noun.english.startsWith('the ') ? noun.english : `the ${noun.english}`,
             answer: noun.spanish,
             displayInfo: `${article} ${noun.spanish}`,
             direction,
@@ -185,10 +185,11 @@ export async function renderSpeedRound(app, router) {
           // Meaning question
           const dir = Math.random() < 0.5 ? 'en-es' : 'es-en';
           if (dir === 'en-es') {
+            const verbPrompt = verb.english.startsWith('to ') ? verb.english : `to ${verb.english}`;
             items.push({
               type: 'verb',
               verbId: verb.id,
-              prompt: `to ${verb.english}`,
+              prompt: verbPrompt,
               answer: verb.spanish,
               displayInfo: verb.spanish,
               direction: dir,
@@ -250,17 +251,35 @@ export async function renderSpeedRound(app, router) {
         pool = practicedVerbs.map(v => v.english).filter(w => w.toLowerCase() !== answer);
       }
     } else if (item.type === 'verb-conjugation') {
-      // Pull forms from all practiced verbs for the same tense but different results
-      for (const v of practicedVerbs) {
+      // Prioritize same-verb distractors (different person/tense) for harder choices
+      const sameVerb = practicedVerbs.find(v => v.id === item.verbId);
+      const sameVerbPool = [];
+      const otherPool = [];
+      if (sameVerb) {
         for (const t of TENSES) {
           for (const p of PERSONS) {
-            const form = v.conjugations[t][p];
-            if (form.toLowerCase() !== answer && !pool.includes(form)) {
-              pool.push(form);
+            const form = sameVerb.conjugations[t][p];
+            if (form.toLowerCase() !== answer && !sameVerbPool.includes(form)) {
+              sameVerbPool.push(form);
             }
           }
         }
       }
+      for (const v of practicedVerbs) {
+        if (v.id === item.verbId) continue;
+        for (const t of TENSES) {
+          for (const p of PERSONS) {
+            const form = v.conjugations[t][p];
+            if (form.toLowerCase() !== answer && !sameVerbPool.includes(form) && !otherPool.includes(form)) {
+              otherPool.push(form);
+            }
+          }
+        }
+      }
+      // At least 2 from same verb, 1 from other verbs
+      const fromSame = shuffle(sameVerbPool).slice(0, 2);
+      const fromOther = shuffle(otherPool).slice(0, 3 - fromSame.length);
+      pool = [...fromSame, ...fromOther];
     }
 
     const distractors = shuffle(pool).slice(0, 3);
