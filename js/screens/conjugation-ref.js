@@ -134,28 +134,47 @@ export async function renderConjugationRef(app, router) {
   const paraPrep = preps.find(p => p.spanish === 'para');
 
   const porParaSection = (porPrep && paraPrep) ? `
-    <div class="ref-pattern-card" id="prep-por-para">
-      <h3 class="ref-pattern-name">Por vs Para</h3>
-      <p class="ref-pattern-desc">The most commonly confused preposition pair. Both translate to "for" in English, but have distinct uses.</p>
-      <div class="ref-por-para-grid">
-        <div class="ref-por-para-col">
-          <h4 class="ref-prep-col-title">Por</h4>
-          ${porPrep.usages.map(u => `
-            <div class="ref-prep-usage">
-              <span class="ref-prep-usage-label">${u.meaning}</span>
-              <span class="ref-prep-usage-ex">${u.example}</span>
-            </div>
-          `).join('')}
+    <div class="ref-quick-rules">
+      <h2 class="ref-section-title">Key Distinctions</h2>
+      <div class="ref-pattern-card" id="prep-por-para">
+        <div class="ref-pattern-header">
+          <h3 class="ref-pattern-name">Por vs Para</h3>
         </div>
-        <div class="ref-por-para-col">
-          <h4 class="ref-prep-col-title ref-prep-col-para">Para</h4>
-          ${paraPrep.usages.map(u => `
-            <div class="ref-prep-usage">
-              <span class="ref-prep-usage-label">${u.meaning}</span>
-              <span class="ref-prep-usage-ex">${u.example}</span>
+        <p class="ref-pattern-desc">The most commonly confused pair. Both translate to "for" in English, but have distinct uses.</p>
+        <div class="ref-por-para-grid">
+          <div class="ref-por-para-col">
+            <div class="ref-tense-block">
+              <h4 class="ref-tense-title" style="color: var(--accent);">Por</h4>
+              ${porPrep.usages.map(u => `
+                <div class="ref-prep-usage">
+                  <span class="ref-prep-usage-label">${u.meaning}</span>
+                  <span class="ref-prep-usage-ex">${u.example}</span>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
+          </div>
+          <div class="ref-por-para-col">
+            <div class="ref-tense-block">
+              <h4 class="ref-tense-title" style="color: var(--success);">Para</h4>
+              ${paraPrep.usages.map(u => `
+                <div class="ref-prep-usage">
+                  <span class="ref-prep-usage-label">${u.meaning}</span>
+                  <span class="ref-prep-usage-ex">${u.example}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="ref-rule-card">
+        <h4>Personal "a"</h4>
+        <p>Use <strong>a</strong> before a person when they are the direct object of a verb.</p>
+        <p class="ref-example">Veo <strong>a</strong> mi madre. — I see my mother.</p>
+      </div>
+      <div class="ref-rule-card">
+        <h4>Contractions</h4>
+        <p><strong>a + el = al</strong> and <strong>de + el = del</strong> are the only two contractions in Spanish.</p>
+        <p class="ref-example">Voy <strong>al</strong> parque. — Viene <strong>del</strong> mercado.</p>
       </div>
     </div>
   ` : '';
@@ -168,27 +187,38 @@ export async function renderConjugationRef(app, router) {
           <h3 class="ref-pattern-name">${prep.spanish}</h3>
           <span class="ref-verb-count">${prep.primaryMeaning}</span>
         </div>
-        <div class="ref-prep-usages">
-          ${prep.usages.map(u => `
-            <div class="ref-prep-usage">
-              <span class="ref-prep-usage-label">${u.meaning}</span>
-              <span class="ref-prep-usage-ex">${u.example}</span>
-              <span class="ref-prep-usage-en">${u.exampleEn}</span>
-            </div>
-          `).join('')}
-        </div>
-        ${hasCollocations ? `
-          <div class="ref-prep-colloc-section">
-            <h4 class="ref-prep-colloc-title">Common Collocations</h4>
-            ${prep.collocations.map(c => `
-              <div class="ref-prep-colloc">
-                <span class="ref-prep-colloc-verb">${c.verb} ${prep.spanish}</span>
-                <span class="ref-prep-colloc-meaning">${c.meaning}</span>
-                <span class="ref-prep-usage-ex">${c.example}</span>
-              </div>
-            `).join('')}
+        <div class="ref-tenses-grid">
+          <div class="ref-tense-block">
+            <h4 class="ref-tense-title">Usages</h4>
+            <table class="ref-table">
+              <thead><tr><th>Meaning</th><th>Example</th></tr></thead>
+              <tbody>
+                ${prep.usages.map(u => `
+                  <tr>
+                    <td class="ref-prep-usage-label">${u.meaning}</td>
+                    <td><span class="ref-prep-usage-ex">${u.example}</span><br><span class="ref-prep-usage-en">${u.exampleEn}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
-        ` : ''}
+          ${hasCollocations ? `
+            <div class="ref-tense-block">
+              <h4 class="ref-tense-title">Collocations</h4>
+              <table class="ref-table">
+                <thead><tr><th>Expression</th><th>Example</th></tr></thead>
+                <tbody>
+                  ${prep.collocations.map(c => `
+                    <tr>
+                      <td><span class="ref-ending">${c.verb} ${prep.spanish}</span><br><span class="ref-prep-usage-en">${c.meaning}</span></td>
+                      <td class="ref-prep-usage-ex">${c.example}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : ''}
+        </div>
       </div>
     `;
   }
