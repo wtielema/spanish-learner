@@ -1,0 +1,7 @@
+{
+  "name": "mes-pilot",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
