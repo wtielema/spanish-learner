@@ -29,13 +29,31 @@ import { ProductionLog } from './modules/jobs/entities/production-log.entity.js'
 
 config({ path: '../../.env' });
 
+function getDbConfig() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (databaseUrl) {
+    const url = new URL(databaseUrl);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port || '5432'),
+      database: url.pathname.slice(1),
+      username: url.username,
+      password: url.password,
+      ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } as any : false,
+    };
+  }
+  return {
+    host: process.env.DATABASE_HOST || 'localhost',
+    port: parseInt(process.env.DATABASE_PORT || '5432'),
+    database: process.env.DATABASE_NAME || 'mes_pilot',
+    username: process.env.DATABASE_USER || 'woutertielemans',
+    password: process.env.DATABASE_PASSWORD || '',
+  };
+}
+
 const dataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DATABASE_HOST || 'localhost',
-  port: parseInt(process.env.DATABASE_PORT || '5432'),
-  database: process.env.DATABASE_NAME || 'mes_pilot',
-  username: process.env.DATABASE_USER || 'woutertielemans',
-  password: process.env.DATABASE_PASSWORD || '',
+  ...getDbConfig(),
   entities: [
     Site, Area, WorkCenter, WorkUnit,
     User, Role, UserArea, AuditLog,

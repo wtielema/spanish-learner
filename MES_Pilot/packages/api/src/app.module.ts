@@ -21,17 +21,30 @@ import { GatewayModule } from './gateway/gateway.module.js';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres' as const,
-        host: config.get<string>('DATABASE_HOST', 'localhost'),
-        port: config.get<number>('DATABASE_PORT', 5432),
-        database: config.get<string>('DATABASE_NAME', 'mes_pilot'),
-        username: config.get<string>('DATABASE_USER', 'woutertielemans'),
-        password: config.get<string>('DATABASE_PASSWORD', ''),
-        autoLoadEntities: true,
-        synchronize: true,  // Dev only! Use migrations in production
-        logging: config.get<string>('NODE_ENV') !== 'production',
-      }),
+      useFactory: (config: ConfigService) => {
+        const databaseUrl = config.get<string>('DATABASE_URL');
+        if (databaseUrl) {
+          return {
+            type: 'postgres' as const,
+            url: databaseUrl,
+            ssl: { rejectUnauthorized: false },
+            autoLoadEntities: true,
+            synchronize: true,
+            logging: false,
+          };
+        }
+        return {
+          type: 'postgres' as const,
+          host: config.get<string>('DATABASE_HOST', 'localhost'),
+          port: config.get<number>('DATABASE_PORT', 5432),
+          database: config.get<string>('DATABASE_NAME', 'mes_pilot'),
+          username: config.get<string>('DATABASE_USER', 'woutertielemans'),
+          password: config.get<string>('DATABASE_PASSWORD', ''),
+          autoLoadEntities: true,
+          synchronize: true,
+          logging: config.get<string>('NODE_ENV') !== 'production',
+        };
+      },
     }),
     CoreModule,
     AuthModule,
