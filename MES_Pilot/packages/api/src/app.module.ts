@@ -9,6 +9,7 @@ import { MesConfigModule } from './modules/config/config.module.js';
 import { RecipesModule } from './modules/recipes/recipes.module.js';
 import { JobsModule } from './modules/jobs/jobs.module.js';
 import { QualityModule } from './modules/quality/quality.module.js';
+import { GatewayModule } from './gateway/gateway.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { QualityModule } from './modules/quality/quality.module.js';
     RecipesModule,
     JobsModule,
     QualityModule,
+    GatewayModule,
   ],
 })
 export class AppModule {}
