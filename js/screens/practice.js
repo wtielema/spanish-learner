@@ -87,6 +87,9 @@ export async function renderPractice(app, router, mode) {
   }
 
   function renderFlashcard(card, progress) {
+    const verbTranslation = showTranslations && card.verb && card.subtype === 'conjugation'
+      ? `<div class="fillin-translation">${card.verb.english}</div>` : '';
+
     app.innerHTML = `
       <div class="practice">
         <div class="practice-header">
@@ -97,6 +100,7 @@ export async function renderPractice(app, router, mode) {
           <div class="card-front">
             <span class="card-label">${card.type}${card.subtype === 'conjugation' ? ' \u2014 ' + (card.tense || '') : ''}</span>
             <span class="card-text">${card.front}</span>
+            ${verbTranslation}
             <span class="card-hint">Tap to reveal</span>
           </div>
         </div>
@@ -140,6 +144,8 @@ export async function renderPractice(app, router, mode) {
     const distractors = session.getDistractors(card, 3);
     const correctAnswer = card.back || card.answer;
     const options = shuffle([correctAnswer, ...distractors]);
+    const verbTranslation = showTranslations && card.verb && card.subtype === 'conjugation'
+      ? `<div class="fillin-translation">${card.verb.english}</div>` : '';
 
     app.innerHTML = `
       <div class="practice">
@@ -151,6 +157,7 @@ export async function renderPractice(app, router, mode) {
           <div class="card-front">
             <span class="card-label">${card.type}${card.subtype === 'conjugation' ? ' \u2014 ' + (card.tense || '') : ''}</span>
             <span class="card-text">${card.front}</span>
+            ${verbTranslation}
           </div>
         </div>
         <div class="mc-options">
@@ -189,6 +196,7 @@ export async function renderPractice(app, router, mode) {
     const isPerson = card.subtype === 'person-id';
     const title = isPerson ? 'Who is speaking?' : 'What tense is this?';
     const verbInfo = card.verb ? card.verb.spanish : '';
+    const verbEnglish = card.verb ? card.verb.english : '';
 
     app.innerHTML = `
       <div class="practice">
@@ -200,7 +208,8 @@ export async function renderPractice(app, router, mode) {
           <div class="card-front">
             <span class="card-label">Form Recognition${isPerson && card.tense ? ' \u2014 ' + card.tense : ''}</span>
             <span class="card-text fr-conjugated">${card.prompt}</span>
-            <span class="fr-verb-name">${verbInfo} (${card.verb ? card.verb.english : ''})</span>
+            <span class="fr-verb-name">${verbInfo}</span>
+            ${showTranslations ? `<div class="fillin-translation">${verbEnglish}</div>` : ''}
             <span class="card-hint">${title}</span>
           </div>
         </div>
