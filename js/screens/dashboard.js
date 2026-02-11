@@ -155,8 +155,8 @@ export async function renderDashboard(app, router) {
           </div>
         </div>
         <div class="dash-section-actions">
-          <button class="btn-primary" id="btn-verb-learn">Train Verbs</button>
-          <button class="btn-secondary" id="btn-verb-review">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
+          <button class="btn-primary" id="btn-verb-review">Review Verbs${verbsDue > 0 ? ` (${verbsDue})` : ''}</button>
+          <button class="btn-secondary" id="btn-verb-learn">Train Verbs</button>
           <button class="btn-paradigm-launch" id="btn-paradigm-drill">&#128221; Paradigm Drill</button>
         </div>
       </div>
