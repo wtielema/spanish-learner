@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity.js';
@@ -9,6 +9,7 @@ import { PermissionGuard } from './guards/permission.guard.js';
 import { SessionSerializer } from './session.serializer.js';
 import { AuthController } from './auth.controller.js';
 
+@Global()
 @Module({
   imports: [
     PassportModule.register({ session: true }),
@@ -16,6 +17,6 @@ import { AuthController } from './auth.controller.js';
   ],
   controllers: [AuthController],
   providers: [DevStrategy, PermissionGuard, SessionSerializer],
-  exports: [PermissionGuard],
+  exports: [PermissionGuard, TypeOrmModule],
 })
 export class AuthModule {}
