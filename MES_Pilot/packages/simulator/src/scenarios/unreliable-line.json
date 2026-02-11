@@ -1,0 +1,28 @@
+{
+  "name": "Unreliable Line",
+  "timeScale": 60,
+  "seed": 999,
+  "shiftDurationHours": 8,
+  "lines": [
+    {
+      "workCenterId": "PKG-LINE-01",
+      "idealCycleTimeSec": 0.5,
+      "speedVariancePct": 5,
+      "breakdownMtbfHours": 2,
+      "breakdownMttrMin": { "mean": 30, "std": 12 },
+      "rejectRate": 0.01,
+      "minorStopRatePerHour": 8,
+      "qualityParams": {
+        "weight_g": { "mean": 500, "std": 3 },
+        "seal_strength_n": { "mean": 25, "std": 2 }
+      }
+    }
+  ],
+  "workOrders": [
+    {
+      "productSku": "SKU-WIDGET-001",
+      "quantity": 10000,
+      "workCenterId": "PKG-LINE-01"
+    }
+  ]
+}
