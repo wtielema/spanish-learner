@@ -458,6 +458,121 @@ async function seed() {
   }
   console.log(`✓ QC Template: Startup Safety Check`);
 
+  // Visual Appearance Check (Packaging, timed_interval 60 min)
+  const visAppName = { en: 'Visual Appearance Check', nl: 'Visuele Uiterlijkcontrole', zh: '外观检查' };
+  let visAppTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: visAppName } });
+  if (!visAppTemplate) {
+    visAppTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      areaId: areas[2].id,
+      nameI18n: visAppName,
+      trigger: 'timed_interval',
+      triggerValue: 60,
+      isMandatory: true,
+      applicableWorkCenters: [workCenters[4].id, workCenters[5].id],
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Container Integrity OK', nl: 'Verpakkingsintegriteit OK', zh: '容器完整性正常' }, paramType: 'boolean', sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Label Alignment OK', nl: 'Labeluitlijning OK', zh: '标签对齐正常' }, paramType: 'boolean', sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Print Quality', nl: 'Drukkwaliteit', zh: '打印质量' }, paramType: 'selection', optionsI18n: { en: ['Acceptable', 'Minor Defect', 'Major Defect'], nl: ['Acceptabel', 'Klein Defect', 'Groot Defect'], zh: ['合格', '轻微缺陷', '严重缺陷'] }, sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Fill Level Visual', nl: 'Vulniveau Visueel', zh: '目视液位' }, paramType: 'selection', optionsI18n: { en: ['Normal', 'Underfill', 'Overfill'], nl: ['Normaal', 'Ondervulling', 'Overvulling'], zh: ['正常', '欠充', '过充'] }, sequence: 4 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Color Match', nl: 'Kleurovereenkomst', zh: '颜色匹配' }, paramType: 'boolean', sequence: 5 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: visAppTemplate.id, nameI18n: { en: 'Notes', nl: 'Opmerkingen', zh: '备注' }, paramType: 'text', sequence: 6 }));
+  }
+  console.log(`✓ QC Template: Visual Appearance Check`);
+
+  // Finished Product Inspection (Batch, on_complete)
+  const fpInspName = { en: 'Finished Product Inspection', nl: 'Eindproductinspectie', zh: '成品检验' };
+  let fpInspTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: fpInspName } });
+  if (!fpInspTemplate) {
+    fpInspTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      areaId: areas[0].id,
+      nameI18n: fpInspName,
+      trigger: 'on_complete',
+      isMandatory: true,
+      applicableWorkCenters: [workCenters[0].id, workCenters[1].id],
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: fpInspTemplate.id, nameI18n: { en: 'Color Consistency', nl: 'Kleurconsistentie', zh: '颜色一致性' }, paramType: 'selection', optionsI18n: { en: ['Pass', 'Marginal', 'Fail'], nl: ['Goed', 'Marginaal', 'Afgekeurd'], zh: ['通过', '临界', '不合格'] }, sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: fpInspTemplate.id, nameI18n: { en: 'Texture/Viscosity Visual', nl: 'Textuur/Viscositeit Visueel', zh: '质地/粘度目视' }, paramType: 'selection', optionsI18n: { en: ['Normal', 'Too Thin', 'Too Thick'], nl: ['Normaal', 'Te Dun', 'Te Dik'], zh: ['正常', '过稀', '过稠'] }, sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: fpInspTemplate.id, nameI18n: { en: 'Odor Acceptable', nl: 'Geur Acceptabel', zh: '气味合格' }, paramType: 'boolean', sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: fpInspTemplate.id, nameI18n: { en: 'Foreign Particles Absent', nl: 'Geen Vreemde Deeltjes', zh: '无异物' }, paramType: 'boolean', sequence: 4 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: fpInspTemplate.id, nameI18n: { en: 'Foam Level', nl: 'Schuimniveau', zh: '泡沫水平' }, paramType: 'selection', optionsI18n: { en: ['Normal', 'Excessive', 'None'], nl: ['Normaal', 'Overmatig', 'Geen'], zh: ['正常', '过多', '无'] }, sequence: 5 }));
+  }
+  console.log(`✓ QC Template: Finished Product Inspection`);
+
+  // Incoming Material Verification (site-wide, on_start)
+  const matVerName = { en: 'Incoming Material Verification', nl: 'Inkomend Materiaal Verificatie', zh: '来料验证' };
+  let matVerTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: matVerName } });
+  if (!matVerTemplate) {
+    matVerTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      nameI18n: matVerName,
+      trigger: 'on_start',
+      isMandatory: true,
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Material Lot Number', nl: 'Materiaal Lotnummer', zh: '物料批号' }, paramType: 'text', sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Expiry Date Valid', nl: 'Vervaldatum Geldig', zh: '有效期合格' }, paramType: 'boolean', sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Certificate of Analysis Present', nl: 'Analysecertificaat Aanwezig', zh: '分析证书齐全' }, paramType: 'boolean', sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Packaging Intact', nl: 'Verpakking Intact', zh: '包装完好' }, paramType: 'boolean', sequence: 4 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Material Appearance Normal', nl: 'Materiaaluiterlijk Normaal', zh: '物料外观正常' }, paramType: 'boolean', sequence: 5 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: matVerTemplate.id, nameI18n: { en: 'Temperature', nl: 'Temperatuur', zh: '温度' }, paramType: 'numeric', unit: '°C', targetValue: 22, lowerLimit: 15, upperLimit: 30, sequence: 6 }));
+  }
+  console.log(`✓ QC Template: Incoming Material Verification`);
+
+  // Weighing & Dispensing Check (Batch, on_start)
+  const weighName = { en: 'Weighing & Dispensing Check', nl: 'Weeg- & Doseercontrole', zh: '称量与配料检查' };
+  let weighTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: weighName } });
+  if (!weighTemplate) {
+    weighTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      areaId: areas[0].id,
+      nameI18n: weighName,
+      trigger: 'on_start',
+      isMandatory: true,
+      applicableWorkCenters: [workCenters[0].id, workCenters[1].id],
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: weighTemplate.id, nameI18n: { en: 'Scale Calibration Verified', nl: 'Weegschaal Kalibratie Geverifieerd', zh: '天平校准已验证' }, paramType: 'boolean', sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: weighTemplate.id, nameI18n: { en: 'Tare Weight Correct', nl: 'Tarragewicht Correct', zh: '皮重正确' }, paramType: 'boolean', sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: weighTemplate.id, nameI18n: { en: 'Net Weight', nl: 'Nettogewicht', zh: '净重' }, paramType: 'numeric', unit: 'kg', targetValue: 25, lowerLimit: 24.9, upperLimit: 25.1, sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: weighTemplate.id, nameI18n: { en: 'Operator Double-Check Initials', nl: 'Operator Dubbelcontrole Initialen', zh: '操作员复核签名' }, paramType: 'text', sequence: 4 }));
+  }
+  console.log(`✓ QC Template: Weighing & Dispensing Check`);
+
+  // Equipment Pre-Run Check (site-wide, on_start)
+  const equipName = { en: 'Equipment Pre-Run Check', nl: 'Apparatuur Pre-Run Controle', zh: '设备运行前检查' };
+  let equipTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: equipName } });
+  if (!equipTemplate) {
+    equipTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      nameI18n: equipName,
+      trigger: 'on_start',
+      isMandatory: true,
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'Machine Cleaned', nl: 'Machine Schoongemaakt', zh: '机器已清洁' }, paramType: 'boolean', sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'No Visible Damage', nl: 'Geen Zichtbare Schade', zh: '无可见损坏' }, paramType: 'boolean', sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'Guards & Safety Devices OK', nl: 'Beveiligingen & Veiligheidsinrichtingen OK', zh: '防护装置与安全设备正常' }, paramType: 'boolean', sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'Lubrication Level OK', nl: 'Smeerniveau OK', zh: '润滑油位正常' }, paramType: 'boolean', sequence: 4 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'Previous Batch Cleared', nl: 'Vorige Batch Verwijderd', zh: '上批已清场' }, paramType: 'boolean', sequence: 5 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: equipTemplate.id, nameI18n: { en: 'Calibration Sticker Valid', nl: 'Kalibratiesticker Geldig', zh: '校准标签有效' }, paramType: 'boolean', sequence: 6 }));
+  }
+  console.log(`✓ QC Template: Equipment Pre-Run Check`);
+
+  // Packaging Line Equipment Check (Packaging, every_n_units 5000)
+  const pkgEquipName = { en: 'Packaging Line Equipment Check', nl: 'Verpakkingslijn Apparatuurcontrole', zh: '包装线设备检查' };
+  let pkgEquipTemplate = await qcTemplateRepo.findOne({ where: { nameI18n: pkgEquipName } });
+  if (!pkgEquipTemplate) {
+    pkgEquipTemplate = await qcTemplateRepo.save(qcTemplateRepo.create({
+      areaId: areas[2].id,
+      nameI18n: pkgEquipName,
+      trigger: 'every_n_units',
+      triggerValue: 5000,
+      isMandatory: true,
+      applicableWorkCenters: [workCenters[4].id, workCenters[5].id],
+    }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Filler Nozzle Condition', nl: 'Vulmond Conditie', zh: '灌装嘴状态' }, paramType: 'selection', optionsI18n: { en: ['Good', 'Worn', 'Replace'], nl: ['Goed', 'Versleten', 'Vervangen'], zh: ['良好', '磨损', '更换'] }, sequence: 1 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Capper Torque Setting', nl: 'Dopsluiter Koppelinstelling', zh: '压盖扭矩设定' }, paramType: 'numeric', unit: 'Nm', targetValue: 1.5, lowerLimit: 1.3, upperLimit: 1.7, sequence: 2 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Label Applicator Alignment', nl: 'Etiketteerapparaat Uitlijning', zh: '贴标机对准' }, paramType: 'boolean', sequence: 3 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Conveyor Belt Tension OK', nl: 'Transportbandspanning OK', zh: '传送带张力正常' }, paramType: 'boolean', sequence: 4 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Sensor Readings Normal', nl: 'Sensoruitlezingen Normaal', zh: '传感器读数正常' }, paramType: 'boolean', sequence: 5 }));
+    await qcParamRepo.save(qcParamRepo.create({ templateId: pkgEquipTemplate.id, nameI18n: { en: 'Reject Bin Emptied', nl: 'Afkeurbak Geleegd', zh: '废品箱已清空' }, paramType: 'boolean', sequence: 6 }));
+  }
+  console.log(`✓ QC Template: Packaging Line Equipment Check`);
+
   // ── Work Orders ─────────────────────────────────────────
   const woRepo = dataSource.getRepository(WorkOrder);
   const workOrdersData = [
