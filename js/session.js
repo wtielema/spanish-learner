@@ -20,7 +20,7 @@ export class Session {
 
     this._allCards = [
       ...nounsResp.flatMap(generateNounCards),
-      ...verbsResp.flatMap(generateVerbCards),
+      ...verbsResp.flatMap(v => generateVerbCards(v).filter(c => c.subtype === 'meaning')),
     ];
 
     const allProgress = await this.db.getAllProgress();
