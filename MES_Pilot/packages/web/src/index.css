@@ -390,6 +390,134 @@ tr:hover td {
   color: var(--status-completed);
 }
 
+/* ===== Page Header ===== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  margin-bottom: 0;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: var(--color-sidebar);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 4px;
+  min-height: auto;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ===== Form Fields ===== */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* ===== I18n Input ===== */
+.i18n-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.i18n-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.i18n-tab {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: auto;
+}
+
+.i18n-tab.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.i18n-tab:hover:not(.active) {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+}
+
 /* ===== Error Text ===== */
 .error-text {
   color: var(--status-on-hold);
@@ -412,4 +540,355 @@ tr:hover td {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
+}
+
+/* ===== Job Center ===== */
+.job-center-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* ===== Work Order Grid ===== */
+.wo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.wo-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+}
+
+.wo-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.wo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.wo-order-number {
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+
+.wo-card-product {
+  font-size: 14px;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.wo-card-wc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+}
+
+.wo-progress-bar-container {
+  background: var(--color-border);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.wo-progress-bar-container.large {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.wo-progress-bar {
+  background: var(--status-active);
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.wo-progress-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.wo-priority {
+  font-size: 12px;
+  color: var(--status-in-progress);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* ===== Work Order Detail ===== */
+.wo-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.wo-detail-header h1 {
+  margin-bottom: 0;
+}
+
+.wo-detail-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.wo-detail-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.wo-detail-section h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.wo-progress-stats {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-top: 8px;
+}
+
+/* ===== Action Buttons ===== */
+.wo-action-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.action-btn {
+  min-height: 48px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.action-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.action-btn.release {
+  background: var(--status-completed);
+  color: #fff;
+}
+
+.action-btn.start {
+  background: var(--status-active);
+  color: #fff;
+}
+
+.action-btn.count {
+  background: var(--status-completed);
+  color: #fff;
+}
+
+.action-btn.reject {
+  background: var(--status-on-hold);
+  color: #fff;
+}
+
+.action-btn.downtime {
+  background: var(--status-in-progress);
+  color: #fff;
+}
+
+.action-btn.hold {
+  background: #d97706;
+  color: #fff;
+}
+
+.action-btn.complete {
+  background: var(--status-active);
+  color: #fff;
+}
+
+.action-inline-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ===== QC Checks Due ===== */
+.qc-due-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qc-due-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--color-bg);
+  border-radius: 6px;
+}
+
+.qc-due-item span:first-child {
+  flex: 1;
+}
+
+/* ===== Production Log List ===== */
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.log-value {
+  font-weight: 700;
+  color: #fff;
+}
+
+.log-comment {
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.log-time {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  margin-left: auto;
+}
+
+/* ===== Form Stacks (modal forms) ===== */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+}
+
+.form-stack label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.modal-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  padding: 20px 24px 0;
+}
+
+.modal-wide {
+  max-width: 640px;
+}
+
+/* ===== QC Check Parameters ===== */
+.qc-param-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.param-unit {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.qc-numeric-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.param-target {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.input-out-of-spec {
+  border-color: var(--status-on-hold) !important;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.oos-warning {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--status-on-hold);
+}
+
+.param-comment-input {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* ===== Radio Group ===== */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.radio-label input[type="radio"] {
+  width: auto;
+  min-height: auto;
 }

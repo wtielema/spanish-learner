@@ -54,6 +54,9 @@ export default function AppLayout() {
           <NavLink to="/deviations" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             {t('nav.deviations')}
           </NavLink>
+          <NavLink to="/holds" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            {t('nav.holds')}
+          </NavLink>
 
           <div className="nav-group-label">{t('nav.engineering')}</div>
           <NavLink to="/recipes" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>

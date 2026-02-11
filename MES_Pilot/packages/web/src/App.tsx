@@ -9,6 +9,7 @@ import JobCenter from './pages/JobCenter';
 import WorkOrderDetail from './pages/WorkOrderDetail';
 import QcChecks from './pages/QcChecks';
 import Deviations from './pages/Deviations';
+import HoldManager from './pages/HoldManager';
 import RecipeList from './pages/RecipeList';
 import RecipeDetail from './pages/RecipeDetail';
 import ProductList from './pages/ProductList';
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/work-orders/:id" element={<WorkOrderDetail />} />
                 <Route path="/qc-checks" element={<QcChecks />} />
                 <Route path="/deviations" element={<Deviations />} />
+                <Route path="/holds" element={<HoldManager />} />
                 <Route path="/recipes" element={<RecipeList />} />
                 <Route path="/recipes/:id" element={<RecipeDetail />} />
                 <Route path="/products" element={<ProductList />} />
