@@ -7,6 +7,8 @@ import { CoreModule } from './modules/core/core.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { MesConfigModule } from './modules/config/config.module.js';
 import { RecipesModule } from './modules/recipes/recipes.module.js';
+import { JobsModule } from './modules/jobs/jobs.module.js';
+import { QualityModule } from './modules/quality/quality.module.js';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { RecipesModule } from './modules/recipes/recipes.module.js';
     UsersModule,
     MesConfigModule,
     RecipesModule,
+    JobsModule,
+    QualityModule,
   ],
 })
 export class AppModule {}
