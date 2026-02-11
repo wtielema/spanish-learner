@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { CoreModule } from './modules/core/core.module.js';
+import { UsersModule } from './modules/users/users.module.js';
+import { MesConfigModule } from './modules/config/config.module.js';
+import { RecipesModule } from './modules/recipes/recipes.module.js';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { CoreModule } from './modules/core/core.module.js';
     }),
     CoreModule,
     AuthModule,
+    UsersModule,
+    MesConfigModule,
+    RecipesModule,
   ],
 })
 export class AppModule {}
