@@ -148,7 +148,7 @@ export async function renderSpeedRound(app, router) {
 
     if (mode === 'nouns' || mode === 'mixed') {
       const pool = shuffle([...practicedNouns]);
-      const count = mode === 'nouns' ? 20 : Math.min(16, pool.length); // 80% nouns in mixed
+      const count = mode === 'nouns' ? 20 : Math.min(14, pool.length);
       for (let i = 0; i < Math.min(count, pool.length); i++) {
         const noun = pool[i];
         const direction = Math.random() < 0.7 ? 'en-es' : 'es-en';
@@ -178,7 +178,7 @@ export async function renderSpeedRound(app, router) {
 
     if (mode === 'verbs' || mode === 'mixed') {
       const pool = shuffle([...practicedVerbs]);
-      const count = mode === 'verbs' ? 20 : Math.min(4, pool.length); // 20% verbs in mixed
+      const count = mode === 'verbs' ? 20 : Math.min(14, pool.length);
       for (let i = 0; i < Math.min(count, pool.length); i++) {
         const verb = pool[i];
         if (Math.random() < 0.4) {

@@ -33,7 +33,7 @@ export class Session {
       });
 
       if (dueCards.length > 0) {
-        this.cards = this._shuffle(dueCards).slice(0, 30);
+        this.cards = this._mixByRatio(dueCards, 30);
       } else {
         // Nothing due — fall back to weakest cards for extra practice
         const practicedCards = this._allCards
@@ -44,7 +44,7 @@ export class Session {
     } else {
       const newPerDay = (await this.db.getSetting('newPerDay')) || 10;
       const newCards = this._allCards.filter(card => !progressMap[card.id]);
-      this.cards = this._shuffle(newCards).slice(0, newPerDay);
+      this.cards = this._mixByRatio(newCards, newPerDay);
     }
   }
 
@@ -78,6 +78,26 @@ export class Session {
 
   getProgress() {
     return { current: this.current, total: this.cards.length };
+  }
+
+  // Pick cards with 80% nouns, 20% verbs ratio
+  _mixByRatio(cards, total) {
+    const nounCards = this._shuffle(cards.filter(c => c.type === 'noun'));
+    const verbCards = this._shuffle(cards.filter(c => c.type !== 'noun'));
+    const verbTarget = Math.round(total * 0.2);
+    const nounTarget = total - verbTarget;
+    const picked = [
+      ...nounCards.slice(0, nounTarget),
+      ...verbCards.slice(0, verbTarget),
+    ];
+    // If one pool is short, fill from the other
+    if (picked.length < total) {
+      const remaining = total - picked.length;
+      const pickedIds = new Set(picked.map(c => c.id));
+      const extras = this._shuffle(cards.filter(c => !pickedIds.has(c.id)));
+      picked.push(...extras.slice(0, remaining));
+    }
+    return this._shuffle(picked);
   }
 
   _shuffle(arr) {
