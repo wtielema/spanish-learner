@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import JobCenter from './pages/JobCenter';
 import WorkOrderDetail from './pages/WorkOrderDetail';
 import QcChecks from './pages/QcChecks';
+import QcHistory from './pages/QcHistory';
 import Deviations from './pages/Deviations';
 import HoldManager from './pages/HoldManager';
 import RecipeList from './pages/RecipeList';
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/job-center" element={<JobCenter />} />
                 <Route path="/work-orders/:id" element={<WorkOrderDetail />} />
                 <Route path="/qc-checks" element={<QcChecks />} />
+                <Route path="/qc-history" element={<QcHistory />} />
                 <Route path="/deviations" element={<Deviations />} />
                 <Route path="/holds" element={<HoldManager />} />
                 <Route path="/recipes" element={<RecipeList />} />

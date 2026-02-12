@@ -255,6 +255,50 @@ export class QualityService {
     return savedCheck;
   }
 
+  // ── Check History ────────────────────────────────────────
+
+  async findHistory(filters?: {
+    templateId?: string;
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }): Promise<QcCheck[]> {
+    const qb = this.checkRepo
+      .createQueryBuilder('check')
+      .leftJoinAndSelect('check.template', 'template')
+      .leftJoinAndSelect('template.params', 'params')
+      .leftJoinAndSelect('check.results', 'results')
+      .leftJoinAndSelect('results.param', 'resultParam')
+      .leftJoinAndSelect('check.workOrder', 'workOrder')
+      .where('check.completedAt IS NOT NULL')
+      .andWhere('check.status IN (:...statuses)', {
+        statuses: ['passed', 'failed'],
+      })
+      .orderBy('check.completedAt', 'DESC')
+      .addOrderBy('params.sequence', 'ASC');
+
+    if (filters?.templateId) {
+      qb.andWhere('check.templateId = :templateId', {
+        templateId: filters.templateId,
+      });
+    }
+    if (filters?.status) {
+      qb.andWhere('check.status = :status', { status: filters.status });
+    }
+    if (filters?.dateFrom) {
+      qb.andWhere('check.completedAt >= :dateFrom', {
+        dateFrom: filters.dateFrom,
+      });
+    }
+    if (filters?.dateTo) {
+      qb.andWhere('check.completedAt <= :dateTo', {
+        dateTo: filters.dateTo,
+      });
+    }
+
+    return qb.getMany();
+  }
+
   // ── Deviations ─────────────────────────────────────────
 
   async createDeviation(

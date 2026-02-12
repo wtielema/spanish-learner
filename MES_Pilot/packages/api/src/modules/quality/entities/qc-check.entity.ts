@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { QcTemplate } from './qc-template.entity.js';
 import { QcResult } from './qc-result.entity.js';
+import { WorkOrder } from '../../jobs/entities/work-order.entity.js';
 
 @Entity('qc_checks')
 export class QcCheck {
@@ -39,6 +40,10 @@ export class QcCheck {
   @ManyToOne(() => QcTemplate)
   @JoinColumn({ name: 'templateId' })
   template: QcTemplate;
+
+  @ManyToOne(() => WorkOrder)
+  @JoinColumn({ name: 'workOrderId' })
+  workOrder: WorkOrder;
 
   @OneToMany(() => QcResult, (r) => r.check)
   results: QcResult[];

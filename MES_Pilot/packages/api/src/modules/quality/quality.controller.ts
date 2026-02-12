@@ -67,6 +67,22 @@ export class QualityController {
 
   // ── QC Checks ──────────────────────────────────────────
 
+  @Get('qc-checks/history')
+  @RequirePermission('qc:view')
+  findHistory(
+    @Query('templateId') templateId?: string,
+    @Query('status') status?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    return this.qualityService.findHistory({
+      templateId,
+      status,
+      dateFrom,
+      dateTo,
+    });
+  }
+
   @Get('work-orders/:workOrderId/qc-checks')
   @RequirePermission('qc:view')
   getDueChecks(@Param('workOrderId') workOrderId: string) {

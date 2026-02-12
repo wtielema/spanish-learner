@@ -122,6 +122,7 @@ export interface QcResult {
   value: string | null;
   isInSpec: boolean | null;
   comment: string | null;
+  param?: QcTemplateParam;
 }
 
 export interface QcDeviation {

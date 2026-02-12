@@ -51,6 +51,9 @@ export default function AppLayout() {
           <NavLink to="/qc-checks" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             {t('nav.qcChecks')}
           </NavLink>
+          <NavLink to="/qc-history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            {t('nav.qcHistory')}
+          </NavLink>
           <NavLink to="/deviations" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             {t('nav.deviations')}
           </NavLink>
