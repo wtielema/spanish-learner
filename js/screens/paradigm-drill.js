@@ -213,6 +213,7 @@ export async function renderParadigmDrill(app, router) {
         <div class="speed-play-header">
           <span class="speed-progress">${progress}</span>
           <button class="speed-skip-btn" id="pd-skip">Skip</button>
+          <button class="practice-close" id="pd-close">&times;</button>
         </div>
         <div class="pd-prompt-card">
           <div class="pd-verb-name">${verb.spanish}</div>
@@ -277,6 +278,13 @@ export async function renderParadigmDrill(app, router) {
 
     document.getElementById('pd-check').addEventListener('click', submitDrill);
     document.getElementById('pd-skip').addEventListener('click', skipDrill);
+    document.getElementById('pd-close').addEventListener('click', () => {
+      if (state.results.length > 0) {
+        showResults();
+      } else {
+        router.navigate('/');
+      }
+    });
   }
 
   function submitDrill() {
@@ -336,6 +344,7 @@ export async function renderParadigmDrill(app, router) {
         <div class="speed-play-header">
           <span class="speed-progress">${state.currentIndex + 1} / ${state.drillItems.length}</span>
           <span class="speed-progress">${correctCount}/6</span>
+          <button class="practice-close" id="pd-close">&times;</button>
         </div>
         <div class="pd-prompt-card">
           <div class="pd-verb-name">${verb.spanish}</div>
@@ -374,6 +383,8 @@ export async function renderParadigmDrill(app, router) {
         renderDrillingPhase();
       }
     });
+
+    document.getElementById('pd-close').addEventListener('click', () => showResults());
   }
 
   // --- Results phase ---
